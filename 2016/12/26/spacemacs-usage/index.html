@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="spacemacs使用指南">
+
+
+
+
+  <meta name="keywords" content="spacemacs, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2016/12/26/spacemacs-usage/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> spacemacs使用指南 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          spacemacs使用指南
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2016-12-26
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#简介"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装-amp-使用"><span class="toc-text">安装&amp;使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Mac平台推荐安装Emacs的方法"><span class="toc-text">Mac平台推荐安装Emacs的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用方法"><span class="toc-text">使用方法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置文件"><span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用快捷键"><span class="toc-text">常用快捷键</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置文件管理"><span class="toc-text">配置文件管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#帮助文档"><span class="toc-text">帮助文档</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文件管理"><span class="toc-text">文件管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#窗口管理"><span class="toc-text">窗口管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#项目管理"><span class="toc-text">项目管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对齐"><span class="toc-text">对齐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Shell-集成-必须先配置-Shell-layer"><span class="toc-text">Shell 集成 (必须先配置 Shell layer)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#让Spacemacs支持EditorCofnig"><span class="toc-text">让Spacemacs支持EditorCofnig</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Git-集成-必须先配置Magit-的使用"><span class="toc-text">Git 集成 (必须先配置Magit 的使用)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#插件配置"><span class="toc-text">插件配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#行号开启"><span class="toc-text">行号开启</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#显示80字符的column"><span class="toc-text">显示80字符的column</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#flycheck"><span class="toc-text">flycheck</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bookmarks"><span class="toc-text">bookmarks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#搜索"><span class="toc-text">搜索</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#搜索内容："><span class="toc-text">搜索内容：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#搜索文件名"><span class="toc-text">搜索文件名:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多光标编辑"><span class="toc-text">多光标编辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注释"><span class="toc-text">注释</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Spacemacs是一份emacs的配置文件，想要使用它，你先要有emacs，本文主要介绍在Mac上安装和使用Spacemacs，同时本文在Spacemacs基础上使用了子龙山人的Spacemacs-private</p>
+<h1 id="安装-amp-使用"><a href="#安装-amp-使用" class="headerlink" title="安装&amp;使用"></a>安装&amp;使用</h1><h2 id="Mac平台推荐安装Emacs的方法"><a href="#Mac平台推荐安装Emacs的方法" class="headerlink" title="Mac平台推荐安装Emacs的方法"></a>Mac平台推荐安装Emacs的方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew tap railwaycat/emacsmacport;</span><br><span class="line">brew install emacs-mac --with-spacemacs-icon --HEAD --with-gnutls</span><br></pre></td></tr></table></figure>
+<p>注意：—with-gnutls是用来支持ssl的</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#clone spacemacs repo and use develop branch</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/syl20bnr/spacemacs.git ~/.emacs.d -b develop</span><br><span class="line"></span><br><span class="line"><span class="comment">#clone zilongshanren layer and checkout develop branch</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zilongshanren/spacemacs-private.git ~/.spacemacs.d/</span><br></pre></td></tr></table></figure>
+<p>详细的配置说明以及安装powershell支持，可以参考<a href="https://github.com/zilongshanren/spacemacs-private" target="_blank" rel="noopener">spacemacs-private</a></p>
+<a id="more"></a>
+<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><p>Spacemacs 的配置文件位于 ~/.spacemacs 中，我们只需要修改这个文件就可以制定自己的配置了。<br>一般情况下，我们只需要在 dotspacemacs-configuration-layers 中添加自己需要的 layer 就可以了。<br>但是由于我们使用spacemacs-private因此个性化的配置文件都放在了.spacemacs.d目录，可以根据自己的需求修改该目录下的文件</p>
+<h1 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h1><h2 id="配置文件管理"><a href="#配置文件管理" class="headerlink" title="配置文件管理"></a>配置文件管理</h2><ul>
+<li><code>SPC f e d</code> 快速打开配置文件</li>
+<li><code>SPC f e R</code> 同步配置文件</li>
+<li><code>SPC q R</code> 重启 emacs</li>
+</ul>
+<h2 id="帮助文档"><a href="#帮助文档" class="headerlink" title="帮助文档"></a>帮助文档</h2><ul>
+<li><code>SPC h d</code> 查看 describe 相关的文档</li>
+<li><code>SPC h d f</code> 查看指定函数的帮助文档</li>
+<li><code>SPC h d b</code> 查看指定快捷键绑定了什么命令</li>
+<li><code>SPC h d v</code> 查看指定变量的帮助文档</li>
+</ul>
+<h2 id="文件管理"><a href="#文件管理" class="headerlink" title="文件管理"></a>文件管理</h2><ul>
+<li><code>SPC f f</code> 打开文件（夹），相当于 <code>$ open xxx</code> 或 <code>$ cd /path/to/project</code></li>
+<li><code>SPC /</code> 用合适的搜索工具搜索内容，相当于 <code>$ grep/ack/ag/pt xxx</code> 或 <code>ST / Atom</code> 中的  <code>Ctrl + Shift + f</code></li>
+<li><code>SPC s c</code> 清除搜索高亮</li>
+<li><code>SPC f R</code> 重命名当前文件</li>
+<li><code>SPC b k</code> 关闭当前 buffer (spacemacs 0.1xx 以前)</li>
+<li><code>SPC b d</code> 关闭当前 buffer (spacemacs 0.1xx 以后)</li>
+</ul>
+<h2 id="窗口管理"><a href="#窗口管理" class="headerlink" title="窗口管理"></a>窗口管理</h2><ul>
+<li><code>SPC f t</code> 或 <code>SPC p t</code> 用 NeoTree 打开/关闭侧边栏，相当于 <code>ST / Atom</code> 中的 <code>Ctrl(cmd) + k + b</code></li>
+<li><code>SPC f t</code> 打开当前文件所在的目录</li>
+<li><code>SPC p t</code> 打开当前文件所在的根目录</li>
+<li><code>SPC 0</code> 光标跳转到侧边栏（NeoTree）中</li>
+<li><code>SPC n</code>(数字) 光标跳转到第 n 个 buffer 中</li>
+<li><code>SPC w s</code> 或 <code>SPC w -</code> 水平分割窗口</li>
+<li><code>SPC w v</code> 或 <code>SPC w /</code> 垂直分割窗口</li>
+<li><code>SPC w c</code> 关闭当前窗口 (spacemacs 0.1xx 以前)</li>
+<li><code>SPC w d</code> 关闭当前窗口 (spacemacs 0.1xx 以后)</li>
+</ul>
+<h2 id="项目管理"><a href="#项目管理" class="headerlink" title="项目管理"></a>项目管理</h2><ul>
+<li><code>SPC p p</code> 切换项目</li>
+<li><code>SPC p D</code> 在 dired 中打开项目根目录</li>
+<li><code>SPC p f</code> 在项目中搜索文件名，相当于 ST / Atom 中的 Ctrl + p</li>
+<li><code>SPC p R</code> 在项目中替换字符串，根据提示输入「匹配」和「替换」的字符串，然后输入替换的方式：<ul>
+<li><code>E</code> 修改刚才输入的「替换」字符串</li>
+<li><code>RET</code> 表示不做处理</li>
+<li><code>y</code> 表示只替换一处</li>
+<li><code>Y</code> 表示替换全部</li>
+<li><code>n</code>或<code>delete</code>表示跳过当前匹配项，匹配下一项</li>
+<li><code>^</code> 表示跳过当前匹配项，匹配上一项</li>
+<li><code>,</code> 表示替换当前项，但不移动光标，可和 <code>n</code> 或 <code>^</code> 配合使用</li>
+</ul>
+</li>
+</ul>
+<h2 id="对齐"><a href="#对齐" class="headerlink" title="对齐"></a>对齐</h2><p><code>SPC j =</code> 自动对齐，相当于 beautify</p>
+<h2 id="Shell-集成-必须先配置-Shell-layer"><a href="#Shell-集成-必须先配置-Shell-layer" class="headerlink" title="Shell 集成 (必须先配置 Shell layer)"></a>Shell 集成 (必须先配置 Shell layer)</h2><ul>
+<li><code>SPC &#39;</code>(单引号) 打开/关闭 Shell</li>
+<li><code>C-k</code> 前一条 shell 命令，相当于在 shell 中按上箭头</li>
+<li><code>C-j</code> 后一条 shell 命令，相当于在 shell 中按下箭头</li>
+</ul>
+<h2 id="让Spacemacs支持EditorCofnig"><a href="#让Spacemacs支持EditorCofnig" class="headerlink" title="让Spacemacs支持EditorCofnig"></a>让Spacemacs支持EditorCofnig</h2><p>EditorConfig 是一个配置文件，一般位于项目的根目录，它可以让不同的编辑器和IDE 都按照相同的格式来格式化代码，对于项目的维护者来说是一个很好的工具。<br>Spacemacs 也支持 EditorConfig，只需要在配置文件中添加配置即可。下面以 OS X 为例，通过以下步骤即可让 Spacemacs 支持 EditorConfig：</p>
+<ol>
+<li><code>$ brew install editorconfig</code></li>
+<li><p>在 <code>~/.spacemacs.d/init.el</code> 中的 <code>dotspacemacs-additional-package</code>s 中添加 <code>editorconfig</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dotspacemacs-additional-packages</span><br><span class="line"> &apos;(</span><br><span class="line">   editorconfig</span><br><span class="line">   )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建 <code>.editorconfig</code> 文件，写上自己喜欢的配置。</p>
+</li>
+<li>在 <code>~/.spacemacs.d/init.el</code> 中的 docspacemacs/user-config<code>中加入</code>(editorconfig-mode 1)`。</li>
+</ol>
+<h2 id="Git-集成-必须先配置Magit-的使用"><a href="#Git-集成-必须先配置Magit-的使用" class="headerlink" title="Git 集成 (必须先配置Magit 的使用)"></a>Git 集成 (必须先配置Magit 的使用)</h2><p>Git 是一个优秀的版本控制工具，我们可以在 <code>.spacemacs.d/init.el</code> 的 <code>dotspacemacs-configuration-layers</code> 列表中添加 <code>git</code> 就可以集成 <code>git</code> 了。</p>
+<p>下面是一些常用的 <code>git</code> 命令，前缀为 <code>g</code>。</p>
+<p>spacemacs 0.1xx:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Git</th>
+<th style="text-align:center">Magit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>git init</code></td>
+<td style="text-align:center"><code>SPC g i</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>git status</code></td>
+<td style="text-align:center"><code>SPC g s</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>git add</code></td>
+<td style="text-align:center"><code>SPC g s</code> 弹出层选中文件然后按<code>s</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>git add currentFile</code></td>
+<td style="text-align:center"><code>SPC g S</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>git commit</code></td>
+<td style="text-align:center"><code>SPC g c c</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>git push</code></td>
+<td style="text-align:center"><code>SPC g P</code> 按提示操作</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>git checkout xxx</code></td>
+<td style="text-align:center"><code>SPC g C</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>git checkout -- xxx</code></td>
+<td style="text-align:center"><code>SPC g s</code> 弹出层选中文件然后按 <code>u</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>git log</code></td>
+<td style="text-align:center"><code>SPC g l l</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>spacemacs 0.2xx:</p>
+<p>大部分命令整合到 <code>SPC g s</code> 中，需要按照提示执行命令</p>
+<p>在 commit 时，我们输入完 commit message 之后，需要按 <code>C-c C-c</code> 来完成 commit 操作，也可以按  <code>C-c C-k</code> 来取消 commit 。</p>
+<h1 id="插件配置"><a href="#插件配置" class="headerlink" title="插件配置"></a>插件配置</h1><h2 id="行号开启"><a href="#行号开启" class="headerlink" title="行号开启"></a>行号开启</h2><p>默认快捷键是<code>SPC t n</code></p>
+<p>如果想开启emacs自动设置, 找到<code>~/.spacemacs.d/init.el</code>下的<code>defun dotspacemacs/config()</code>在里面添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(global-linum-mode t)</span><br></pre></td></tr></table></figure></p>
+<h2 id="显示80字符的column"><a href="#显示80字符的column" class="headerlink" title="显示80字符的column"></a>显示80字符的column</h2><p>默认快捷键是<code>SPC t f</code></p>
+<p>默认启动加入下面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(turn-on-fci-mode)</span><br></pre></td></tr></table></figure></p>
+<h2 id="flycheck"><a href="#flycheck" class="headerlink" title="flycheck"></a>flycheck</h2><p><img src="http://hackerxu.com/img/spacemacs_flycheck.png" alt=""><br>语法检测, 如上图需要添加<code>syntax-checking</code>插件</p>
+<p>快捷键<code>SPC e</code>, 需要查看error lists使用<code>SPC e l</code></p>
+<h2 id="bookmarks"><a href="#bookmarks" class="headerlink" title="bookmarks"></a>bookmarks</h2><p>bookmarks是spacemacs自带的, 可以迅速定位标记的文件, 它可以永久保存<br>启用的快捷键是<code>SPC h b</code></p>
+<ul>
+<li>删除书签<code>C-d</code></li>
+<li>编辑书签<code>C-e</code></li>
+<li>在另一个窗口打开书签<code>C-o</code></li>
+</ul>
+<h2 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h2><p>我这里用的ag, 推荐大家使用, 它比ack快一点点</p>
+<h3 id="搜索内容："><a href="#搜索内容：" class="headerlink" title="搜索内容："></a>搜索内容：</h3><ul>
+<li>和使用vim一样在本文件搜索<code>/</code></li>
+<li>在项目里智能搜索<code>SPC /</code></li>
+<li>在所有打开的buffer里搜索<code>SPC s b</code></li>
+</ul>
+<h3 id="搜索文件名"><a href="#搜索文件名" class="headerlink" title="搜索文件名:"></a>搜索文件名:</h3><ul>
+<li>在当前目录里搜索文件名<code>SPC s f</code>, 其实等价于<code>SPC f f</code></li>
+<li>最近打开的文件<code>SPC f r</code></li>
+</ul>
+<h2 id="多光标编辑"><a href="#多光标编辑" class="headerlink" title="多光标编辑"></a>多光标编辑</h2><p>需要进入iedit模式, 此时光标变成红色, 步骤如下:</p>
+<ol>
+<li>用vim的visul模式选取要replace的值</li>
+<li>按<code>SPC s e</code>选取全部的匹配值(暂时不知怎么自定义选取)</li>
+<li>按<code>S</code>对值删除并进行修改</li>
+<li>按<code>ESC ESC</code>退出</li>
+</ol>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><ul>
+<li>注释行<code>SPC c l</code></li>
+<li><code>SPC c y</code>这个比较有用, 注释的同时并且复制相同的一份<br>文档里给出了注释块的快捷方法<code>SPC ; SPC l</code>, 其实对于vimer来说使用visul模式选取并用<code>SPC c l</code>注释或许是更好的方法.</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://github.com/syl20bnr/spacemacs/blob/master/doc/DOCUMENTATION.org" target="_blank" rel="noopener">官方文档</a><br><a href="http://brannonlucas.com/using-editorconfig-and-spacemacs-on-os-x/" target="_blank" rel="noopener">editorconfig配置</a><br><a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Mode-Hooks.html" target="_blank" rel="noopener">Mode-Hook</a><br><a href="https://scarletsky.github.io/2016/01/22/spacemacs-usage/" target="_blank" rel="noopener">spacemacs-usage</a><br><a href="http://hackerxu.com/2015/08/31/spacemacs.html" target="_blank" rel="noopener">spacemacs-说明</a></p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2016/12/26/spacemacs-usage/">http://code-monkey.top/2016/12/26/spacemacs-usage/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/spacemacs/">spacemacs</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/12/28/emmet-usage/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">emmet_usage</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/12/25/mathjax-test/">
+        <span class="next-text nav-default">mathjax 在hexo应用</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>

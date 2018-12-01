@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="快速计算Distinct Count(转)">
+
+
+
+
+  <meta name="keywords" content="SQL, Distinct Count, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2017/12/24/快速计算Distinct-Count/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> 快速计算Distinct Count(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          快速计算Distinct Count(转)
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-12-24
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#UV-vs-PV"><span class="toc-text">UV vs. PV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#count-distinct-vs-count-group-by"><span class="toc-text">count distinct vs. count group by</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#count-distinct-SQL如下"><span class="toc-text">count distinct SQL如下</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#count-group-by-SQL如下"><span class="toc-text">count group by SQL如下</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dinstinct-count高效近似算法"><span class="toc-text">dinstinct count高效近似算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数据集100万条，每条记录均不相同，几种算法耗时及内存使用如下。"><span class="toc-text">数据集100万条，每条记录均不相同，几种算法耗时及内存使用如下。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据集100万条，只有100条不同记录，几种近似算法耗时及内存使用如下。"><span class="toc-text">数据集100万条，只有100条不同记录，几种近似算法耗时及内存使用如下。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#distinct-count结果合并"><span class="toc-text">distinct count结果合并</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="UV-vs-PV"><a href="#UV-vs-PV" class="headerlink" title="UV vs. PV"></a>UV vs. PV</h2><p>在互联网中，经常需要计算UV和PV。所谓PV即Page View，网页被打开多少次（YouTube等视频网站非常重视视频的点击率，即被播放多少次，也即PV）。而UV即Unique Visitor（微信朋友圈或者微信公众号中的文章则统计有多少人看过该文章，也即UV。虽然微信上显示是指明该值是PV，但经笔者测试，实为UV）。这两个概念非常重要，比如淘宝卖家在做活动时，他往往需要统计宝贝被看了多少次，有多少个不同的人看过该活动介绍。至于如何在互联网上唯一标识一个自然人，也是一个难点，目前还没有一个非常准确的方法，常用的方法是用户名加cookie，这里不作深究。</p>
+<h2 id="count-distinct-vs-count-group-by"><a href="#count-distinct-vs-count-group-by" class="headerlink" title="count distinct vs. count group by"></a>count distinct vs. count group by</h2><p>很多情景下，尤其对于文本类型的字段，直接使用count distinct的查询效率是非常低的，而先做group by更count往往能提升查询效率。但实验表明，对于不同的字段，count distinct与count group by的性能并不一样，而且其效率也与目标数据集的数据重复度相关。</p>
+<p>本节通过几组实验说明了不同场景下不同query的不同效率，同时分析性能差异的原因。 （本文所有实验皆基于PostgreSQL 9.3.5平台）<br>分别使用count distinct 和 count group by对 bigint, macaddr, text三种类型的字段做查询。<br>首先创建如下结构的表</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Modifiers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac_bigint</td>
+<td>bignit</td>
+<td></td>
+</tr>
+<tr>
+<td>mac_macaddr</td>
+<td>macaddr</td>
+<td></td>
+</tr>
+<tr>
+<td>mac_text</td>
+<td>text</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>并插入1000万条记录，并保证mac_bigint为mac_macaddr去掉冒号后的16进制转换而成的10进制bigint，而mac_text为mac_macaddr的文本形式，从而保证在这三个字段上查询的结果，并且复杂度相同。</p>
+<h3 id="count-distinct-SQL如下"><a href="#count-distinct-SQL如下" class="headerlink" title="count distinct SQL如下"></a>count distinct SQL如下</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> </span><br><span class="line">    <span class="keyword">count</span>(<span class="keyword">distinct</span> mac_macaddr) </span><br><span class="line"><span class="keyword">from</span> </span><br><span class="line">    testmac</span><br></pre></td></tr></table></figure>
+<h3 id="count-group-by-SQL如下"><a href="#count-group-by-SQL如下" class="headerlink" title="count group by SQL如下"></a>count group by SQL如下</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span></span><br><span class="line">    <span class="keyword">count</span>(*)</span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">    (<span class="keyword">select</span></span><br><span class="line">        mac_macaddr</span><br><span class="line">    <span class="keyword">from</span></span><br><span class="line">        testmac</span><br><span class="line">    <span class="keyword">group</span> <span class="keyword">by</span></span><br><span class="line">        <span class="number">1</span>) foo</span><br></pre></td></tr></table></figure>
+<p>对于不同记录数较大的情景（1000万条记录中，有300多万条不同记录），查询时间（单位毫秒）如下表所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>query/字段类型</th>
+<th>macaddr</th>
+<th>bigint</th>
+<th>text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count distinct</td>
+<td>24668.023</td>
+<td>13890.051</td>
+<td>149048.911</td>
+</tr>
+<tr>
+<td>count group by</td>
+<td>32152.808</td>
+<td>25929.555</td>
+<td>159212.700</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>对于不同记录数较小的情景（1000万条记录中，只有1万条不同记录），查询时间（单位毫秒）如下表所示。<br>|query/字段类型|macaddr|bigint|text|<br>|—-|—-|—-|—-|<br>|count distinct|20006.681|9984.763|225208.133|<br>|count group by|2529.420|2554.720|3701.869|</p>
+<p>从上面两组实验可看出，在不同记录数较小时，count group by性能普遍高于count distinct，尤其对于text类型表现的更明显。而对于不同记录数较大的场景，count group by性能反而低于直接count distinct。为什么会造成这种差异呢，我们以macaddr类型为例来对比不同结果集下count group by的query plan。</p>
+<p>当结果集较小时，planner会使用HashAggregation。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">analyze</span> <span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> (<span class="keyword">select</span> mac_macaddr <span class="keyword">from</span> testmac_small <span class="keyword">group</span> <span class="keyword">by</span> <span class="number">1</span>) foo;</span><br><span class="line">                                        QUERY PLAN</span><br><span class="line"> Aggregate  (cost=668465.04..668465.05 rows=1 width=0) (actual time=9166.486..9166.486 rows=1 loops=1)</span><br><span class="line">   -&gt;  HashAggregate  (cost=668296.74..668371.54 rows=7480 width=6) (actual time=9161.796..9164.393 rows=10001 loops=1)</span><br><span class="line">         -&gt;  Seq Scan on testmac_small  (cost=0.00..572898.79 rows=38159179 width=6) (actual time=323.338..5091.112 rows=10000000 l</span><br><span class="line">oops=1)</span><br></pre></td></tr></table></figure>
+<p>而当结果集较大时，无法通过在内存中维护Hash表的方式使用HashAggregation，planner会使用GroupAggregation，并会用到排序，而且因为目标数据集太大，无法在内存中使用Quick Sort，而要在外存中使用Merge Sort，而这就极大的增加了I/O开销。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">analyze</span> <span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> (<span class="keyword">select</span> mac_macaddr <span class="keyword">from</span> testmac <span class="keyword">group</span> <span class="keyword">by</span> <span class="number">1</span>) foo;</span><br><span class="line">                                        QUERY PLAN</span><br><span class="line"> Aggregate  (cost=1881542.62..1881542.63 rows=1 width=0) (actual time=34288.232..34288.232 rows=1 loops=1)</span><br><span class="line">   -&gt;  Group  (cost=1794262.09..1844329.41 rows=2977057 width=6) (actual time=25291.372..33481.228 rows=3671797 loops=1)</span><br><span class="line">         -&gt;  Sort  (cost=1794262.09..1819295.75 rows=10013464 width=6) (actual time=25291.366..29907.351 rows=10000000 loops=1)</span><br><span class="line">               Sort Key: testmac.mac_macaddr</span><br><span class="line">               Sort Method: external <span class="keyword">merge</span>  Disk: <span class="number">156440</span>kB</span><br><span class="line">               -&gt;  Seq <span class="keyword">Scan</span> <span class="keyword">on</span> testmac  (<span class="keyword">cost</span>=<span class="number">0.00</span>.<span class="number">.219206</span><span class="number">.64</span> <span class="keyword">rows</span>=<span class="number">10013464</span> width=<span class="number">6</span>) (actual <span class="built_in">time</span>=<span class="number">0.082</span>.<span class="number">.4312</span><span class="number">.053</span> <span class="keyword">rows</span>=<span class="number">10000000</span> loo</span><br><span class="line">ps=<span class="number">1</span>)</span><br></pre></td></tr></table></figure></p>
+<h2 id="dinstinct-count高效近似算法"><a href="#dinstinct-count高效近似算法" class="headerlink" title="dinstinct count高效近似算法"></a>dinstinct count高效近似算法</h2><p>由于distinct count的需求非常普遍（如互联网中计算UV），而该计算的代价又相比较高，很难适应实时性要求较高的场景，如流计算，因此有很多相关研究试图解决该问题。比较著名的算法有daptive sampling Algorithm，Distinct Counting with a Self-Learning Bitmap，HyperLogLog，LogLog，Probabilistic Counting Algorithms。这些算法都不能精确计算distinct count，都是在保证误差较小的情况下高效计算出结果。本文分别就这几种算法做了两组实验。</p>
+<h3 id="数据集100万条，每条记录均不相同，几种算法耗时及内存使用如下。"><a href="#数据集100万条，每条记录均不相同，几种算法耗时及内存使用如下。" class="headerlink" title="数据集100万条，每条记录均不相同，几种算法耗时及内存使用如下。"></a>数据集100万条，每条记录均不相同，几种算法耗时及内存使用如下。</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>algorithm</th>
+<th>result</th>
+<th>error</th>
+<th>time(ms)</th>
+<th>memory(B)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count(distinct)</td>
+<td>1000000</td>
+<td>0%</td>
+<td>14026</td>
+<td>?</td>
+</tr>
+<tr>
+<td>Adaptive Sampling</td>
+<td>1008128</td>
+<td>0.8%</td>
+<td>8653</td>
+<td>57627</td>
+</tr>
+<tr>
+<td>Self-learning Bitmap</td>
+<td>991651</td>
+<td>0.9%</td>
+<td>1151</td>
+<td>65571</td>
+</tr>
+<tr>
+<td>Bloom filter</td>
+<td>788052</td>
+<td>22%</td>
+<td>2400</td>
+<td>1198164</td>
+</tr>
+<tr>
+<td>Probalilistic Counting</td>
+<td>1139925</td>
+<td>14%</td>
+<td>3613</td>
+<td>95</td>
+</tr>
+<tr>
+<td>PCSA</td>
+<td>841735</td>
+<td>16%</td>
+<td>842</td>
+<td>495</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="数据集100万条，只有100条不同记录，几种近似算法耗时及内存使用如下。"><a href="#数据集100万条，只有100条不同记录，几种近似算法耗时及内存使用如下。" class="headerlink" title="数据集100万条，只有100条不同记录，几种近似算法耗时及内存使用如下。"></a>数据集100万条，只有100条不同记录，几种近似算法耗时及内存使用如下。</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>algorithm</th>
+<th>result</th>
+<th>error</th>
+<th>time(ms)</th>
+<th>memory(B)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count(distinct)</td>
+<td>100</td>
+<td>0%</td>
+<td>75306</td>
+<td>?</td>
+</tr>
+<tr>
+<td>Adaptive Sampling</td>
+<td>100</td>
+<td>0%</td>
+<td>1491</td>
+<td>57627</td>
+</tr>
+<tr>
+<td>Self-learning Bitmap</td>
+<td>101</td>
+<td>1%</td>
+<td>1031</td>
+<td>65571</td>
+</tr>
+<tr>
+<td>Bloom filter</td>
+<td>100</td>
+<td>0%</td>
+<td>1675</td>
+<td>1198164</td>
+</tr>
+<tr>
+<td>Probalilistic Counting</td>
+<td>95</td>
+<td>5%</td>
+<td>3613</td>
+<td>95</td>
+</tr>
+<tr>
+<td>PCSA</td>
+<td>98</td>
+<td>2%</td>
+<td>852</td>
+<td>495</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>从上面两组实验可看出，大部分的近似算法工作得都很好，其速度都比简单的count distinct要快很多，而且它们对内存的使用并不多而结果去非常好，尤其是Adaptive Sampling和Self-learning Bitmap，误差一般不超过1%，性能却比简单的count distinct高十几倍乃至几十倍。</p>
+<h3 id="distinct-count结果合并"><a href="#distinct-count结果合并" class="headerlink" title="distinct count结果合并"></a>distinct count结果合并</h3><p>如上几种近似算法可以极大提高distinct count的效率，但对于data warehouse来说，数据量非常大，可能存储了几年的数据，为了提高查询速度，对于sum及avg这些aggregation一般会创建一些aggregation table。比如如果要算过去三年的总营业额，那可以创建一张daily/monthly aggregation table，基于daily/monthly表去计算三年的营业额。但对于distinct count，即使创建了daily/monthly aggregation table，也没办法通过其计算三年的数值。这里有种新的数据类型hll，这是一种HyperLogLog数据结构。一个1280字节的hll能计算几百亿的不同数值并且保证只有很小的误差。</p>
+<p>首先创建一张表(fact)，结构如下<br>|Column|Type|Modifiers|<br>|—-|———-|——-|<br>|day|date||<br>|user_id|integer||<br>|sales|numeric||</p>
+<p>插入三年的数据，并保证总共有10万个不同的user_id，总数据量为1亿条（一天10万条左右）。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> fact</span><br><span class="line"><span class="keyword">select</span></span><br><span class="line">    <span class="keyword">current_date</span> - (random()*<span class="number">1095</span>)::<span class="built_in">integer</span> * <span class="string">'1 day'</span>::<span class="built_in">interval</span>,</span><br><span class="line">    (random()*<span class="number">100000</span>)::<span class="built_in">integer</span> + <span class="number">1</span>,</span><br><span class="line">    random() * <span class="number">10000</span> + <span class="number">500</span></span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">    generate_series(<span class="number">1</span>, <span class="number">100000000</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure></p>
+<p>直接从fact表中查询不同用户的总数，耗时115143.217 ms。</p>
+<p>利用hll，创建daily_unique_user_hll表，将每天的不同用户信息存于hll类型的字段中。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> daily_unique_user_hll </span><br><span class="line"><span class="keyword">as</span> <span class="keyword">select</span></span><br><span class="line">    <span class="keyword">day</span>, </span><br><span class="line">    hll_add_agg(hll_hash_integer(user_id))</span><br><span class="line"><span class="keyword">from</span> </span><br><span class="line">    fact</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的daily aggregation table可计算任意日期范围内的unique user count。如计算整个三年的不同用户数，耗时17.485 ms，查询结果为101044，误差为(101044-100000)/100000=1.044%。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">analyze</span> <span class="keyword">select</span> hll_cardinality(hll_union_agg(hll_add_agg)) <span class="keyword">from</span> daily_unique_user_hll;</span><br><span class="line">                                   QUERY PLAN</span><br><span class="line"> Aggregate  (cost=196.70..196.72 rows=1 width=32) (actual time=16.772..16.772 rows=1 loops=1)</span><br><span class="line">   -&gt;  Seq Scan on daily_unique_user_hll  (cost=0.00..193.96 rows=1096 width=32) (actual time=0.298..3.251 rows=</span><br><span class="line">1096 loops=1)</span><br><span class="line"> Planning time: 0.081 ms</span><br><span class="line"> Execution time: 16.851 ms</span><br><span class="line"> Time: 17.485 ms</span><br></pre></td></tr></table></figure></p>
+<p>而如果直接使用count distinct基于fact表计算该值，则耗时长达 127807.105 ms。<br>从上面的实验中可以看到，hll类型实现了distinct count的合并，并可以通过hll存储各个部分数据集上的distinct count值，并可通过合并这些hll值来快速计算整个数据集上的distinct count值，耗时只有直接使用count distinct在原始数据上计算的1/7308，并且误差非常小，1%左右。 　　</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果必须要计算精确的distinct count，可以针对不同的情况使用count distinct或者count group by来实现较好的效率，同时对于数据的存储类型，能使用macaddr/intger/bigint的，尽量不要使用text。<br>　　<br>另外不必要精确计算，只需要保证误差在可接受的范围之内，或者计算效率更重要时，可以采用本文所介绍的daptive sampling Algorithm，Distinct Counting with a Self-Learning Bitmap，HyperLogLog，LogLog，Probabilistic Counting Algorithms等近似算法。另外，对于data warehouse这种存储数据量随着时间不断超增加且最终数据总量非常巨大的应用场景，可以使用hll这种支持合并dintinct count结果的数据类型，并周期性的（比如daily/weekly/monthly）计算部分数据的distinct值，然后通过合并部分结果的方式得到总结果的方式来快速响应查询请求。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2017/12/24/快速计算Distinct-Count/">http://code-monkey.top/2017/12/24/快速计算Distinct-Count/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/SQL/">SQL</a>
+            
+              <a href="/tags/Distinct-Count/">Distinct Count</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/12/24/两阶段提交及JTA/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">两阶段提交及JTA</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/">
+        <span class="next-text nav-default">Merge Join vs. Hash Join vs. Nested Loop(转)</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
