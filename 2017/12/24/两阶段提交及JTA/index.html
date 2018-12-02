@@ -17,10 +17,12 @@
 
 
 
-  <meta name="description" content="两阶段提交及JTA">
+  <meta name="description" content="两阶段提交及JTA(转)">
 
 
 
+
+  <meta name="keywords" content="big data, 分布式, Anthon">
 
 
 
@@ -88,7 +90,7 @@
   window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 两阶段提交及JTA - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> 两阶段提交及JTA(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -204,7 +206,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          两阶段提交及JTA
+          两阶段提交及JTA(转)
         
       </h1>
 
@@ -219,11 +221,19 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#分布式事务"><span class="toc-text">分布式事务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#分布式事务简介"><span class="toc-text">分布式事务简介</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
-        
+        <h3 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h3><h4 id="分布式事务简介"><a href="#分布式事务简介" class="headerlink" title="分布式事务简介"></a>分布式事务简介</h4><p>分布式事务是指会涉及到操作多个数据库（或者提供事务语义的系统，如JMS）的事务。其实就是将对同一数据库事务的概念扩大到了对多个数据库的事务。目的是为了保证分布式系统中事务操作的原子性。分布式事务处理的关键是必须有一种方法可以知道事务在任何地方所做的所有动作，提交或回滚事务的决定必须产生统一的结果（全部提交或全部回滚）。</p>
+
       
     </div>
 
@@ -256,9 +266,23 @@
     
       <footer class="post-footer">
         
+          <div class="post-tags">
+            
+              <a href="/tags/big-data/">big data</a>
+            
+              <a href="/tags/分布式/">分布式</a>
+            
+          </div>
+        
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/2018/12/02/PostgreSQL实现事务和多版本并发控制的精华/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">PostgreSQL实现事务和多版本并发控制的精华(转)</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
     
     
       <a class="next" href="/2017/12/24/快速计算Distinct-Count/">
