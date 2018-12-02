@@ -346,7 +346,7 @@
 <p>注意，SQL标准规定，具体数据库实现时，对于标准规定不允许发生的，绝不可发生；对于可能发生的，并不要求一定能发生。换句话说，具体数据库实现时，对应的隔离级别只可更严格，不可更宽松。</p>
 <p>事实中，PostgreSQL实现了三种隔离级别——未提交读和提交读实际上都被实现为提交读。</p>
 <p>下面将讨论提交读和可重复读的实现方式</p>
-<h5 id="MVCC提交读"><a href="#MVCC提交读" class="headerlink" title="MVCC提交读"></a>MVCC提交读</h5><p>提交读只可读取其它已提交事务的结果。PostgreSQL中通过pg_clog来记录哪些事务已经被提交，哪些未被提交。具体实现方式<br>将在下一篇文章<a href="">WAL PostgreSQL实现事务和高并发的重要技术</a>中讲述。</p>
+<h5 id="MVCC提交读"><a href="#MVCC提交读" class="headerlink" title="MVCC提交读"></a>MVCC提交读</h5><p>提交读只可读取其它已提交事务的结果。PostgreSQL中通过pg_clog来记录哪些事务已经被提交，哪些未被提交。</p>
 <h5 id="MVCC可重复读"><a href="#MVCC可重复读" class="headerlink" title="MVCC可重复读"></a>MVCC可重复读</h5><p>相对于提交读，重复读要求在同一事务中，前后两次带条件查询所得到的结果集相同。实际中，PostgreSQL的实现更严格，不紧要求可重复读，还不允许出现幻读。它是通过只读取在当前事务开启之前已经提交的数据实现的。结合上文的四个隐藏系统字段来讲，PostgreSQL的可重复读是通过只读取xmin小于当前事务ID且已提交的事务的结果来实现的。</p>
 <h4 id="PostgreSQL中的MVCC优势"><a href="#PostgreSQL中的MVCC优势" class="headerlink" title="PostgreSQL中的MVCC优势"></a>PostgreSQL中的MVCC优势</h4><ul>
 <li>使用MVCC，读操作不会阻塞写，写操作也不会阻塞读，提高了并发访问下的性能</li>
