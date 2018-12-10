@@ -208,6 +208,111 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/07/30/model-evaluation/">机器学习模型评测指标</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-07-30
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>假定有一个二分类问题，比如判定商品是否是假货。给系统一个样本，系统将会判断该样本为“真”（Predicted positive），或“假”（Predicted Negative）。但是当然，系统的判断与真实判断（actual positive/negative）是有误差的，将原本是真的判为真，就是TP（True Positive），原本真的判为假，就是FN（False Negative），原本假的判为真，就是FP（False Positive），原本假的判为假，就是TN（True Negative）。<br><img src="/2017/07/30/model-evaluation/metric.png"></p>
+<p><strong>精确率(Precision)</strong>是指在所有系统判定的“真”的样本中，确实是真的占比，就是<strong>TP/(TP+FP)</strong></p>
+<p><strong>召回率(Recall)</strong>是指在所有确实为真的样本中，被判为“真”的占比，就是<strong>TP/(TP + FN)</strong></p>
+<p><strong>TPR(True Positive Rate)</strong>的定义和Recall定义一样</p>
+<p><strong>FPR(False Positive Rate)</strong>, 又被称为”Probability of False Alarm”, <strong>就是所有确实为“假”的样本中，被误判为真的样本，或者FP/(TN + FP)</strong></p>
+<p><strong>F1</strong> 是为了综合考量精确率和召回率而设计的一个指标，一般公式为取P和R的 <strong>harmonic mean:2<em>Precision</em>Recall/(Precision+Recall)</strong>。</p>
+<p><strong>ROC=Receiver Operating Characteristic</strong>，是TPR vs FPR的曲线；与之对应的是Precision-Recall Curve，展示的是Precision vs Recall的曲线。</p>
+<img src="/2017/07/30/model-evaluation/metric2.png">
+          <div class="read-more">
+            <a href="/2017/07/30/model-evaluation/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/15/how-to-read-source-code/">我是如何阅读开源项目的源代码的</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-07-15
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"Hello World!"</span>);</span><br><span class="line">    System.out.println(<span class="string">"中国欢迎你！"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>阅读优秀代码是提高开发人员水平的最佳方法，就像一名优秀的小说作者，要写出好的作品，首先要做一名如饥似渴的读者，一个卓越的木匠，得观察大量结构优良的家具。同样地，想要在软件工程这条路上走得更远，也必须阅读大量的代码，吸收不同的风格及其精华，看看前辈已尝试过的方法，增长见识，如果你不能吸收他们的经验知识，那你永远都无法成为一位大师。</p>
+<p>在我编程生涯的前几年里，我跟大部分的同行一样都讨厌阅读代码，一方面是阅读代码真的不容易，一方面是逃避承担挫败的打击，一方面是英文太差。但工作总会迫使你去克服这些弱点，幸运地，我坚持了下来，并找到自己行之有效的方法。</p>
+<h1 id="工具很重要"><a href="#工具很重要" class="headerlink" title="工具很重要"></a>工具很重要</h1><p>“磨刀不误砍柴工”这句话告诉我们欲善其事先利其器的道理，说到底就是一个最核心的问题：工具很重要。平时的工作中要多留意并尝试一些代码工具，学习并利用其便利性强化自己的编程技能。在阅读代码的过程中，我们应当掌握如下的工具：</p>
+<ul>
+<li><strong>语法检查</strong>工具：用于代码重构过程中进行及时的错误提醒，对于查看使用自己不太擅长的语言书写的代码非常有用。</li>
+<li><strong>断点调试</strong>工具：用于跟踪并明确代码块的价值，定位关键代码位置及判断代码有效性。在目标逻辑可能发生的位置输出日志或注释部分代码然后检验执行过程是否会出错这两种方法在帮助理解代码时经常会被使用，但很多时候这些原始方法的效率都比较低下，要确定某代码块是否重要，最高效的方法就是设断点来调试，它不但能让我们看到代码块是否执行，还能看到所有运行时变量的动态。</li>
+<li><strong>版本控制</strong>工具：用于代码处理过程中进行版本迭代，一个好的版本管理工具在这个过程中能够帮助你快速取回前面运行良好的代码，让我们更容易发现自己的重构失误，立于不败之地。</li>
+</ul>
+          <div class="read-more">
+            <a href="/2017/07/15/how-to-read-source-code/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/07/09/Learn-Java-Collection/">Java 集合学习指南</a>
         
       </h1>
@@ -604,100 +709,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/12/25/mathjax-test/">mathjax 在hexo应用</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016-12-25
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="Hexo支持公式"><a href="#Hexo支持公式" class="headerlink" title="Hexo支持公式"></a>Hexo支持公式</h1><h2 id="常规方法"><a href="#常规方法" class="headerlink" title="常规方法"></a>常规方法</h2><p>在 Hexo 中使用 Mathjax 最常规的方法就是主题的 after_footer.ejs 里加入 (该 Mathjax 代码根据 Math StackExchange 所用修改)</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">"text/x-mathjax-config"</span>&gt;</span><br><span class="line">    MathJax.Hub.Config(&#123;<span class="string">"HTML-CSS"</span>: &#123; <span class="attr">preferredFont</span>: <span class="string">"TeX"</span>, <span class="attr">availableFonts</span>: [<span class="string">"STIX"</span>,<span class="string">"TeX"</span>], <span class="attr">linebreaks</span>: &#123; <span class="attr">automatic</span>:<span class="literal">true</span> &#125;, <span class="attr">EqnChunk</span>: (MathJax.Hub.Browser.isMobile ? <span class="number">10</span> : <span class="number">50</span>) &#125;,</span><br><span class="line">        tex2jax: &#123; <span class="attr">inlineMath</span>: [ [<span class="string">"$"</span>, <span class="string">"$"</span>], [<span class="string">"\\("</span>,<span class="string">"\\)"</span>] ], <span class="attr">processEscapes</span>: <span class="literal">true</span>, <span class="attr">ignoreClass</span>: <span class="string">"tex2jax_ignore|dno"</span>,<span class="attr">skipTags</span>: [<span class="string">'script'</span>, <span class="string">'noscript'</span>, <span class="string">'style'</span>, <span class="string">'textarea'</span>, <span class="string">'pre'</span>, <span class="string">'code'</span>]&#125;,</span><br><span class="line">        TeX: &#123;  <span class="attr">noUndefined</span>: &#123; <span class="attr">attributes</span>: &#123; <span class="attr">mathcolor</span>: <span class="string">"red"</span>, <span class="attr">mathbackground</span>: <span class="string">"#FFEEEE"</span>, <span class="attr">mathsize</span>: <span class="string">"90%"</span> &#125; &#125;, <span class="attr">Macros</span>: &#123; <span class="attr">href</span>: <span class="string">"&#123;&#125;"</span> &#125; &#125;,</span><br><span class="line">        messageStyle: <span class="string">"none"</span></span><br><span class="line">    &#125;); </span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">&lt;script type="text/</span>x-mathjax-config<span class="string">"&gt;</span></span><br><span class="line"><span class="string">    MathJax.Hub.Queue(function() &#123;</span></span><br><span class="line"><span class="string">        var all = MathJax.Hub.getAllJax(), i;</span></span><br><span class="line"><span class="string">        for(i=0; i &lt; all.length; i += 1) &#123;</span></span><br><span class="line"><span class="string">            all[i].SourceElement().parentNode.className += ' has-jax';</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">    &#125;);</span></span><br><span class="line"><span class="string">&lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;script type="</span>text/javascript<span class="string">" src="</span>http:<span class="comment">//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"&gt;</span></span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
-          <div class="read-more">
-            <a href="/2016/12/25/mathjax-test/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/12/25/rewrite/">rewrite</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016-12-25
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <h2 id="重新开始"><a href="#重新开始" class="headerlink" title="重新开始"></a>重新开始</h2><ul>
-<li>需要重新写博客</li>
-<li>需要重拾算法</li>
-<li>需要重拾英语</li>
-<li>重拾健身</li>
-<li>需要重拾机器学习和深度学习算法</li>
-</ul>
-<h2 id="工作"><a href="#工作" class="headerlink" title="工作"></a>工作</h2><p>进入新的公司，很多都是未知，需要每天学习不同的知识，希望能够在这里记录点点滴滴，也希望能够从这里获得希望得到的一些东西。</p>
-
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -706,6 +717,11 @@
         <span class="prev-text">上一页</span>
       </a>
     
+    
+      <a class="next" href="/page/4/">
+        <span class="next-text">下一页</span>
+        <i class="iconfont icon-right"></i>
+      </a>
     
   </nav>
 
@@ -838,24 +854,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>
