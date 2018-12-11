@@ -208,6 +208,70 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">Spark CommitCoordinator 保证数据一致性(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-11
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Spark 输出数据到 HDFS 时，需要解决如下问题：</p>
+<ol>
+<li>由于多个 Task 同时写数据到 HDFS，如何保证要么所有 Task 写的所有文件要么同时对外可见，要么同时对外不可见，即保证数据一致性</li>
+<li>同一 Task 可能因为 Speculation 而存在两个完全相同的 Task 实例写相同的数据到 HDFS中，如何保证只有一个 commit 成功</li>
+<li>对于大 Job（如具有几万甚至几十万 Task），如何高效管理所有文件</li>
+</ol>
+<h2 id="commit-原理"><a href="#commit-原理" class="headerlink" title="commit 原理"></a>commit 原理</h2><p>本文通过 Local mode 执行如下 Spark 程序详解 commit 原理</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sparkContext.textFile(<span class="string">"/jason/input.zstd"</span>)</span><br><span class="line">  .map(_.split(<span class="string">","</span>))</span><br><span class="line">  .saveAsTextFile(<span class="string">"/jason/test/tmp"</span>)</span><br></pre></td></tr></table></figure>
+<p>在详述 commit 原理前，需要说明几个述语</p>
+<ul>
+<li>Task，即某个 Application 的某个 Job 内的某个 Stage 的一个 Task</li>
+<li>TaskAttempt，Task 每次执行都视为一个 TaskAttempt。对于同一个 Task，可能同时存在多个 TaskAttemp</li>
+<li>Application Attempt，即 Application 的一次执行</li>
+</ul>
+<p>在本文中，会使用如下缩写</p>
+<ul>
+<li>${output.dir.root} 即输出目录根路径</li>
+<li>${appAttempt} 即 Application Attempt ID，为整型，从 0 开始</li>
+<li>${taskAttemp} 即 Task Attetmp ID，为整型，从 0 开始</li>
+</ul>
+          <div class="read-more">
+            <a href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/">Spark性能优化之道——解决Spark数据倾斜</a>
         
       </h1>
@@ -679,54 +743,6 @@
 <p>在全表扫描比索引范围扫描再进行表访问更可取的情况下，Merge Join会比Nested Loop性能更佳。当表特别小或特别巨大的时候，实行全表访问可能会比索引范围扫描更有效。Merge Join的性能开销几乎都在前两步。Merge Join可适于于非等值Join（&gt;，&lt;，&gt;=，&lt;=，但是不包含!=，也即&lt;&gt;）</p>
           <div class="read-more">
             <a href="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/24/评分卡模型WOE-IV-ROC/">评分卡模型WOE+IV+ROC</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-12-24
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="WOE（Weight-Of-Evidence：证据权重）"><a href="#WOE（Weight-Of-Evidence：证据权重）" class="headerlink" title="WOE（Weight Of Evidence：证据权重）"></a>WOE（Weight Of Evidence：证据权重）</h2><p>WOE的全称是“Weight of Evidence”，即证据权重。WOE是对原始自变量的一种编码形式。<br>要对一个变量进行WOE编码，需要首先把这个变量进行分组处理（也叫离散化、分箱等等，说的都是一个意思）。分组后，对于第i组，<strong>WOE的计算公式</strong>如下：</p>
-<script type="math/tex; mode=display">
-WOE_i = \ln(\frac{py_i}{pn_i}) = \ln(\frac{\#y_i / \#y_T}{\#n_i / \#n_T})</script><p>其中，$py_i$是这个组中响应客户（风险模型中，对应的是违约客户，总之，指的是模型中预测变量取值为“是”或者说1的个体）占所有样本中所有响应客户的比例，$pn_i$是这个组中未响应客户占样本中所有未响应客户的比例，$\#y_i$是这个组中响应客户的数量，$\#n_i$是这个组中未响应客户的数量，$\#y_T$是样本中所有响应客户的数量，$\#n_T$是样本中所有未响应客户的数量。</p>
-<p>从这个公式中我们可以体会到，<strong>WOE表示的实际上是“当前分组中响应客户占所有响应客户的比例”和“当前分组中没有响应的客户占所有没有响应的客户的比例”的差异</strong>。</p>
-          <div class="read-more">
-            <a href="/2017/12/24/评分卡模型WOE-IV-ROC/" class="read-more-link">阅读更多</a>
           </div>
         
       

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Spark CommitCoordinator 保证数据一致性(转)">
+
+
+
+
+  <meta name="keywords" content="大数据, spark, commit coordinator, 一致性, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Spark CommitCoordinator 保证数据一致性(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Spark CommitCoordinator 保证数据一致性(转)
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-11
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#commit-原理"><span class="toc-text">commit 原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#检查-Job-输出目录"><span class="toc-text">检查 Job 输出目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Driver执行setupJob"><span class="toc-text">Driver执行setupJob</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Task执行setupTask"><span class="toc-text">Task执行setupTask</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按需创建-Task-目录"><span class="toc-text">按需创建 Task 目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#检查是否需要-commit"><span class="toc-text">检查是否需要 commit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CommitCoordinator"><span class="toc-text">CommitCoordinator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#commitTask"><span class="toc-text">commitTask</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#commitJob"><span class="toc-text">commitJob</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#recoverTask"><span class="toc-text">recoverTask</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#abortTask"><span class="toc-text">abortTask</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#abortJob"><span class="toc-text">abortJob</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#V1-vs-V2-committer-过程"><span class="toc-text">V1 vs. V2 committer 过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#V1-vs-V2-committer-性能对比"><span class="toc-text">V1 vs. V2 committer 性能对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#V1-vs-V2-committer-一致性对比"><span class="toc-text">V1 vs. V2 committer 一致性对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用建议"><span class="toc-text">使用建议</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Spark 输出数据到 HDFS 时，需要解决如下问题：</p>
+<ol>
+<li>由于多个 Task 同时写数据到 HDFS，如何保证要么所有 Task 写的所有文件要么同时对外可见，要么同时对外不可见，即保证数据一致性</li>
+<li>同一 Task 可能因为 Speculation 而存在两个完全相同的 Task 实例写相同的数据到 HDFS中，如何保证只有一个 commit 成功</li>
+<li>对于大 Job（如具有几万甚至几十万 Task），如何高效管理所有文件</li>
+</ol>
+<h2 id="commit-原理"><a href="#commit-原理" class="headerlink" title="commit 原理"></a>commit 原理</h2><p>本文通过 Local mode 执行如下 Spark 程序详解 commit 原理</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sparkContext.textFile(<span class="string">"/jason/input.zstd"</span>)</span><br><span class="line">  .map(_.split(<span class="string">","</span>))</span><br><span class="line">  .saveAsTextFile(<span class="string">"/jason/test/tmp"</span>)</span><br></pre></td></tr></table></figure>
+<p>在详述 commit 原理前，需要说明几个述语</p>
+<ul>
+<li>Task，即某个 Application 的某个 Job 内的某个 Stage 的一个 Task</li>
+<li>TaskAttempt，Task 每次执行都视为一个 TaskAttempt。对于同一个 Task，可能同时存在多个 TaskAttemp</li>
+<li>Application Attempt，即 Application 的一次执行</li>
+</ul>
+<p>在本文中，会使用如下缩写</p>
+<ul>
+<li>${output.dir.root} 即输出目录根路径</li>
+<li>${appAttempt} 即 Application Attempt ID，为整型，从 0 开始</li>
+<li>${taskAttemp} 即 Task Attetmp ID，为整型，从 0 开始</li>
+</ul>
+<a id="more"></a>
+<h3 id="检查-Job-输出目录"><a href="#检查-Job-输出目录" class="headerlink" title="检查 Job 输出目录"></a>检查 Job 输出目录</h3><p>在启动 Job 之前，Driver 首先通过 FileOutputFormat 的 checkOutputSpecs 方法检查输出目录是否已经存在。若已存在，则直接抛出 FileAlreadyExistsException</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/check_output_path.png">
+<h3 id="Driver执行setupJob"><a href="#Driver执行setupJob" class="headerlink" title="Driver执行setupJob"></a>Driver执行setupJob</h3><p>Job 开始前，由 Driver（本例使用 local mode，因此由 main 线程执行）调用 FileOuputCommitter.setupJob 创建 Application Attempt 目录，即 <code>output.dir.root/temporary/{appAttempt}</code></p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/setup_job.png">
+<h3 id="Task执行setupTask"><a href="#Task执行setupTask" class="headerlink" title="Task执行setupTask"></a>Task执行setupTask</h3><p>由各 Task 执行 FileOutputCommitter.setupTask 方法（本例使用 local mode，因此由 task 线程执行）。该方法不做任何事情，因为 Task 临时目录由 Task 按需创建。</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/setup_task.png">
+<h3 id="按需创建-Task-目录"><a href="#按需创建-Task-目录" class="headerlink" title="按需创建 Task 目录"></a>按需创建 Task 目录</h3><p>本例中，Task 写数据需要通过 TextOutputFormat 的 getRecordWriter 方法创建 LineRecordWriter。而创建前需要通过 FileOutputFormat.getTaskOutputPath设置 Task 输出路径，即 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}/${fileName}</code>。该 Task Attempt 所有数据均写在该目录下的文件内</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/create_task_output_file.png">
+<h3 id="检查是否需要-commit"><a href="#检查是否需要-commit" class="headerlink" title="检查是否需要 commit"></a>检查是否需要 commit</h3><p>Task 执行数据写完后，通过 FileOutputCommitter.needsTaskCommit 方法检查是否需要 commit 它写在 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 下的数据。</p>
+<p>检查依据是 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 目录是否存在</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/need_commit_task.png">
+<p>如果需要 commit，并且开启了 Output commit coordination，还需要通过 RPC 由 Driver 侧的 OutputCommitCoordinator 判断该 Task Attempt 是否可以 commit</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/need_commit_task_detail.png">
+<p>之所以需要由 Driver 侧的 CommitCoordinator 判断是否可以 commit，是因为可能由于 speculation 或者其它原因（如之前的 TaskAttemp 未被 Kill 成功）存在同一 Task 的多个 Attemp 同时写数据且都申请 commit 的情况。</p>
+<h3 id="CommitCoordinator"><a href="#CommitCoordinator" class="headerlink" title="CommitCoordinator"></a>CommitCoordinator</h3><p>当申请 commitTask 的 TaskAttempt 为失败的 Attempt，则直接拒绝</p>
+<p>若该 TaskAttempt 成功，并且 CommitCoordinator 未允许过该 Task 的其它 Attempt 的 commit 请求，则允许该 TaskAttempt 的 commit 请求</p>
+<p>若 CommitCoordinator 之前已允许过该 TaskAttempt 的 commit 请求，则继续同意该 TaskAttempt 的 commit 请求，即 CommitCoordinator 对该申请的处理是幂等的。</p>
+<p>若该 TaskAttempt 成功，且 CommitCoordinator 之前已允许该 Task 的其它 Attempt 的 commit 请求，则直接拒绝当前 TaskAttempt 的 commit 请求</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/coordinator_handle_request.png">
+<p>OutputCommitCoordinator 为了实现上述功能，为每个 ActiveStage 维护一个如下 StageState</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">StageState</span>(<span class="params">numPartitions: <span class="type">Int</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">val</span> authorizedCommitters = <span class="type">Array</span>.fill[<span class="type">TaskAttemptNumber</span>](numPartitions)(<span class="type">NO_AUTHORIZED_COMMITTER</span>)</span><br><span class="line">  <span class="keyword">val</span> failures = mutable.<span class="type">Map</span>[<span class="type">PartitionId</span>, mutable.<span class="type">Set</span>[<span class="type">TaskAttemptNumber</span>]]()</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>该数据结构中，保存了每个 Task 被允许 commit 的 TaskAttempt。默认值均为 NO_AUTHORIZED_COMMITTER</p>
+<p>同时，保存了每个 Task 的所有失败的 Attempt</p>
+<h3 id="commitTask"><a href="#commitTask" class="headerlink" title="commitTask"></a>commitTask</h3><p>当 TaskAttempt 被允许 commit 后，Task (本例由于使用 local model，因此由 task 线程执行)会通过如下方式 commitTask。</p>
+<p>当 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 1 (默认值)时，Task 将 taskAttemptPath 即 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 重命令为 committedTaskPath 即 <code>${output.dir.root}/_temporary/${appAttempt}/${taskAttempt}</code></p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/commit_task_v1.png">
+<p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 2，直接将taskAttemptPath 即 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 内的所有文件移动到 outputPath 即 <code>${output.dir.root}/</code></p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/commit_task_v2.png">
+<h3 id="commitJob"><a href="#commitJob" class="headerlink" title="commitJob"></a>commitJob</h3><p>当所有 Task 都执行成功后，由 Driver （本例由于使用 local model，故由 main 线程执行）执行 <code>FileOutputCommitter.commitJob</code></p>
+<p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 1，则由 Driver 单线程遍历所有 committedTaskPath 即 <code>${output.dir.root}/_temporary/${appAttempt}/${taskAttempt}</code>，并将其下所有文件移动到 finalOutput 即 <code>${output.dir.root}</code> 下</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/commit_job_v1.png">
+<p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 2，则无须移动任何文件。因为所有 Task 的输出文件已在 commitTask 内被移动到 finalOutput 即 <code>${output.dir.root}</code> 内</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/commit_job_v2.png">
+<p>所有 commit 过的 Task 输出文件移动到 finalOutput 即 <code>${output.dir.root}</code> 后，Driver 通过 cleanupJob 删除 <code>${output.dir.root}/_temporary/</code> 下所有内容</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/cleanup_job.png">
+<h3 id="recoverTask"><a href="#recoverTask" class="headerlink" title="recoverTask"></a>recoverTask</h3><p>上文所述的 commitTask 与 commitJob 机制，保证了一次 Application Attemp 中不同 Task 的不同 Attemp 在 commit 时的数据一致性</p>
+<p>而当整个 Application retry 时，在之前的 Application Attemp 中已经成功 commit 的 Task 无须重新执行，其数据可直接恢复</p>
+<p>恢复 Task 时，先获取上一次的 Application Attempt，以及对应的 committedTaskPath，即 <code>${output.dir.root}/_temporary/${preAppAttempt}/${taskAttempt}</code></p>
+<p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 1，并且 preCommittedTaskPath 存在（说明在之前的 Application Attempt 中该 Task 已被 commit 过），则直接将 preCommittedTaskPath 重命名为 committedTaskPath</p>
+<p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 2，无须恢复任何数据，因为在之前 Application Attempt 中 commit 过的 Task 的数据已经在 commitTask 中被移动到 ${output.dir.root} 中</p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/recover_task.png">
+<h3 id="abortTask"><a href="#abortTask" class="headerlink" title="abortTask"></a>abortTask</h3><p>中止 Task 时，由 Task 调用 <code>FileOutputCommitter.abortTask</code> 方法删除 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code></p>
+<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/abort_task.png">
+<h3 id="abortJob"><a href="#abortJob" class="headerlink" title="abortJob"></a>abortJob</h3><p>中止 Job 由 Driver 调用 <code>FileOutputCommitter.abortJob</code> 方法完成。该方法通过 <code>FileOutputCommitter.cleanupJob</code> 方法删除 <code>${output.dir.root}/_temporary</code></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="V1-vs-V2-committer-过程"><a href="#V1-vs-V2-committer-过程" class="headerlink" title="V1 vs. V2 committer 过程"></a>V1 vs. V2 committer 过程</h3><p>V1 committer（即 mapreduce.fileoutputcommitter.algorithm.version 的值为 1），commit 过程如下</p>
+<ul>
+<li>Task 线程将 TaskAttempt 数据写入 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code></li>
+<li>commitTask 由 Task 线程将 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 移动到 <code>${output.dir.root}/_temporary/${appAttempt}/${taskAttempt}</code></li>
+<li>commitJob 由 Driver 单线程依次将所有 <code>${output.dir.root}/_temporary/${appAttempt}/${taskAttempt}</code> 移动到 <code>${output.dir.root}</code>，然后创建 _SUCCESS 标记文件</li>
+<li>recoverTask 由 Task 线程将 <code>${output.dir.root}/_temporary/${preAppAttempt}/${preTaskAttempt}</code> 移动到 <code>${output.dir.root}/_temporary/${appAttempt}/${taskAttempt}</code></li>
+</ul>
+<p>V2 committer（即 mapreduce.fileoutputcommitter.algorithm.version 的值为 2），commit 过程如下</p>
+<ul>
+<li>Task 线程将 TaskAttempt 数据写入 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code></li>
+<li>commitTask 由 Task 线程将 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 移动到 <code>${output.dir.root}</code></li>
+<li>commitJob 创建 _SUCCESS 标记文件</li>
+<li>recoverTask 无需任何操作</li>
+</ul>
+<h3 id="V1-vs-V2-committer-性能对比"><a href="#V1-vs-V2-committer-性能对比" class="headerlink" title="V1 vs. V2 committer 性能对比"></a>V1 vs. V2 committer 性能对比</h3><p>V1 在 Job 执行结束后，在 Driver 端通过 commitJob 方法，单线程串行将所有 Task 的输出文件移动到输出根目录。移动以文件为单位，当 Task 个数较多（大 Job，或者小文件引起的大量小 Task），Name Node RPC 较慢时，该过程耗时较久。在实践中，可能因此发生所有 Task 均执行结束，但 Job 不结束的问题。甚至 commitJob 耗时比 所有 Task 执行时间还要长</p>
+<p>而 V2 在 Task 结束后，由 Task 在 commitTask 方法内，将自己的数据文件移动到输出根目录。一方面，Task 结束时即移动文件，不需等待 Job 结束才移动文件，即文件移动更早发起，也更早结束。另一方面，不同 Task 间并行移动文件，极大缩短了整个 Job 内所有 Task 的文件移动耗时</p>
+<h3 id="V1-vs-V2-committer-一致性对比"><a href="#V1-vs-V2-committer-一致性对比" class="headerlink" title="V1 vs. V2 committer 一致性对比"></a>V1 vs. V2 committer 一致性对比</h3><p>V1 只有 Job 结束，才会将数据文件移动到输出根目录，才会对外可见。在此之前，所有文件均在 <code>${output.dir.root}/_temporary/${appAttempt}</code> 及其子文件内，对外不可见。</p>
+<p>当 commitJob 过程耗时较短时，其失败的可能性较小，可认为 V1 的 commit 过程是两阶段提交，要么所有 Task 都 commit 成功，要么都失败。</p>
+<p>而由于上文提到的问题， commitJob 过程可能耗时较久，如果在此过程中，Driver 失败，则可能发生部分 Task 数据被移动到 ${output.dir.root} 对外可见，部分 Task 的数据未及时移动，对外不可见的问题。此时发生了数据不一致性的问题</p>
+<p>V2 当 Task 结束时，立即将数据移动到 ${output.dir.root}，立即对外可见。如果 Application 执行过程中失败了，已 commit 的 Task 数据仍然对外可见，而失败的 Task 数据或未被 commit 的 Task 数据对外不可见。也即 V2 更易发生数据一致性问题</p>
+<h2 id="使用建议"><a href="#使用建议" class="headerlink" title="使用建议"></a>使用建议</h2><ol>
+<li>如果使用分布式文件系统，例如HDFS，建议用V1，因为mv操作比较便宜，快速</li>
+<li>如果采用对象存储系统，例如S3，COS，建议用V1，因为mv操作比较贵，非常耗时</li>
+</ol>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-保证数据一致性/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/大数据/">大数据</a>
+            
+              <a href="/tags/spark/">spark</a>
+            
+              <a href="/tags/commit-coordinator/">commit coordinator</a>
+            
+              <a href="/tags/一致性/">一致性</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/">
+        <span class="next-text nav-default">Spark性能优化之道——解决Spark数据倾斜</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>

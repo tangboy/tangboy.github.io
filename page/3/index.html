@@ -208,6 +208,70 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/08/05/Python中的进程和线程/">Python中的进程和线程</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-08-05
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>对于操作系统来说，一个任务就是一个进程（Process），比如打开一个浏览器就是启动一个浏览器进程，打开一个记事本就启动了一个记事本进程，打开两个记事本就启动了两个记事本进程，打开一个Word就启动了一个Word进程。</p>
+<p>使用top命令看有哪些进程在跑:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Processes: 371 total, 2 running, 15 stuck, 354 sleeping, 3142 threads  17:27:27</span><br><span class="line">Load Avg: 2.57, 2.29, 2.07  CPU usage: 5.26% user, 4.79% sys, 89.94% idle</span><br><span class="line">SharedLibs: 151M resident, 18M data, 17M linkedit.</span><br><span class="line">MemRegions: 107884 total, 6773M resident, 131M private, 2803M shared.</span><br><span class="line">PhysMem: 15G used (2386M wired), 988M unused.</span><br><span class="line">VM: 1564G vsize, 527M framework vsize, 20146031(0) swapins, 21455983(0) swapouts</span><br><span class="line">Networks: packets: 39381163/32G in, 38877596/18G out.</span><br><span class="line">Disks: 4762039/190G read, 7146822/247G written.</span><br><span class="line"></span><br><span class="line">PID    COMMAND      %CPU TIME     #TH   #WQ  #PORT MEM    PURG   CMPRS  PGRP</span><br><span class="line">96223- Microsoft Ex 0.1  15:30.25 356   2    2216  46M    0B     298M   96223</span><br><span class="line">96200  Microsoft AU 0.0  00:11.45 5     0    169   5956K  0B     2480K  96200</span><br><span class="line">91030  nwjs Helper  0.0  02:06.91 9     0    139   2920K  0B     15M    91027</span><br><span class="line">91029  nwjs Helper  0.0  02:37:00 21    0    178   650M   10M    70M    91027</span><br><span class="line">91028  nwjs Helper  0.0  19:01.66 5     0    76    34M    0B     9464K  91027</span><br></pre></td></tr></table></figure></p>
+<p>有些进程还不止同时干一件事，比如Word，它可以同时进行打字、拼写检查、打印等事情。在一个进程内部，要同时干多件事，就需要同时运行多个“子任务”，我们把进程内的这些“子任务”称为线程（Thread）。</p>
+<p>由于每个进程至少要干一件事，所以，一个进程至少有一个线程。当然，像Word这种复杂的进程可以有多个线程，多个线程可以同时执行，多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。</p>
+<p>我们前面编写的所有的Python程序，都是执行单任务的进程，也就是只有一个线程。如果我们要同时执行多个任务怎么办？</p>
+<p>有两种解决方案：</p>
+<ul>
+<li>一种是启动多个进程，每个进程虽然只有一个线程，但多个进程可以一块执行多个任务。</li>
+<li>还有一种方法是启动一个进程，在一个进程内启动多个线程，这样，多个线程也可以一块执行多个任务。</li>
+<li>当然还有第三种方法，就是启动多个进程，每个进程再启动多个线程，这样同时执行的任务就更多了，当然这种模型更复杂，实际很少采用。</li>
+</ul>
+<p>总结一下就是，多任务的实现有3种方式：</p>
+<ul>
+<li>多进程模式；</li>
+<li>多线程模式；</li>
+<li>多进程+多线程模式。</li>
+</ul>
+<p>线程是最小的执行单元，而进程由至少一个线程组成。如何调度进程和线程，完全由操作系统决定，程序自己不能决定什么时候执行，执行多长时间。</p>
+<p>多进程和多线程的程序涉及到同步、数据共享的问题，编写起来更复杂。</p>
+<p>来啊，征服进程和线程，越过Python学习的一个大坎儿吧。</p>
+          <div class="read-more">
+            <a href="/2017/08/05/Python中的进程和线程/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/07/30/model-evaluation/">机器学习模型评测指标</a>
         
       </h1>
@@ -648,55 +712,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">打开 HTML 或 CSS 文件-&gt;按语法编写指令-&gt;按下 TAB 键-&gt;生成</span><br></pre></td></tr></table></figure>
           <div class="read-more">
             <a href="/2016/12/28/emmet-usage/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/12/26/spacemacs-usage/">spacemacs使用指南</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016-12-26
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Spacemacs是一份emacs的配置文件，想要使用它，你先要有emacs，本文主要介绍在Mac上安装和使用Spacemacs，同时本文在Spacemacs基础上使用了子龙山人的Spacemacs-private</p>
-<h1 id="安装-amp-使用"><a href="#安装-amp-使用" class="headerlink" title="安装&amp;使用"></a>安装&amp;使用</h1><h2 id="Mac平台推荐安装Emacs的方法"><a href="#Mac平台推荐安装Emacs的方法" class="headerlink" title="Mac平台推荐安装Emacs的方法"></a>Mac平台推荐安装Emacs的方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew tap railwaycat/emacsmacport;</span><br><span class="line">brew install emacs-mac --with-spacemacs-icon --HEAD --with-gnutls</span><br></pre></td></tr></table></figure>
-<p>注意：—with-gnutls是用来支持ssl的</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#clone spacemacs repo and use develop branch</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/syl20bnr/spacemacs.git ~/.emacs.d -b develop</span><br><span class="line"></span><br><span class="line"><span class="comment">#clone zilongshanren layer and checkout develop branch</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zilongshanren/spacemacs-private.git ~/.spacemacs.d/</span><br></pre></td></tr></table></figure>
-<p>详细的配置说明以及安装powershell支持，可以参考<a href="https://github.com/zilongshanren/spacemacs-private" target="_blank" rel="noopener">spacemacs-private</a></p>
-          <div class="read-more">
-            <a href="/2016/12/26/spacemacs-usage/" class="read-more-link">阅读更多</a>
           </div>
         
       

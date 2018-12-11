@@ -208,6 +208,54 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/12/24/评分卡模型WOE-IV-ROC/">评分卡模型WOE+IV+ROC</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-12-24
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="WOE（Weight-Of-Evidence：证据权重）"><a href="#WOE（Weight-Of-Evidence：证据权重）" class="headerlink" title="WOE（Weight Of Evidence：证据权重）"></a>WOE（Weight Of Evidence：证据权重）</h2><p>WOE的全称是“Weight of Evidence”，即证据权重。WOE是对原始自变量的一种编码形式。<br>要对一个变量进行WOE编码，需要首先把这个变量进行分组处理（也叫离散化、分箱等等，说的都是一个意思）。分组后，对于第i组，<strong>WOE的计算公式</strong>如下：</p>
+<script type="math/tex; mode=display">
+WOE_i = \ln(\frac{py_i}{pn_i}) = \ln(\frac{\#y_i / \#y_T}{\#n_i / \#n_T})</script><p>其中，$py_i$是这个组中响应客户（风险模型中，对应的是违约客户，总之，指的是模型中预测变量取值为“是”或者说1的个体）占所有样本中所有响应客户的比例，$pn_i$是这个组中未响应客户占样本中所有未响应客户的比例，$\#y_i$是这个组中响应客户的数量，$\#n_i$是这个组中未响应客户的数量，$\#y_T$是样本中所有响应客户的数量，$\#n_T$是样本中所有未响应客户的数量。</p>
+<p>从这个公式中我们可以体会到，<strong>WOE表示的实际上是“当前分组中响应客户占所有响应客户的比例”和“当前分组中没有响应的客户占所有没有响应的客户的比例”的差异</strong>。</p>
+          <div class="read-more">
+            <a href="/2017/12/24/评分卡模型WOE-IV-ROC/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/12/11/养成早起习惯/">养成早起习惯(转)</a>
         
       </h1>
@@ -737,70 +785,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/08/05/Python中的进程和线程/">Python中的进程和线程</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-08-05
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>对于操作系统来说，一个任务就是一个进程（Process），比如打开一个浏览器就是启动一个浏览器进程，打开一个记事本就启动了一个记事本进程，打开两个记事本就启动了两个记事本进程，打开一个Word就启动了一个Word进程。</p>
-<p>使用top命令看有哪些进程在跑:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Processes: 371 total, 2 running, 15 stuck, 354 sleeping, 3142 threads  17:27:27</span><br><span class="line">Load Avg: 2.57, 2.29, 2.07  CPU usage: 5.26% user, 4.79% sys, 89.94% idle</span><br><span class="line">SharedLibs: 151M resident, 18M data, 17M linkedit.</span><br><span class="line">MemRegions: 107884 total, 6773M resident, 131M private, 2803M shared.</span><br><span class="line">PhysMem: 15G used (2386M wired), 988M unused.</span><br><span class="line">VM: 1564G vsize, 527M framework vsize, 20146031(0) swapins, 21455983(0) swapouts</span><br><span class="line">Networks: packets: 39381163/32G in, 38877596/18G out.</span><br><span class="line">Disks: 4762039/190G read, 7146822/247G written.</span><br><span class="line"></span><br><span class="line">PID    COMMAND      %CPU TIME     #TH   #WQ  #PORT MEM    PURG   CMPRS  PGRP</span><br><span class="line">96223- Microsoft Ex 0.1  15:30.25 356   2    2216  46M    0B     298M   96223</span><br><span class="line">96200  Microsoft AU 0.0  00:11.45 5     0    169   5956K  0B     2480K  96200</span><br><span class="line">91030  nwjs Helper  0.0  02:06.91 9     0    139   2920K  0B     15M    91027</span><br><span class="line">91029  nwjs Helper  0.0  02:37:00 21    0    178   650M   10M    70M    91027</span><br><span class="line">91028  nwjs Helper  0.0  19:01.66 5     0    76    34M    0B     9464K  91027</span><br></pre></td></tr></table></figure></p>
-<p>有些进程还不止同时干一件事，比如Word，它可以同时进行打字、拼写检查、打印等事情。在一个进程内部，要同时干多件事，就需要同时运行多个“子任务”，我们把进程内的这些“子任务”称为线程（Thread）。</p>
-<p>由于每个进程至少要干一件事，所以，一个进程至少有一个线程。当然，像Word这种复杂的进程可以有多个线程，多个线程可以同时执行，多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。</p>
-<p>我们前面编写的所有的Python程序，都是执行单任务的进程，也就是只有一个线程。如果我们要同时执行多个任务怎么办？</p>
-<p>有两种解决方案：</p>
-<ul>
-<li>一种是启动多个进程，每个进程虽然只有一个线程，但多个进程可以一块执行多个任务。</li>
-<li>还有一种方法是启动一个进程，在一个进程内启动多个线程，这样，多个线程也可以一块执行多个任务。</li>
-<li>当然还有第三种方法，就是启动多个进程，每个进程再启动多个线程，这样同时执行的任务就更多了，当然这种模型更复杂，实际很少采用。</li>
-</ul>
-<p>总结一下就是，多任务的实现有3种方式：</p>
-<ul>
-<li>多进程模式；</li>
-<li>多线程模式；</li>
-<li>多进程+多线程模式。</li>
-</ul>
-<p>线程是最小的执行单元，而进程由至少一个线程组成。如何调度进程和线程，完全由操作系统决定，程序自己不能决定什么时候执行，执行多长时间。</p>
-<p>多进程和多线程的程序涉及到同步、数据共享的问题，编写起来更复杂。</p>
-<p>来啊，征服进程和线程，越过Python学习的一个大坎儿吧。</p>
-          <div class="read-more">
-            <a href="/2017/08/05/Python中的进程和线程/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -946,7 +930,24 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
   </body>
 </html>
