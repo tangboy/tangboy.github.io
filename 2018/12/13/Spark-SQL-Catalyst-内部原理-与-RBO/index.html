@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Spark SQL / Catalyst 内部原理 与 RBO(转)">
+
+
+
+
+  <meta name="keywords" content="分布式, big data, spark, sql, catalyst, RBO, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Spark SQL / Catalyst 内部原理 与 RBO(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Spark SQL / Catalyst 内部原理 与 RBO(转)
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-13
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Spark-SQL-架构"><span class="toc-text">Spark SQL 架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Parser"><span class="toc-text">Parser</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Analyzer"><span class="toc-text">Analyzer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Optimizer"><span class="toc-text">Optimizer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SparkPlanner"><span class="toc-text">SparkPlanner</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="Spark-SQL-架构"><a href="#Spark-SQL-架构" class="headerlink" title="Spark SQL 架构"></a>Spark SQL 架构</h2><p>Spark SQL 的整体架构如下图所示</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql.png">
+<p>从上图可见，无论是直接使用 SQL 语句还是使用 DataFrame，都会经过如下步骤转换成 DAG 对 RDD 的操作</p>
+<ul>
+<li>Parser 解析 SQL，生成 Unresolved Logical Plan</li>
+<li>由 Analyzer 结合 Catalog 信息生成 Resolved Logical Plan</li>
+<li>Optimizer根据预先定义好的规则对 Resolved Logical Plan 进行优化并生成 Optimized Logical Plan</li>
+<li>Query Planner 将 Optimized Logical Plan 转换成多个 Physical Plan</li>
+<li>CBO 根据 Cost Model 算出每个 Physical Plan 的代价并选取代价最小的 Physical Plan 作为最终的 Physical Plan</li>
+<li>Spark 以 DAG 的方法执行上述 Physical Plan</li>
+<li>在执行 DAG 的过程中，Adaptive Execution 根据运行时信息动态调整执行计划从而提高执行效率</li>
+</ul>
+<a id="more"></a>
+<h2 id="Parser"><a href="#Parser" class="headerlink" title="Parser"></a>Parser</h2><p>Spark SQL 使用 Antlr 进行记法和语法解析，并生成 UnresolvedPlan。</p>
+<p>当用户使用 SparkSession.sql(sqlText : String) 提交 SQL 时，SparkSession 最终会调用 SparkSqlParser 的 parsePlan 方法。该方法分两步</p>
+<ul>
+<li>使用 Antlr 生成的 SqlBaseLexer 对 SQL 进行词法分析，生成 CommonTokenStream</li>
+<li>使用 Antlr 生成的 SqlBaseParser 进行语法分析，得到 LogicalPlan</li>
+</ul>
+<p>现在两张表，分别定义如下</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> score (</span><br><span class="line">  <span class="keyword">id</span> <span class="built_in">INT</span>,</span><br><span class="line">  math_score <span class="built_in">INT</span>,</span><br><span class="line">  english_score <span class="built_in">INT</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> people (</span><br><span class="line">  <span class="keyword">id</span> <span class="built_in">INT</span>,</span><br><span class="line">  age <span class="built_in">INT</span>,</span><br><span class="line">  <span class="keyword">name</span> <span class="built_in">INT</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>对其进行关联查询如下</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">sum</span>(v)</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">  <span class="keyword">SELECT</span> score.id,</span><br><span class="line">    <span class="number">100</span> + <span class="number">80</span> + score.math_score + score.english_score <span class="keyword">AS</span> v</span><br><span class="line">  <span class="keyword">FROM</span> people</span><br><span class="line">  <span class="keyword">JOIN</span> score</span><br><span class="line">  <span class="keyword">ON</span> people.id = score.id</span><br><span class="line">  <span class="keyword">AND</span> people.age &gt; <span class="number">10</span></span><br><span class="line">) tmp</span><br></pre></td></tr></table></figure>
+<p>生成的 UnresolvedPlan 如下图所示。</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_parser.png">
+<p>从上图可见</p>
+<ul>
+<li>查询涉及的两张表，被解析成了两个 UnresolvedRelation，也即只知道这们是两张表，却并不知道它们是 EXTERNAL TABLE 还是 MANAGED TABLE，也不知道它们的数据存在哪儿，更不知道它们的表结构如何</li>
+<li>sum(v) 的结果未命名</li>
+<li>Project 部分只知道是选择出了属性，却并不知道这些属性属于哪张表，更不知道其数据类型</li>
+<li>Filter 部分也不知道数据类型</li>
+</ul>
+<p>Spark SQL 解析出的 UnresolvedPlan 如下所示</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">== Parsed Logical Plan ==</span><br><span class="line">'Project [unresolvedalias('sum('v), None)]</span><br><span class="line">+- 'SubqueryAlias tmp</span><br><span class="line">   +- 'Project ['score.id, (((100 + 80) + 'score.math_score) + 'score.english_score) AS v<span class="comment">#493]</span></span><br><span class="line">      +- 'Filter (('people.id = 'score.id) &amp;&amp; ('people.age &gt; 10))</span><br><span class="line">         +- 'Join Inner</span><br><span class="line">            :- 'UnresolvedRelation `people`</span><br><span class="line">            +- 'UnresolvedRelation `score`</span><br></pre></td></tr></table></figure>
+<h2 id="Analyzer"><a href="#Analyzer" class="headerlink" title="Analyzer"></a>Analyzer</h2><p>从 Analyzer 的构造方法可见</p>
+<ul>
+<li>Analyzer 持有一个 SessionCatalog 对象的引用</li>
+<li>Analyzer 继承自 RuleExecutor[LogicalPlan]，因此可对 LogicalPlan 进行转换</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Analyzer</span>(<span class="params"></span></span></span><br><span class="line"><span class="class"><span class="params">    catalog: <span class="type">SessionCatalog</span>,</span></span></span><br><span class="line"><span class="class"><span class="params">    conf: <span class="type">SQLConf</span>,</span></span></span><br><span class="line"><span class="class"><span class="params">    maxIterations: <span class="type">Int</span></span>)</span></span><br><span class="line"><span class="class">  <span class="keyword">extends</span> <span class="title">RuleExecutor</span>[<span class="type">LogicalPlan</span>] <span class="keyword">with</span> <span class="title">CheckAnalysis</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+<p>Analyzer 包含了如下的转换规则</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">lazy</span> <span class="keyword">val</span> batches: <span class="type">Seq</span>[<span class="type">Batch</span>] = <span class="type">Seq</span>(</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"Hints"</span>, fixedPoint,</span><br><span class="line">      <span class="keyword">new</span> <span class="type">ResolveHints</span>.<span class="type">ResolveBroadcastHints</span>(conf),</span><br><span class="line">      <span class="type">ResolveHints</span>.<span class="type">RemoveAllHints</span>),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"Simple Sanity Check"</span>, <span class="type">Once</span>,</span><br><span class="line">      <span class="type">LookupFunctions</span>),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"Substitution"</span>, fixedPoint,</span><br><span class="line">      <span class="type">CTESubstitution</span>,</span><br><span class="line">      <span class="type">WindowsSubstitution</span>,</span><br><span class="line">      <span class="type">EliminateUnions</span>,</span><br><span class="line">      <span class="keyword">new</span> <span class="type">SubstituteUnresolvedOrdinals</span>(conf)),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"Resolution"</span>, fixedPoint,</span><br><span class="line">      <span class="type">ResolveTableValuedFunctions</span> ::</span><br><span class="line">      <span class="type">ResolveRelations</span> ::</span><br><span class="line">      <span class="type">ResolveReferences</span> ::</span><br><span class="line">      <span class="type">ResolveCreateNamedStruct</span> ::</span><br><span class="line">      <span class="type">ResolveDeserializer</span> ::</span><br><span class="line">      <span class="type">ResolveNewInstance</span> ::</span><br><span class="line">      <span class="type">ResolveUpCast</span> ::</span><br><span class="line">      <span class="type">ResolveGroupingAnalytics</span> ::</span><br><span class="line">      <span class="type">ResolvePivot</span> ::</span><br><span class="line">      <span class="type">ResolveOrdinalInOrderByAndGroupBy</span> ::</span><br><span class="line">      <span class="type">ResolveAggAliasInGroupBy</span> ::</span><br><span class="line">      <span class="type">ResolveMissingReferences</span> ::</span><br><span class="line">      <span class="type">ExtractGenerator</span> ::</span><br><span class="line">      <span class="type">ResolveGenerate</span> ::</span><br><span class="line">      <span class="type">ResolveFunctions</span> ::</span><br><span class="line">      <span class="type">ResolveAliases</span> ::</span><br><span class="line">      <span class="type">ResolveSubquery</span> ::</span><br><span class="line">      <span class="type">ResolveSubqueryColumnAliases</span> ::</span><br><span class="line">      <span class="type">ResolveWindowOrder</span> ::</span><br><span class="line">      <span class="type">ResolveWindowFrame</span> ::</span><br><span class="line">      <span class="type">ResolveNaturalAndUsingJoin</span> ::</span><br><span class="line">      <span class="type">ExtractWindowExpressions</span> ::</span><br><span class="line">      <span class="type">GlobalAggregates</span> ::</span><br><span class="line">      <span class="type">ResolveAggregateFunctions</span> ::</span><br><span class="line">      <span class="type">TimeWindowing</span> ::</span><br><span class="line">      <span class="type">ResolveInlineTables</span>(conf) ::</span><br><span class="line">      <span class="type">ResolveTimeZone</span>(conf) ::</span><br><span class="line">      <span class="type">ResolvedUuidExpressions</span> ::</span><br><span class="line">      <span class="type">TypeCoercion</span>.typeCoercionRules(conf) ++</span><br><span class="line">      extendedResolutionRules : _*),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"Post-Hoc Resolution"</span>, <span class="type">Once</span>, postHocResolutionRules: _*),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"View"</span>, <span class="type">Once</span>,</span><br><span class="line">      <span class="type">AliasViewChild</span>(conf)),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"Nondeterministic"</span>, <span class="type">Once</span>,</span><br><span class="line">      <span class="type">PullOutNondeterministic</span>),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"UDF"</span>, <span class="type">Once</span>,</span><br><span class="line">      <span class="type">HandleNullInputsForUDF</span>),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"FixNullability"</span>, <span class="type">Once</span>,</span><br><span class="line">      <span class="type">FixNullability</span>),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"Subquery"</span>, <span class="type">Once</span>,</span><br><span class="line">      <span class="type">UpdateOuterReferences</span>),</span><br><span class="line">    <span class="type">Batch</span>(<span class="string">"Cleanup"</span>, fixedPoint,</span><br><span class="line">      <span class="type">CleanupAliases</span>)</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>例如， ResolveRelations 用于分析查询用到的 Table 或 View。本例中 UnresolvedRelation (people) 与 UnresolvedRelation (score) 被解析为 HiveTableRelation (json.people) 与 HiveTableRelation (json.score)，并列出其各自包含的字段名。</p>
+<p>经 Analyzer 分析后得到的 Resolved Logical Plan 如下所示</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">== Analyzed Logical Plan ==</span><br><span class="line">sum(v): bigint</span><br><span class="line">Aggregate [sum(cast(v<span class="comment">#493 as bigint)) AS sum(v)#504L]</span></span><br><span class="line">+- SubqueryAlias tmp</span><br><span class="line">   +- Project [id<span class="comment">#500, (((100 + 80) + math_score#501) + english_score#502) AS v#493]</span></span><br><span class="line">      +- Filter ((id<span class="comment">#496 = id#500) &amp;&amp; (age#497 &gt; 10))</span></span><br><span class="line">         +- Join Inner</span><br><span class="line">            :- SubqueryAlias people</span><br><span class="line">            :  +- HiveTableRelation `jason`.`people`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [id<span class="comment">#496, age#497, name#498]</span></span><br><span class="line">            +- SubqueryAlias score</span><br><span class="line">               +- HiveTableRelation `jason`.`score`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [id<span class="comment">#500, math_score#501, english_score#502]</span></span><br></pre></td></tr></table></figure>
+<p>Analyzer 分析前后的 LogicalPlan 对比如下</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_analyzer.png">
+<p>由上图可见，分析后，每张表对应的字段集，字段类型，数据存储位置都已确定。Project 与 Filter 操作的字段类型以及在表中的位置也已确定。</p>
+<p>有了这些信息，已经可以直接将该 LogicalPlan 转换为 Physical Plan 进行执行。</p>
+<p>但是由于不同用户提交的 SQL 质量不同，直接执行会造成不同用户提交的语义相同的不同 SQL 执行效率差距甚远。换句话说，如果要保证较高的执行效率，用户需要做大量的 SQL 优化，使用体验大大降低。</p>
+<p>为了尽可能保证无论用户是否熟悉 SQL 优化，提交的 SQL 质量如何， Spark SQL 都能以较高效率执行，还需在执行前进行 LogicalPlan 优化。</p>
+<h2 id="Optimizer"><a href="#Optimizer" class="headerlink" title="Optimizer"></a>Optimizer</h2><p>Spark SQL 目前的优化主要是基于规则的优化，即 RBO （Rule-based optimization）</p>
+<ul>
+<li>每个优化以 Rule 的形式存在，每条 Rule 都是对 Analyzed Plan 的等价转换</li>
+<li>RBO 设计良好，易于扩展，新的规则可以非常方便地嵌入进 Optimizer</li>
+<li>RBO 目前已经足够好，但仍然需要更多规则来 cover 更多的场景</li>
+<li>优化思路主要是减少参与计算的数据量以及计算本身的代价</li>
+</ul>
+<p><strong>PushdownPredicate</strong><br><code>PushdownPredicate</code> 是最常见的用于减少参与计算的数据量的方法。</p>
+<p>前文中直接对两表进行 Join 操作，然后再 进行 Filter 操作。引入 PushdownPredicate 后，可先对两表进行 Filter 再进行 Join，如下图所示。</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_predicate_pushdown.png">
+<p>当 Filter 可过滤掉大部分数据时，参与 Join 的数据量大大减少，从而使得 Join 操作速度大大提高。</p>
+<p>这里需要说明的是，此处的优化是 LogicalPlan 的优化，从逻辑上保证了将 Filter 下推后由于参与 Join 的数据量变少而提高了性能。另一方面，在物理层面，Filter 下推后，对于支持 Filter 下推的 Storage，并不需要将表的全量数据扫描出来再过滤，而是直接只扫描符合 Filter 条件的数据，从而在物理层面极大减少了扫描表的开销，提高了执行速度。</p>
+<p><strong>ConstantFolding</strong><br>本文的 SQL 查询中，Project 部分包含了 100 + 800 + match_score + english_score 。如果不进行优化，那如果有一亿条记录，就会计算一亿次 100 + 80，非常浪费资源。因此可通过 ConstantFolding 将这些常量合并，从而减少不必要的计算，提高执行速度。</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_constant_folding.png">
+<p><strong>ColumnPruning</strong><br>在上图中，Filter 与 Join 操作会保留两边所有字段，然后在 Project 操作中筛选出需要的特定列。如果能将 Project 下推，在扫描表时就只筛选出满足后续操作的最小字段集，则能大大减少 Filter 与 Project 操作的中间结果集数据量，从而极大提高执行速度。</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_column_pruning.png">
+<p>这里需要说明的是，此处的优化是逻辑上的优化。在物理上，Project 下推后，对于列式存储，如 Parquet 和 ORC，可在扫描表时就只扫描需要的列而跳过不需要的列，进一步减少了扫描开销，提高了执行速度。</p>
+<p>经过如上优化后的 LogicalPlan 如下</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">== Optimized Logical Plan ==</span><br><span class="line">Aggregate [sum(cast(v<span class="comment">#493 as bigint)) AS sum(v)#504L]</span></span><br><span class="line">+- Project [((180 + math_score<span class="comment">#501) + english_score#502) AS v#493]</span></span><br><span class="line">   +- Join Inner, (id<span class="comment">#496 = id#500)</span></span><br><span class="line">      :- Project [id<span class="comment">#496]</span></span><br><span class="line">      :  +- Filter ((isnotnull(age<span class="comment">#497) &amp;&amp; (age#497 &gt; 10)) &amp;&amp; isnotnull(id#496))</span></span><br><span class="line">      :     +- HiveTableRelation `jason`.`people`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [id<span class="comment">#496, age#497, name#498]</span></span><br><span class="line">      +- Filter isnotnull(id<span class="comment">#500)</span></span><br><span class="line">         +- HiveTableRelation `jason`.`score`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [id<span class="comment">#500, math_score#501, english_score#502]</span></span><br></pre></td></tr></table></figure>
+<h2 id="SparkPlanner"><a href="#SparkPlanner" class="headerlink" title="SparkPlanner"></a>SparkPlanner</h2><p>得到优化后的 LogicalPlan 后，SparkPlanner 将其转化为 SparkPlan 即物理计划。</p>
+<p>本例中由于 score 表数据量较小，Spark 使用了 BroadcastJoin。因此 score 表经过 Filter 后直接使用 BroadcastExchangeExec 将数据广播出去，然后结合广播数据对 people 表使用 BroadcastHashJoinExec 进行 Join。再经过 Project 后使用 HashAggregateExec 进行分组聚合。</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_physical_plan.png">
+<p>至此，一条 SQL 从提交到解析、分析、优化以及执行的完整过程就介绍完毕。</p>
+<p>本文介绍的 Optimizer 属于 RBO，实现简单有效。它属于 LogicalPlan 的优化，所有优化均基于 LogicalPlan 本身的特点，未考虑数据本身的特点，也未考虑算子本身的代价。下文将介绍 CBO，它充分考虑了数据本身的特点（如大小、分布）以及操作算子的特点（中间结果集的分布及大小）及代价，从而更好的选择执行代价最小的物理执行计划，即 SparkPlan。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/分布式/">分布式</a>
+            
+              <a href="/tags/big-data/">big data</a>
+            
+              <a href="/tags/spark/">spark</a>
+            
+              <a href="/tags/sql/">sql</a>
+            
+              <a href="/tags/catalyst/">catalyst</a>
+            
+              <a href="/tags/RBO/">RBO</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">
+        <span class="next-text nav-default">Spark CommitCoordinator 保证数据一致性(转)</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
