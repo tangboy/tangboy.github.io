@@ -17,10 +17,12 @@
 
 
 
-  <meta name="description" content="机器学习，编程，玩">
+  <meta name="description" content="Adaptive Execution 让 Spark SQL 更高效更智能">
 
 
 
+
+  <meta name="keywords" content="SQL, Spark, Adaptive Execution, Anthon">
 
 
 
@@ -40,7 +42,7 @@
 
 
 
-<link rel="canonical" href="http://code-monkey.top/">
+<link rel="canonical" href="http://code-monkey.top/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/">
 
 
 
@@ -88,7 +90,7 @@
   window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> Adaptive Execution 让 Spark SQL 更高效更智能 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -200,15 +202,11 @@
           <div id="content" class="content">
             
   
-  <section id="posts" class="posts">
-    
-      
-        
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/">Adaptive Execution 让 Spark SQL 更高效更智能</a>
+          Adaptive Execution 让 Spark SQL 更高效更智能
         
       </h1>
 
@@ -223,15 +221,18 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态设置-Shuffle-Partition"><span class="toc-text">动态设置 Shuffle Partition</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spark-Shuffle-原理"><span class="toc-text">Spark Shuffle 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#原有-Shuffle-的问题"><span class="toc-text">原有 Shuffle 的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自动设置-Shuffle-Partition-原理"><span class="toc-text">自动设置 Shuffle Partition 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用与优化方法"><span class="toc-text">使用与优化方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调整执行计划"><span class="toc-text">动态调整执行计划</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#固定执行计划的不足"><span class="toc-text">固定执行计划的不足</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SortMergeJoin-原理"><span class="toc-text">SortMergeJoin 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BroadcastJoin-原理"><span class="toc-text">BroadcastJoin 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态调整执行计划原理"><span class="toc-text">动态调整执行计划原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用与优化方法-1"><span class="toc-text">使用与优化方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动处理数据倾斜"><span class="toc-text">自动处理数据倾斜</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#解决数据倾斜典型方案"><span class="toc-text">解决数据倾斜典型方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自动解决数据倾斜"><span class="toc-text">自动解决数据倾斜</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用与优化方法-2"><span class="toc-text">使用与优化方法</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
-        
-        
-
-        
-          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>前面<a href="https://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">《Spark SQL / Catalyst 内部原理 与 RBO》</a>与<a href="https://code-monkey.top/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/">《Spark SQL 性能优化再进一步 CBO 基于代价的优化》</a>介绍的优化，从查询本身与目标数据的特点的角度尽可能保证了最终生成的执行计划的高效性。但是</p>
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>前面<a href="https://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">《Spark SQL / Catalyst 内部原理 与 RBO》</a>与<a href="https://code-monkey.top/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/">《Spark SQL 性能优化再进一步 CBO 基于代价的优化》</a>介绍的优化，从查询本身与目标数据的特点的角度尽可能保证了最终生成的执行计划的高效性。但是</p>
 <ul>
 <li>执行计划一旦生成，便不可更改，即使执行过程中发现后续执行计划可以进一步优化，也只能按原计划执行</li>
 <li>CBO 基于统计信息生成最优执行计划，需要提前生成统计信息，成本较大，且不适合数据更新频繁的场景</li>
@@ -372,504 +373,74 @@
 <li><code>spark.sql.adaptive.skewedPartitionFactor</code> 该参数设置了倾斜因子。如果一个 Partition 的大小大于 <code>spark.sql.adaptive.skewedPartitionSizeThreshold</code> 的同时大于各 Partition 大小中位数与该因子的乘积，或者行数大于 <code>spark.sql.adaptive.skewedPartitionRowCountThreshold</code> 的同时大于各 Partition 行数中位数与该因子的乘积，则它会被视为倾斜的 Partition</li>
 </ul>
 
-        
       
     </div>
 
     
+      
+      
 
-    
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/">http://code-monkey.top/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
 
-  </article>
+
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/">Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-13
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
       
-        
-        
-          
-        
+    
 
+    
+      <footer class="post-footer">
         
-          <h2 id="Spark-CBO-背景"><a href="#Spark-CBO-背景" class="headerlink" title="Spark CBO 背景"></a>Spark CBO 背景</h2><p>上文<a href="https://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">Spark SQL 内部原理中介绍的 Optimizer</a> 属于 RBO，实现简单有效。它属于 LogicalPlan 的优化，所有优化均基于 LogicalPlan 本身的特点，未考虑数据本身的特点，也未考虑算子本身的代价。</p>
-<p>本文将介绍 CBO，它充分考虑了数据本身的特点（如大小、分布）以及操作算子的特点（中间结果集的分布及大小）及代价，从而更好的选择执行代价最小的物理执行计划，即 SparkPlan。</p>
-<h2 id="Spark-CBO-原理"><a href="#Spark-CBO-原理" class="headerlink" title="Spark CBO 原理"></a>Spark CBO 原理</h2><p>CBO 原理是计算所有可能的物理计划的代价，并挑选出代价最小的物理执行计划。其核心在于评估一个给定的物理执行计划的代价。</p>
-<p>物理执行计划是一个树状结构，其代价等于每个执行节点的代价总合，如下图所示。</p>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_sql_cost_model.png">
-<p>而每个执行节点的代价，分为两个部分</p>
-<ul>
-<li>该执行节点对数据集的影响，或者说该节点输出数据集的大小与分布</li>
-<li>该执行节点操作算子的代价</li>
-</ul>
-<p>每个操作算子的代价相对固定，可用规则来描述。而执行节点输出数据集的大小与分布，分为两个部分：1) 初始数据集，也即原始表，其数据集的大小与分布可直接通过统计得到；2)中间节点输出数据集的大小与分布可由其输入数据集的信息与操作本身的特点推算。</p>
-<p>所以，最终主要需要解决两个问题</p>
-<ul>
-<li>如何获取原始数据集的统计信息</li>
-<li>如何根据输入数据集估算特定算子的输出数据集</li>
-</ul>
-          <div class="read-more">
-            <a href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/" class="read-more-link">阅读更多</a>
+          <div class="post-tags">
+            
+              <a href="/tags/SQL/">SQL</a>
+            
+              <a href="/tags/Spark/">Spark</a>
+            
+              <a href="/tags/Adaptive-Execution/">Adaptive Execution</a>
+            
           </div>
         
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">Spark SQL / Catalyst 内部原理 与 RBO(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-13
-        </span>
         
         
-      </div>
-    </header>
-
+  <nav class="post-nav">
     
     
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="Spark-SQL-架构"><a href="#Spark-SQL-架构" class="headerlink" title="Spark SQL 架构"></a>Spark SQL 架构</h2><p>Spark SQL 的整体架构如下图所示</p>
-<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql.png">
-<p>从上图可见，无论是直接使用 SQL 语句还是使用 DataFrame，都会经过如下步骤转换成 DAG 对 RDD 的操作</p>
-<ul>
-<li>Parser 解析 SQL，生成 Unresolved Logical Plan</li>
-<li>由 Analyzer 结合 Catalog 信息生成 Resolved Logical Plan</li>
-<li>Optimizer根据预先定义好的规则对 Resolved Logical Plan 进行优化并生成 Optimized Logical Plan</li>
-<li>Query Planner 将 Optimized Logical Plan 转换成多个 Physical Plan</li>
-<li>CBO 根据 Cost Model 算出每个 Physical Plan 的代价并选取代价最小的 Physical Plan 作为最终的 Physical Plan</li>
-<li>Spark 以 DAG 的方法执行上述 Physical Plan</li>
-<li>在执行 DAG 的过程中，Adaptive Execution 根据运行时信息动态调整执行计划从而提高执行效率</li>
-</ul>
-          <div class="read-more">
-            <a href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">Spark CommitCoordinator 保证数据一致性(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-11
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Spark 输出数据到 HDFS 时，需要解决如下问题：</p>
-<ol>
-<li>由于多个 Task 同时写数据到 HDFS，如何保证要么所有 Task 写的所有文件要么同时对外可见，要么同时对外不可见，即保证数据一致性</li>
-<li>同一 Task 可能因为 Speculation 而存在两个完全相同的 Task 实例写相同的数据到 HDFS中，如何保证只有一个 commit 成功</li>
-<li>对于大 Job（如具有几万甚至几十万 Task），如何高效管理所有文件</li>
-</ol>
-<h2 id="commit-原理"><a href="#commit-原理" class="headerlink" title="commit 原理"></a>commit 原理</h2><p>本文通过 Local mode 执行如下 Spark 程序详解 commit 原理</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sparkContext.textFile(<span class="string">"/jason/input.zstd"</span>)</span><br><span class="line">  .map(_.split(<span class="string">","</span>))</span><br><span class="line">  .saveAsTextFile(<span class="string">"/jason/test/tmp"</span>)</span><br></pre></td></tr></table></figure>
-<p>在详述 commit 原理前，需要说明几个述语</p>
-<ul>
-<li>Task，即某个 Application 的某个 Job 内的某个 Stage 的一个 Task</li>
-<li>TaskAttempt，Task 每次执行都视为一个 TaskAttempt。对于同一个 Task，可能同时存在多个 TaskAttemp</li>
-<li>Application Attempt，即 Application 的一次执行</li>
-</ul>
-<p>在本文中，会使用如下缩写</p>
-<ul>
-<li>${output.dir.root} 即输出目录根路径</li>
-<li>${appAttempt} 即 Application Attempt ID，为整型，从 0 开始</li>
-<li>${taskAttemp} 即 Task Attetmp ID，为整型，从 0 开始</li>
-</ul>
-          <div class="read-more">
-            <a href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/">Spark性能优化之道——解决Spark数据倾斜</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-10
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文结合实例详细阐明了Spark数据倾斜的几种场景以及对应的解决方案，包括避免数据源倾斜，调整并行度，使用自定义Partitioner，使用Map侧Join代替Reduce侧Join，给倾斜Key加上随机前缀等。</p>
-<h2 id="为何要处理数据倾斜（Data-Skew）"><a href="#为何要处理数据倾斜（Data-Skew）" class="headerlink" title="为何要处理数据倾斜（Data Skew）"></a>为何要处理数据倾斜（Data Skew）</h2><h3 id="什么是数据倾斜"><a href="#什么是数据倾斜" class="headerlink" title="什么是数据倾斜"></a>什么是数据倾斜</h3><p>对Spark/Hadoop这样的大数据系统来讲，数据量大并不可怕，可怕的是数据倾斜。</p>
-<p>何谓数据倾斜？数据倾斜指的是，并行处理的数据集中，某一部分（如Spark或Kafka的一个Partition）的数据显著多于其它部分，从而使得该部分的处理速度成为整个数据集处理的瓶颈。</p>
-<p>对于分布式系统而言，理想情况下，随着系统规模（节点数量）的增加，应用整体耗时线性下降。如果一台机器处理一批大量数据需要120分钟，当机器数量增加到三时，理想的耗时为120 / 3 = 40分钟，如下图所示</p>
-<img src="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/non_skew_time.png">
-          <div class="read-more">
-            <a href="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/07/SQL之Join实现/">SQL之Join实现</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-07
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>Join作为SQL中一个重要语法特性，几乎所有稍微复杂一点的数据分析场景都离不开Join，如今Spark SQL(Dataset/DataFrame)已经成为Spark应用程序开发的主流，作为开发者，我们有必要了解Join在Spark中是如何组织运行的。</p>
-<h2 id="SparkSQL总体流程介绍"><a href="#SparkSQL总体流程介绍" class="headerlink" title="SparkSQL总体流程介绍"></a>SparkSQL总体流程介绍</h2><p>在阐述Join实现之前，我们首先简单介绍SparkSQL的总体流程，一般地，我们有两种方式使用SparkSQL，一种是直接写sql语句，这个需要有元数据库支持，例如Hive等，另一种是通过Dataset/DataFrame编写Spark应用程序。如下图所示，sql语句被语法解析(SQL AST)成查询计划，或者我们通过Dataset/DataFrame提供的APIs组织成查询计划，查询计划分为两大类：逻辑计划和物理计划，这个阶段通常叫做逻辑计划，经过语法分析(Analyzer)、一系列查询优化(Optimizer)后得到优化后的逻辑计划，最后被映射成物理计划，转换成RDD执行。</p>
-<img src="/2018/12/07/SQL之Join实现/1.png">
-          <div class="read-more">
-            <a href="/2018/12/07/SQL之Join实现/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/03/数据分片与路由/">数据分片与路由</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-03
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="抽象模型"><a href="#抽象模型" class="headerlink" title="抽象模型"></a>抽象模型</h2><p>我们抽象一个数据分片与路由的通用模型，可以将其看作是一个二级以你映射关系。<br>第一级映射是key-partition映射，其将数据记录映射到数据分片空间，这往往是多对一的映射关系；第二级映射是partition-machine映射，其将数据分片映射到物理机器中，这一般也是多对一映射关系。</p>
-<p>在做数据分片时，根据key-partition映射关系将大数据水平切割成众多数据分片，然后再按照partition-machine映射关系将数据分片放置到对应的物理机器上。而在做数据路由时，比如要查找某条记录的值Get(key)，首先根据key-partition映射找到对应的数据分片，然后再查找partition-machine关系表，就知道具体哪台机器存储该条数据，之后即可从相应的机器上读取key的对应值</p>
-<h2 id="哈希分片"><a href="#哈希分片" class="headerlink" title="哈希分片"></a>哈希分片</h2><h3 id="Round-Robin"><a href="#Round-Robin" class="headerlink" title="Round Robin"></a>Round Robin</h3><p>Round Robin就是俗称的哈希取模法，是实际中非常常用的数据分片方法。</p>
-<p><strong>优点</strong>： 实现简单</p>
-<p><strong>缺点</strong>：缺乏灵活性</p>
-<p>比如增加一台机器，那么之前分配好的所有数据需要重新hash，对于在线存储系统很显然这是缺乏扩展灵活性的</p>
-<p>对照<strong>抽象模型</strong>可以看出，Round Robin其实是将物理机和数据分片两个功能点合二为一了，即每台物理机对应一个数据分片，这样key-partition映射和partition-machine映射也就合二为一了，都是同一个哈希函数来承担，由此造成的后果是机器个数K作为参数出现在映射函数中。</p>
-          <div class="read-more">
-            <a href="/2018/12/03/数据分片与路由/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/02/大数据日知录-算法与架构/">大数据日知录-算法与架构</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-02
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <p>从这周开始，打算以下图中的组织结构串起大数据相关知识点，争取形成系列。</p>
-<img src="/2018/12/02/大数据日知录-算法与架构/big_data.png">
-
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/02/马尔可夫链蒙特卡洛方法/">一份数学小白也能读懂的「马尔可夫链蒙特卡洛方法」入门指南(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-02
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <blockquote>
-<p>在众多经典的贝叶斯方法中，马尔可夫链蒙特卡洛（MCMC）由于包含大量数学知识，且计算量很大，而显得格外特别。本文反其道而行之，试图通过通俗易懂且不包含数学语言的方法，帮助读者对 MCMC 有一个直观的理解，使得毫无数学基础的人搞明白 MCMC。</p>
-</blockquote>
-<p>在我们中的很多人看来，贝叶斯统计学家不是巫术师，就是完全主观的胡说八道者。在贝叶斯经典方法中，马尔可夫链蒙特卡洛（Markov chain Monte Carlo/MCMC）尤其神秘，其中数学很多，计算量很大，但其背后原理与数据科学有诸多相似之处，并可阐释清楚，使得毫无数学基础的人搞明白 MCMC。这正是本文的目标。</p>
-<p>那么，到底什么是 MCMC 方法？一言以蔽之：</p>
-<p>MCMC 通过在概率空间中随机采样以近似兴趣参数（parameter of interest）的后验分布。</p>
-          <div class="read-more">
-            <a href="/2018/12/02/马尔可夫链蒙特卡洛方法/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/02/PostgreSQL实现事务和多版本并发控制的精华/">PostgreSQL实现事务和多版本并发控制的精华(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-02
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h3 id="PostgreSQL针对ACID的实现机制"><a href="#PostgreSQL针对ACID的实现机制" class="headerlink" title="PostgreSQL针对ACID的实现机制"></a>PostgreSQL针对ACID的实现机制</h3><h4 id="数据库ACID"><a href="#数据库ACID" class="headerlink" title="数据库ACID"></a>数据库ACID</h4><p>数据库事务包含如下四个特性</p>
-<ul>
-<li><strong>原子性（Atomicity</strong>  指一个事务要么全部执行，要么不执行。也即一个事务不可能只执行一半就停止（哪怕是因为意外也不行）。比如从取款机取钱，这个事务可以分成两个步骤：1)划卡；2)出钱。不可能划了卡，而钱却没出来。这两步必须同时完成，或者同时不完成。</li>
-<li><strong>一致性（Consistency）</strong> 事务的运行不可改变数据库中数据的一致性，事务必须将数据库中的数据从一个正确的状态带到另一个正确的状态。事务在开始时，完全可以假定数据库中的数据是处于正确（一致）状态的，而不必作过多验证（从而提升效率），同时也必须保证事务结束时数据库数据处于正确（一致）状态。例如，完整性约束了a+b=10，一个事务改变了a，那么b也应该随之改变。</li>
-<li><strong>隔离性（Isolation）</strong> 在并发数据操作时，不同的事务拥有各自的数据空间，其操作不会对对方产生干扰。隔离性允许事务行为独立或隔离于其它事务并发运行。</li>
-<li><strong>持久性（Durability）</strong> 事务执行成功以后，该事务对数据库所作的更改是持久的保存在数据库之中，不会无缘无故的回滚。</li>
-</ul>
-          <div class="read-more">
-            <a href="/2018/12/02/PostgreSQL实现事务和多版本并发控制的精华/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-      
-  <nav class="pagination">
-    
-    
-      <a class="next" href="/page/2/">
-        <span class="next-text">下一页</span>
+      <a class="next" href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/">
+        <span class="next-text nav-default">Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
   </nav>
 
 
+      </footer>
     
-  </section>
+
+  </article>
+
 
           </div>
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
       </main>
@@ -958,6 +529,11 @@
     </div>
 
     
+  
+  
+
+  
+
 
 
     
@@ -993,24 +569,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>
