@@ -243,6 +243,7 @@
 <li>执行计划可动态调整</li>
 <li>调整的依据是中间结果的精确统计信息</li>
 </ul>
+<a id="more"></a>
 <h2 id="动态设置-Shuffle-Partition"><a href="#动态设置-Shuffle-Partition" class="headerlink" title="动态设置 Shuffle Partition"></a>动态设置 Shuffle Partition</h2><h3 id="Spark-Shuffle-原理"><a href="#Spark-Shuffle-原理" class="headerlink" title="Spark Shuffle 原理"></a>Spark Shuffle 原理</h3><p>Spark Shuffle 一般用于将上游 Stage 中的数据按 Key 分区，保证来自不同 Mapper （表示上游 Stage 的 Task）的相同的 Key 进入相同的 Reducer （表示下游 Stage 的 Task）。一般用于 group by 或者 Join 操作。</p>
 <img src="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/spark_ae_fix_reducer_detail.png">
 <p>如上图所示，该 Shuffle 总共有 2 个 Mapper 与 5 个 Reducer。每个 Mapper 会按相同的规则（由 Partitioner 定义）将自己的数据分为五份。每个 Reducer 从这两个 Mapper 中拉取属于自己的那一份数据。</p>
