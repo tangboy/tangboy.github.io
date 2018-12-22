@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="LeetCode 算法题目解答">
+
+
+
+
+  <meta name="keywords" content="LeetCode, 算法, Python, C, C++, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2018/12/22/LeetCode-算法题目解答/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> LeetCode 算法题目解答 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          LeetCode 算法题目解答
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-22
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        <p>为了督促自己能够每天刷一道算法题，特将LeetCode常见题目列出，之后每天一题，每完成一题都会总结解答并链接到该博客相应的题目上。</p>
+<a id="more"></a>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Title</th>
+<th style="text-align:center">Difficulty</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Palindrome Number</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">ZigZag Conversion</td>
+<td style="text-align:center">Easy (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Valid Sudoku</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Add Binary</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Valid Parentheses</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Valid Palindrome</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Balanced Binary Tree</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Valid Number</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Symmetric Tree</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">String to Integer (atoi)</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Same Tree</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Level Order Traversal</td>
+<td style="text-align:center">Easy (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Level Order Traversal II</td>
+<td style="text-align:center">Easy (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Roman to Integer</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Integer</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Nth Node From End of List</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Element</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Duplicates from Sorted List</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Climbing Stairs</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Duplicates from Sorted Array</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Plus One</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Path Sum</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Pascal’s Triangle II</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Pascal’s Triangle</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Minimum Depth of Binary Tree</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Merge Two Sorted Lists</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Merge Sorted Array</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Maximum Depth of Binary Tree</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Common Prefix</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Count and Say</td>
+<td style="text-align:center">Easy (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Length of Last Word</td>
+<td style="text-align:center">Easy (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Implement strStr()</td>
+<td style="text-align:center">Easy (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Divide Two Integers</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">3Sum</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Evaluate Reverse Polish Notation</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Find Minimum in Rotated Sorted Array</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Word Search</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Word Ladder</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Flatten Binary Tree to Linked List</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Gas Station</td>
+<td style="text-align:center">Medium</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">Generate Parentheses</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Gray Code</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Word Break</td>
+<td style="text-align:center">Medium</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">Validate Binary Search Tree</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Insertion Sort List</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Integer to Roman</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">4Sum</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Jump Game</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Add Two Numbers</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Anagrams</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Decode Ways</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Letter Combinations of a Phone Number</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Linked List Cycle</td>
+<td style="text-align:center">Medium</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">Linked List Cycle II</td>
+<td style="text-align:center">Medium</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">Best Time to Buy and Sell Stock</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Unique Paths II</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Palindromic Substring</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Substring Without Repeating Characters</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Unique Paths</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Unique Binary Search Trees II</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Unique Binary Search Trees</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Two Sum</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Convert Sorted List to Binary Search Tree</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Maximum Product Subarray</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Maximum Subarray</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Triangle</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Best Time to Buy and Sell Stock II</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Swap Nodes in Pairs</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Convert Sorted Array to Binary Search Tree</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Container With Most Water</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Minimum Path Sum</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Surrounded Regions</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Multiply Strings</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Sum Root to Leaf Numbers</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Subsets II</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Next Permutation</td>
+<td style="text-align:center">Medium (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">3Sum Closest</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Palindrome Partitioning</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Subsets</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Partition List</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Construct Binary Tree from Inorder and Postorder Traversal</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Construct Binary Tree from Preorder and Inorder Traversal</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Combinations</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Combination Sum II</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Path Sum II</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Permutation Sequence</td>
+<td style="text-align:center">Medium (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Permutations</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Sqrt(x)</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Combination Sum</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Populating Next Right Pointers in Each Node</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Spiral Matrix II</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Pow(x, n)</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Spiral Matrix</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Sort List</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Clone Graph</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Duplicates from Sorted Array II</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Sort Colors</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Duplicates from Sorted List II</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Zigzag Level Order Traversal</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Preorder Traversal</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Reorder List</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Restore IP Addresses</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Single Number II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Linked List II</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Single Number</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Words in a String</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Simplify Path</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Rotate Image</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Rotate List</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Inorder Traversal</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Set Matrix Zeroes</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Search a 2D Matrix</td>
+<td style="text-align:center">Medium (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Search for a Range</td>
+<td style="text-align:center">Medium (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Search Insert Position</td>
+<td style="text-align:center">Medium (2)</td>
+</tr>
+<tr>
+<td style="text-align:center">Search in Rotated Sorted Array II</td>
+<td style="text-align:center">Medium (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Text Justification</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Search in Rotated Sorted Array</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Maximum Path Sum</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Nodes in k-Group</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Postorder Traversal</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Candy</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Edit Distance</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Recover Binary Search Tree</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Populating Next Right Pointers in Each Node II</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Permutations II</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Best Time to Buy and Sell Stock III</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Palindrome Partitioning II</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">N-Queens II</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Substring with Concatenation of All Words</td>
+<td style="text-align:center">Hard (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Sudoku Solver</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">N-Queens</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Minimum Window Substring</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Merge k Sorted Lists</td>
+<td style="text-align:center">Hard (3)</td>
+</tr>
+<tr>
+<td style="text-align:center">Merge Intervals</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Scramble String</td>
+<td style="text-align:center">Hard (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Trapping Rain Water</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Median of Two Sorted Arrays</td>
+<td style="text-align:center">Hard (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Maximal Rectangle</td>
+<td style="text-align:center">Hard (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Max Points on a Line</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">LRU Cache</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Valid Parentheses</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Consecutive Sequence</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Copy List with Random Pointer</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Largest Rectangle in Histogram</td>
+<td style="text-align:center">Hard (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Jump Game II</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Interleaving String</td>
+<td style="text-align:center">Hard (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Insert Interval</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Wildcard Matching</td>
+<td style="text-align:center">Hard (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Distinct Subsequences</td>
+<td style="text-align:center">Hard (4)</td>
+</tr>
+<tr>
+<td style="text-align:center">Word Break II</td>
+<td style="text-align:center">Hard</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">First Missing Positive</td>
+<td style="text-align:center">Hard (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Word Ladder II</td>
+<td style="text-align:center">Hard (1)</td>
+</tr>
+<tr>
+<td style="text-align:center">Find Minimum in Rotated Sorted Array II</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Regular Expression Matching</td>
+<td style="text-align:center">Hard (5)</td>
+</tr>
+<tr>
+<td style="text-align:center">Invert Binary Tree</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Implement Stack using Queues</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Basic Calculator</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Rectangle Area</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Count Complete Tree Nodes</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Maximal Square</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Contains Duplicate III</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Contains Duplicate II</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">The Skyline Problem</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Contains Duplicate</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Combination Sum III</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Kth Largest Element in an Array</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Shortest Palindrome</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">House Robber II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Word Search II</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Add and Search Word – Data structure design</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Course Schedule II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Minimum Size Subarray Sum</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Implement Trie (Prefix Tree)</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Course Schedule</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Linked List</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Isomorphic Strings</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Count Primes</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Linked List Elements</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Happy Number</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Bitwise AND of Numbers Range</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Number of Islands</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Right Side View</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">House Robber</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Number of 1 Bits</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Bits</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Rotate Array</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Best Time to Buy and Sell Stock IV</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Repeated DNA Sequences</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Words in a String II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Largest Number</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Dungeon Game</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Search Tree Iterator</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Factorial Trailing Zeroes</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Excel Sheet Column Number</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Two Sum III – Data structure design</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Majority Element</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Excel Sheet Column Title</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Two Sum II – Input array is sorted</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Fraction to Recurring Decimal</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Compare Version Numbers</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Maximum Gap</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Missing Ranges</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Find Peak Element</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">One Edit Distance</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Intersection of Two Linked Lists</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Substring with At Most Two Distinct Characters</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Read N Characters Given Read4 II – Call multiple times</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Read N Characters Given Read4</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Upside Down</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Min Stack</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Minimum Height Trees</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Best Time to Buy and Sell Stock with Cooldown</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Range Sum Query – Mutable</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Additive Number</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Range Sum Query 2D – Immutable</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Range Sum Query – Immutable</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Invalid Parentheses</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Increasing Subsequence</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Bulls and Cows</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Serialize and Deserialize Binary Tree</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Find Median from Data Stream</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Nim Game</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Word Pattern</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Game of Life</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Find the Duplicate Number</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Peeking Iterator</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Move Zeroes</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Expression Add Operators</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Perfect Squares</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">First Bad Version</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">H-Index II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">H-Index</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Integer to English Words</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Missing Number</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Ugly Number II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Ugly Number</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Single Number III</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Add Digits</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Paths</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Valid Anagram</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Different Ways to Add Parentheses</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Search a 2D Matrix II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Sliding Window Maximum</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Product of Array Except Self</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Delete Node in a Linked List</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Lowest Common Ancestor of a Binary Tree</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Lowest Common Ancestor of a Binary Search Tree</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Palindrome Linked List</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Number of Digit One</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Implement Queue using Stacks</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Power of Two</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Kth Smallest Element in a BST</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Majority Element II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Summary Ranges</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Basic Calculator II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Sum of Two Integers</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Largest Divisible Subset</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Valid Perfect Square</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Water and Jug Problem</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Max Sum of Rectangle No Larger Than K</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Count Numbers with Unique Digits</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Design Twitter</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Russian Doll Envelopes</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Data Stream as Disjoint Intervals</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Intersection of Two Arrays II</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Intersection of Two Arrays</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Top K Frequent Elements</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Vowels of a String</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse String</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Integer Break</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Power of Four</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Flatten Nested List Iterator</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Counting Bits</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">House Robber III</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Palindrome Pairs</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Self Crossing</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Increasing Triplet Subsequence</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Reconstruct Itinerary</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Verify Preorder Serialization of a Binary Three</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Patching Arrays</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Increasing Path in a Matrix</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Odd Even Linked List</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Count of Range Sum</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Power of Three</td>
+<td style="text-align:center">Easy</td>
+</tr>
+<tr>
+<td style="text-align:center">Wiggle Sort II</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Coin Change</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Create Maximum Number</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Bulb Switcher</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Maximum Product of Word Lengths</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Remove Duplicate Letters</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Count of Smaller Numbers After Self</td>
+<td style="text-align:center">Hard</td>
+</tr>
+<tr>
+<td style="text-align:center">Super Ugly Number</td>
+<td style="text-align:center">Medium</td>
+</tr>
+<tr>
+<td style="text-align:center">Burst Balloons</td>
+<td style="text-align:center">Hard</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>其他题目总结</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Binary Tree Upside Down</td>
+</tr>
+<tr>
+<td style="text-align:center">Read N Characters Given Read4</td>
+</tr>
+<tr>
+<td style="text-align:center">Read N Characters Given Read4 II – Call multiple times</td>
+</tr>
+<tr>
+<td style="text-align:center">Longest Substring with At Most Two Distinct Characters</td>
+</tr>
+<tr>
+<td style="text-align:center">One Edit Distance</td>
+</tr>
+<tr>
+<td style="text-align:center">Missing Ranges</td>
+</tr>
+<tr>
+<td style="text-align:center">Two Sum III – Data structure design</td>
+</tr>
+<tr>
+<td style="text-align:center">Reverse Words in a String II</td>
+</tr>
+<tr>
+<td style="text-align:center">Shortest Word Distance</td>
+</tr>
+<tr>
+<td style="text-align:center">Shortest Word Distance II</td>
+</tr>
+<tr>
+<td style="text-align:center">Shortest Word Distance III</td>
+</tr>
+<tr>
+<td style="text-align:center">Strobogrammatic Number</td>
+</tr>
+<tr>
+<td style="text-align:center">Strobogrammatic Number II</td>
+</tr>
+<tr>
+<td style="text-align:center">Strobogrammatic Number III</td>
+</tr>
+<tr>
+<td style="text-align:center">Group Shifted Strings</td>
+</tr>
+<tr>
+<td style="text-align:center">Count Univalue Subtrees</td>
+</tr>
+<tr>
+<td style="text-align:center">Flatten 2D Vector</td>
+</tr>
+<tr>
+<td style="text-align:center">Meeting Rooms</td>
+</tr>
+<tr>
+<td style="text-align:center">Meeting Rooms II</td>
+</tr>
+<tr>
+<td style="text-align:center">Factor Combinations</td>
+</tr>
+<tr>
+<td style="text-align:center">Verify Preorder Sequence in Binary Search Tree</td>
+</tr>
+<tr>
+<td style="text-align:center">Paint House</td>
+</tr>
+<tr>
+<td style="text-align:center">3Sum Smaller</td>
+</tr>
+<tr>
+<td style="text-align:center">Graph Valid Tree</td>
+</tr>
+<tr>
+<td style="text-align:center">Paint House II</td>
+</tr>
+<tr>
+<td style="text-align:center">Palindrome Permutation</td>
+</tr>
+<tr>
+<td style="text-align:center">Palindrome Permutation II</td>
+</tr>
+<tr>
+<td style="text-align:center">Alien Dictionary</td>
+</tr>
+<tr>
+<td style="text-align:center">Closest Binary Search Tree Value</td>
+</tr>
+<tr>
+<td style="text-align:center">Encode and Decode Strings</td>
+</tr>
+<tr>
+<td style="text-align:center">Closest Binary Search Tree Value II</td>
+</tr>
+<tr>
+<td style="text-align:center">Paint Fence</td>
+</tr>
+<tr>
+<td style="text-align:center">Find the Celebrity</td>
+</tr>
+<tr>
+<td style="text-align:center">Wiggle Sort</td>
+</tr>
+<tr>
+<td style="text-align:center">Zigzag Iterator</td>
+</tr>
+<tr>
+<td style="text-align:center">Inorder Successor in BST</td>
+</tr>
+<tr>
+<td style="text-align:center">Walls and Gates</td>
+</tr>
+<tr>
+<td style="text-align:center">Unique Word Abbreviation</td>
+</tr>
+<tr>
+<td style="text-align:center">Word Pattern II</td>
+</tr>
+<tr>
+<td style="text-align:center">Flip Game</td>
+</tr>
+<tr>
+<td style="text-align:center">Flip Game II</td>
+</tr>
+<tr>
+<td style="text-align:center">Best Meeting Point</td>
+</tr>
+<tr>
+<td style="text-align:center">Binary Tree Longest Consecutive Sequence</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2018/12/22/LeetCode-算法题目解答/">http://code-monkey.top/2018/12/22/LeetCode-算法题目解答/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/LeetCode/">LeetCode</a>
+            
+              <a href="/tags/算法/">算法</a>
+            
+              <a href="/tags/Python/">Python</a>
+            
+              <a href="/tags/C/">C</a>
+            
+              <a href="/tags/C/">C++</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/">
+        <span class="next-text nav-default">Adaptive Execution 让 Spark SQL 更高效更智能</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
