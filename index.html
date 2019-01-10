@@ -208,6 +208,69 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/22/数据复制与一致性/">数据复制与一致性</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-22
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>在大数据存储系统中，为了增加系统高可用性，往往会将同一数据存储多份副本，工业界的常规做法是三备份。将数据复制成多份除了增加存储系统高可用性外还可以增加读操作的并发性，但是这样会引入一致性问题。本文会详细介绍。</p>
+<h2 id="基本原则与设计理念"><a href="#基本原则与设计理念" class="headerlink" title="基本原则与设计理念"></a>基本原则与设计理念</h2><p>首先介绍一下CAP、BASE、ACID基础理论模型。</p>
+<h3 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h3><ol>
+<li><strong>强一致性</strong>：即在分布式系统中的同一数据多副本情形下，对于数据的更新操作体现出的效果与只有单份数据是一样的</li>
+<li><strong>可用性</strong>：客户端在任何时刻对大规模数据系统的读/写操作都应该保证在限定延时内完成</li>
+<li><strong>分区容忍性</strong>：在大规模分布式数据系统中，网络分布现象，即分区间的机器无法进行网络通信的情况是必然会发生的，所以系统应该能够在这种情况下仍然继续工作</li>
+</ol>
+<p>在设计具体分布式架构技术方案时，必须再一致性和可用性方面做出取舍，要么选择强一致性减弱服务可用性，要么选择高可用性容忍弱一致性。依然认为，传统的关系数据库在三要素中选择CA两个因素，即强一致性，高可用性，但是可扩展性与容错性差。而NoSQL系统往往更关注AP因素，即高扩展性和高可用性，但是往往以弱一致性作为代价。</p>
+<h3 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h3><ol>
+<li><strong>原子性(Atomicity)</strong></li>
+<li><strong>一致性(Consistency)</strong></li>
+<li><strong>事务独立(Isolation)</strong></li>
+<li><strong>持久性(Durability)</strong></li>
+</ol>
+<h3 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h3><ol>
+<li><strong>基本可用(Basically Available)</strong></li>
+<li><strong>软状态或者柔性状态(Soft State)</strong></li>
+<li><strong>最终一致性(Eventual Consistency)</strong></li>
+</ol>
+          <div class="read-more">
+            <a href="/2018/12/22/数据复制与一致性/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/22/LeetCode-算法题目解答/">LeetCode 算法题目解答</a>
         
       </h1>
@@ -672,56 +735,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/02/马尔可夫链蒙特卡洛方法/">一份数学小白也能读懂的「马尔可夫链蒙特卡洛方法」入门指南(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-02
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <blockquote>
-<p>在众多经典的贝叶斯方法中，马尔可夫链蒙特卡洛（MCMC）由于包含大量数学知识，且计算量很大，而显得格外特别。本文反其道而行之，试图通过通俗易懂且不包含数学语言的方法，帮助读者对 MCMC 有一个直观的理解，使得毫无数学基础的人搞明白 MCMC。</p>
-</blockquote>
-<p>在我们中的很多人看来，贝叶斯统计学家不是巫术师，就是完全主观的胡说八道者。在贝叶斯经典方法中，马尔可夫链蒙特卡洛（Markov chain Monte Carlo/MCMC）尤其神秘，其中数学很多，计算量很大，但其背后原理与数据科学有诸多相似之处，并可阐释清楚，使得毫无数学基础的人搞明白 MCMC。这正是本文的目标。</p>
-<p>那么，到底什么是 MCMC 方法？一言以蔽之：</p>
-<p>MCMC 通过在概率空间中随机采样以近似兴趣参数（parameter of interest）的后验分布。</p>
-          <div class="read-more">
-            <a href="/2018/12/02/马尔可夫链蒙特卡洛方法/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -810,7 +823,7 @@
      
       2015 - 
     
-    2018
+    2019
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>
