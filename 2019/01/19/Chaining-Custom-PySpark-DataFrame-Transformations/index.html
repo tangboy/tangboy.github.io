@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Chaining Custom PySpark DataFrame Transformations">
+
+
+
+
+  <meta name="keywords" content="Spark, Python, PySpark, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Chaining Custom PySpark DataFrame Transformations - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Chaining Custom PySpark DataFrame Transformations
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-01-19
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Chaining-DataFrame-Transformations-with-Lambda"><span class="toc-text">Chaining DataFrame Transformations with Lambda</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chaining-DataFrame-Transformations-with-functools-partial"><span class="toc-text">Chaining DataFrame Transformations with functools.partial</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Defining-DataFrame-transformations-as-nested-functions"><span class="toc-text">Defining DataFrame transformations as nested functions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Function-composition-with-cytoolz"><span class="toc-text">Function composition with cytoolz</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>和基于Scala Spark API一样，我们也期望在Pyspark中也能够将不同的transformation方法连接起来统一执行。</p>
+<p>这篇博客主要描述如何给Pyspark DataFrame添加<code>transform</code>方法，从而支持能够将自定义的DataFrame transformation连接起来。</p>
+<p>同时，我们也会介绍如何利用<a href="https://github.com/pytoolz/cytoolz" target="_blank" rel="noopener">cytoolz</a>来批量顺序执行自定义变换函数</p>
+<h2 id="Chaining-DataFrame-Transformations-with-Lambda"><a href="#Chaining-DataFrame-Transformations-with-Lambda" class="headerlink" title="Chaining DataFrame Transformations with Lambda"></a>Chaining DataFrame Transformations with Lambda</h2><p>首先，在原生的Pyspark DataFrame增加<code>transform</code>方法，从而我们能够串联执行DataFrame变换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pyspark.sql.dataframe <span class="keyword">import</span> DataFrame</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, f)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> f(self)</span><br><span class="line">    </span><br><span class="line">DataFrame.transform = transform</span><br></pre></td></tr></table></figure>
+<p>接下来，我们定义一些简单的DataFrame变换方法来测试<code>transform</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">with_greeting</span><span class="params">(df)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> df.withColumn(<span class="string">"greeting"</span>, lit(<span class="string">"hi"</span>))</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">with_something</span><span class="params">(df, something)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> df.withColumn(<span class="string">"something"</span>, lit(something))</span><br></pre></td></tr></table></figure>
+<p>创建一个DataFrame然后串联执行<code>with_greeting</code>和<code>with_something</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">data = [(<span class="string">"jsoe"</span>, <span class="number">1</span>), (<span class="string">"li"</span>, <span class="number">2</span>), (<span class="string">"liz"</span>, <span class="number">3</span>)]</span><br><span class="line">source_df = spark.createDataFrame(data, [<span class="string">"name"</span>, <span class="string">"age"</span>])</span><br><span class="line"></span><br><span class="line">actual_df = (source_df</span><br><span class="line">                .transform(<span class="keyword">lambda</span> df: with_greeting(df))</span><br><span class="line">                .transform(<span class="keyword">lambda</span> df: with_something(df, <span class="string">"crazy"</span>)))</span><br><span class="line">                </span><br><span class="line">print(actual_df.show())</span><br><span class="line"></span><br><span class="line">+----+---+--------+---------+</span><br><span class="line">|name|age|greeting|something|</span><br><span class="line">+----+---+--------+---------+</span><br><span class="line">|jose|  <span class="number">1</span>|      hi|    crazy|</span><br><span class="line">|  li|  <span class="number">2</span>|      hi|    crazy|</span><br><span class="line">| liz|  <span class="number">3</span>|      hi|    crazy|</span><br><span class="line">+----+---+--------+---------+</span><br></pre></td></tr></table></figure>
+<p>对于只有一个DataFrame参数的自定义变换中，<code>lambda</code>是可以省略的，从而我们可以简化调用方式如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">actual_df = (source_df</span><br><span class="line">             .transform(with_greeting)</span><br><span class="line">             .transform(<span class="keyword">lambda</span> df: with_something(df, <span class="string">"crazy"</span>)))</span><br></pre></td></tr></table></figure>
+<p>如果我们没有定义<code>DataFrame#transform</code>方法，我们就不需要像下面的代码一样，来调用不同的transformation</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">df1 = with_greeting(source_df)</span><br><span class="line">actual_df = with_something(df1, <span class="string">"moo"</span>)</span><br></pre></td></tr></table></figure>
+<p>比较上述代码，采用<code>transform</code>来调用不同的DataFrame的变化，能够避免定义中间DataFrame，从而使得代码更加清晰</p>
+<p>接下来，我们进一步探讨transformations的其他定义形式，让整个<code>transform</code>更加清晰明了</p>
+<a id="more"></a>
+<h2 id="Chaining-DataFrame-Transformations-with-functools-partial"><a href="#Chaining-DataFrame-Transformations-with-functools-partial" class="headerlink" title="Chaining DataFrame Transformations with functools.partial"></a>Chaining DataFrame Transformations with functools.partial</h2><p>定义一个<code>with_jacket</code> DataFrame变换，该变换将会增加<code>jacket</code>列到原始DataFrame中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">with_jacket</span><span class="params">(word, df)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> df.withColumn(<span class="string">"jacket"</span>, lit(word))</span><br></pre></td></tr></table></figure>
+<p>我们使用上文中同样的<code>source_df</code>和 <code>with_greeting</code>方法，采用functools.partial来连接不同的变换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> partial</span><br><span class="line"></span><br><span class="line">actual_df = (source_df</span><br><span class="line">             .transform(with_greeting)</span><br><span class="line">             .transform(partial(with_jacket, <span class="string">"warm"</span>)))</span><br><span class="line">             </span><br><span class="line">print(actual_df.show())</span><br><span class="line"></span><br><span class="line">+----+---+--------+------+</span><br><span class="line">|name|age|greeting|jacket|</span><br><span class="line">+----+---+--------+------+</span><br><span class="line">|jose|  <span class="number">1</span>|      hi|  warm|</span><br><span class="line">|  li|  <span class="number">2</span>|      hi|  warm|</span><br><span class="line">| liz|  <span class="number">3</span>|      hi|  warm|</span><br><span class="line">+----+---+--------+------+</span><br></pre></td></tr></table></figure>
+<p>从上文可以看出，<code>functools.partial</code>能够帮助我们节省掉写<code>lambda</code>， 不过我们可以做的更好</p>
+<h2 id="Defining-DataFrame-transformations-as-nested-functions"><a href="#Defining-DataFrame-transformations-as-nested-functions" class="headerlink" title="Defining DataFrame transformations as nested functions"></a>Defining DataFrame transformations as nested functions</h2><p>利用嵌套方式来定义DataFrame Transformation，是一种更为优雅的方式解决连接调用，我们定义一个<code>with_funny</code>防暑，并且增加一列<code>funny</code>到DataFrame</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">with_funny</span><span class="params">(word)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">inner</span><span class="params">(df)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> df.withColumn(<span class="string">"funny"</span>, lit(word))</span><br><span class="line">    <span class="keyword">return</span> inner</span><br></pre></td></tr></table></figure>
+<p>同样采用上文中的<code>source_df</code>和<code>with_greeting</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">actual_df = (source_df</span><br><span class="line">            .transform(with_greeting)</span><br><span class="line">            .transform(with_funny(<span class="string">"haha)))</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">print(actual_df.show())</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">+----+---+--------+-----+</span></span><br><span class="line"><span class="string">|name|age|greeting|funny|</span></span><br><span class="line"><span class="string">+----+---+--------+-----+</span></span><br><span class="line"><span class="string">|jose|  1|      hi| haha|</span></span><br><span class="line"><span class="string">|  li|  2|      hi| haha|</span></span><br><span class="line"><span class="string">| liz|  3|      hi| haha|</span></span><br><span class="line"><span class="string">+----+---+--------+-----+</span></span><br></pre></td></tr></table></figure>
+<p>以上，我们可以发现，已经可以完全摆脱<code>lambda</code>关键字，调用的方式和Scala API基本一致</p>
+<h2 id="Function-composition-with-cytoolz"><a href="#Function-composition-with-cytoolz" class="headerlink" title="Function composition with cytoolz"></a>Function composition with cytoolz</h2><p>我们可以在定义DataFrame transformation的时候，增加<code>@curry</code>装饰器，并且利用<code>cytoolz</code>提供的composition函数来运行他们</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> cytoolz <span class="keyword">import</span> curry</span><br><span class="line"><span class="keyword">from</span> cytoolz.functoolz <span class="keyword">import</span> compose</span><br><span class="line"></span><br><span class="line"><span class="meta">@curry</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">with_stuff1</span><span class="params">(arg1, arg2, df)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> df.withColumn(<span class="string">"stuff1"</span>, lit(<span class="string">f"<span class="subst">&#123;arg1&#125;</span> <span class="subst">&#123;arg2&#125;</span>"</span>))</span><br><span class="line">    </span><br><span class="line"><span class="meta">@curry</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">with_stuff2</span><span class="params">(arg, df)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> df.withColumn(<span class="string">"stuff2"</span>, lit(arg))</span><br><span class="line">    </span><br><span class="line">data = [(<span class="string">"jose"</span>, <span class="number">1</span>), (<span class="string">"li"</span>, <span class="number">2</span>), (<span class="string">"liz"</span>, <span class="number">3</span>)]</span><br><span class="line">source_df = spark.createDataFrame(data, [<span class="string">"name"</span>, <span class="string">"age"</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">pipeline = compose(</span><br><span class="line">    with_stuff1(<span class="string">"nice"</span>, <span class="string">"person"</span>),</span><br><span class="line">    with_stuff2(<span class="string">"yoyo"</span>)</span><br><span class="line">)</span><br><span class="line">actual_df = pipeline(source_df)</span><br><span class="line"></span><br><span class="line">print(actual_df.show())</span><br><span class="line">+----+---+------+-----------+</span><br><span class="line">|name|age|stuff2|     stuff1|</span><br><span class="line">+----+---+------+-----------+</span><br><span class="line">|jose|  <span class="number">1</span>|  yoyo|nice person|</span><br><span class="line">|  li|  <span class="number">2</span>|  yoyo|nice person|</span><br><span class="line">| liz|  <span class="number">3</span>|  yoyo|nice person|</span><br><span class="line">+----+---+------+-----------+</span><br></pre></td></tr></table></figure>
+<p>但是需要注意的是,<code>compose</code>函数是从右往左(下往上)执行，因此为了能够满足从上往下执行的习惯，需要做如下修改</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">pipeline = compose(*reversed([</span><br><span class="line">    with_stuff1(<span class="string">"nice"</span>, <span class="string">"person"</span>),</span><br><span class="line">    with_stuff2(<span class="string">"yoyo"</span>)</span><br><span class="line">]))</span><br><span class="line">actual_df = pipeline(source_df)</span><br><span class="line"></span><br><span class="line">print(actual_df.show())</span><br><span class="line">+----+---+-----------+------+</span><br><span class="line">|name|age|     stuff1|stuff2|</span><br><span class="line">+----+---+-----------+------+</span><br><span class="line">|jose|  <span class="number">1</span>|nice person|  yoyo|</span><br><span class="line">|  li|  <span class="number">2</span>|nice person|  yoyo|</span><br><span class="line">| liz|  <span class="number">3</span>|nice person|  yoyo|</span><br><span class="line">+----+---+-----------+------+</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/">http://code-monkey.top/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Spark/">Spark</a>
+            
+              <a href="/tags/Python/">Python</a>
+            
+              <a href="/tags/PySpark/">PySpark</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/01/19/Chaining-Custom-DataFrame-Transformations-in-Spark/">
+        <span class="next-text nav-default">Chaining Custom DataFrame Transformations in Spark</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
