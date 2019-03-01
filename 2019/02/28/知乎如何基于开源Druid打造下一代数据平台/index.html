@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="知乎如何基于开源Druid打造下一代数据平台(转)">
+
+
+
+
+  <meta name="keywords" content="数据平台, Druid, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> 知乎如何基于开源Druid打造下一代数据平台(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          知乎如何基于开源Druid打造下一代数据平台(转)
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-02-28
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#导读"><span class="toc-text">导读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据分析平台架构"><span class="toc-text">数据分析平台架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#技术选型-Druid"><span class="toc-text">技术选型-Druid</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Druid-数据结构和架构简介"><span class="toc-text">Druid 数据结构和架构简介</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Druid-数据结构"><span class="toc-text">Druid 数据结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查询服务的相关组件"><span class="toc-text">查询服务的相关组件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#平台的演进"><span class="toc-text">平台的演进</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Druid-查询量大"><span class="toc-text">Druid 查询量大</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#缓存查询结果"><span class="toc-text">缓存查询结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#提高缓存的复用"><span class="toc-text">提高缓存的复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#减少-Redis-IO"><span class="toc-text">减少 Redis IO</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Druid-查询时间跨度长"><span class="toc-text">Druid 查询时间跨度长</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一个-Broker-处理一个请求"><span class="toc-text">一个 Broker 处理一个请求</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#多个-Broker-处理一个请求"><span class="toc-text">多个 Broker 处理一个请求</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存结果过期"><span class="toc-text">缓存结果过期</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#缓存自动失效"><span class="toc-text">缓存自动失效</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/1.webp">
+<h2 id="导读"><a href="#导读" class="headerlink" title="导读"></a>导读</h2><p>本文重点介绍了知乎数据分析平台对 Druid 的查询优化。通过自研的一整套缓存机制和查询改造，该平台目前在较长的时间内，满足了业务固化的指标需求和灵活的分析需求，减少了数据开发者的开发成本。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>知乎作为知名中文知识内容平台，业务增长和产品迭代速度很快，如何满足业务快速扩张中的灵活分析需求，是知乎数据平台组要面临的一大挑战。</p>
+<p>知乎数据平台团队基于开源的 Druid 打造的业务自助式的数据分析平台，经过研发迭代，目前支撑了全业务的数据分析需求，是业务数据分析的重要工具。</p>
+<p>目前，平台主要的能力如下：</p>
+<ol>
+<li>统一的数据源管理，支持摄入离线数仓的 Hive 表和实时数仓的 Kafka 流</li>
+<li>自助式报表配置，支持多维分析报表、留存分析报表</li>
+<li>灵活的多维度多指标的组合分析，秒级响应速度，支持嵌套式「与」和「或」条件筛选</li>
+<li>自助式仪表盘配置</li>
+<li>开发平台接口，为其他系统提供数据服务</li>
+<li>统一的数据权限管理</li>
+</ol>
+<p>目前，业务使用平台的数据如下：</p>
+<ol>
+<li>自助式配置仪表盘数：495 个，仪表盘内报表共计：2399 张</li>
+<li>日请求量 3w+</li>
+<li>为 A/B Testing、渠道管理、APM 、数据邮件等系统提供数据 API</li>
+</ol>
+<h2 id="数据分析平台架构"><a href="#数据分析平台架构" class="headerlink" title="数据分析平台架构"></a>数据分析平台架构</h2><img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/2.webp">
+<a id="more"></a>
+<h2 id="技术选型-Druid"><a href="#技术选型-Druid" class="headerlink" title="技术选型-Druid"></a>技术选型-Druid</h2><p>Druid 是一种能对历史和实时数据提供亚秒级别的查询的数据存储。</p>
+<p>Druid 支持低延时的数据摄取，灵活的数据探索分析，高性能的数据聚合，简便的水平扩展。适用于数据量大，可扩展能力要求高的分析型查询系统。</p>
+<img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/3.webp">
+<h3 id="Druid-数据结构和架构简介"><a href="#Druid-数据结构和架构简介" class="headerlink" title="Druid 数据结构和架构简介"></a>Druid 数据结构和架构简介</h3><h4 id="Druid-数据结构"><a href="#Druid-数据结构" class="headerlink" title="Druid 数据结构"></a>Druid 数据结构</h4><ul>
+<li>DataSource：Druid 的基本数据结构，在逻辑上可以理解为关系型数据库中的表。它包含时间、维度和指标三列。</li>
+<li>Segment：Druid 用来存储索引的数据格式，不同的索引按照时间跨度来分区，分区可通过 segmentGranularity（划分索引的时间粒度）进行配置。</li>
+</ul>
+<h4 id="查询服务的相关组件"><a href="#查询服务的相关组件" class="headerlink" title="查询服务的相关组件"></a>查询服务的相关组件</h4><p><strong>内部组件</strong></p>
+<ul>
+<li>Historical：用于加载和提供 Segment 文件供数据查询。</li>
+<li>Broker：提供数据查询服务，通过路由查询请求到对应的 Historical 节点并获得数据，合并数据后返回给调用方。</li>
+<li>Router：当 Druid 集群到达 TB 级别的规模时才需要启用的节点，主要负责将查询请求路由到不同的 Broker 节点上。</li>
+</ul>
+<p><strong>外部组件</strong></p>
+<ul>
+<li>Deep Storage：用于存储 Segment 文件供 Historical 节点下载。Deep Storage 不属于 Druid 内部组件，用户可根据系统规模来自定义配置。单节点可用本地磁盘，分布式可用 HDFS。</li>
+<li>Metastore Storage：用于存储 Druid 的各种元数据信息，属于 Druid 的外部依赖组件，生产环境中可用 MySQL。</li>
+</ul>
+<h2 id="平台的演进"><a href="#平台的演进" class="headerlink" title="平台的演进"></a>平台的演进</h2><h3 id="Druid-查询量大"><a href="#Druid-查询量大" class="headerlink" title="Druid 查询量大"></a>Druid 查询量大</h3><p>在 Druid 成为主力查询引擎之后，我们发现大查询量的场景下直接查 Druid 会有一些弊端，其中最大的痛点就是查询响应慢。</p>
+<h4 id="缓存查询结果"><a href="#缓存查询结果" class="headerlink" title="缓存查询结果"></a>缓存查询结果</h4><p>为了提高整体查询速度，我们引入了 Redis 作为缓存。</p>
+<img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/4.webp">
+<p>最简单的缓存设计，是将 Druid 的查询体（Request）作为 key，Druid 的返回体（Response）作为 value。上述的缓存机制的缺点是显而易见的，只能应对查询条件完全一致的重复查询。在实际应用中，查询条件往往是多变的，尤其是查询时间的跨度。</p>
+<p>举个例子，在相同指标维度组合下用户发起两次查询，第一次查询 10 月 1 日到 10 月 7 日的数据，Druid 查出结果并缓存到 Redis。用户调整时间跨度到 10 月 2 日到 10 月 8 日，发起第二次查询，这条请求的不会命中 Redis，又需要 Druid 来查询数据。</p>
+<p>从例子中，我们发现两次查询的时间跨度交集是 10 月 2 日到 10 月 7 日，但是这部分的缓存结果并没有被复用。这种查询机制下，查询延时主要来自于 Druid 处理重复的请求，缓存结果没有被充分利用。</p>
+<h4 id="提高缓存的复用"><a href="#提高缓存的复用" class="headerlink" title="提高缓存的复用"></a>提高缓存的复用</h4><p>为了提高缓存复用率，我们需要增加一套新的缓存机制：当查询在 Redis 没有直接命中时，先扫描 Redis 中是否已缓存查询中部分时间跨度的结果提取命中的结果，未命中再查询 Druid。在扫描的过程中，被扫描的对象是单位时间跨度的缓存。</p>
+<p>为了能获得到任意一个单位时间跨度内的缓存，除了在 Redis 中缓存单条查询的结果之外，需要进一步按时间粒度将总跨度等分，缓存所有单位时间跨度对应的结果（如下图所示）。</p>
+<h4 id="减少-Redis-IO"><a href="#减少-Redis-IO" class="headerlink" title="减少 Redis IO"></a>减少 Redis IO</h4><p>从上图中我们发现，对每个单位时间跨度的结果判断是否已被缓存都需要对 Redis 进行一次读操作，当用户查询量增大时，这种操作会对 Redis 集群造成比较大的负担，偶尔会出现 Redis 连接超时的情况。为了减少对 Redis 的 IO，我们对时间跨度单独设计了一套缓存机制。基于减少读操作的想法，我们设计了通过一次读操作就可得到已经被缓存的所有时间跨度，然后再一次性地将所有缓存的结果读出。</p>
+<ul>
+<li>要实现一次性获得缓存的所有时间跨度，我们需要在每次缓存 Druid 查询结果后，再缓存查询请求和它覆盖的时间跨度，在 Redis Key-Value 规则上，我们先把查询体（Request）剔除时间跨度，生成一个时间无关的查询体（IntervalExcludedRequest）作为缓存的 key；提取查询粒度（Granularity），把剔除出来的时间跨度按粒度分隔开（Set）作为 value。</li>
+<li>要实现一次性读出所有缓存结果，通过 Redis 的 MGET 获得 IntervalExcludedRequest 对应的各个时间戳。</li>
+<li>判断当前请求的所有单位时间跨度是否命中缓存，命中的结果会被直接返回。优化后缓存机制如下图所示：</li>
+</ul>
+<img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/5.webp">
+<h3 id="Druid-查询时间跨度长"><a href="#Druid-查询时间跨度长" class="headerlink" title="Druid 查询时间跨度长"></a>Druid 查询时间跨度长</h3><p>在未命中缓存的情况下，设置较长的查询时间跨度（长时间跨度：2 周以上），Druid 经常会出现返回速度变慢，甚至阻塞其他查询请求的现象。</p>
+<p>我们测试了长时间跨度的查询请求对集群整体的影响，通过对 Druid 集群的监控数据的分析，我们发现被长时间跨度查询命中的 Broker 节点会出现内存消耗过大的问题，并且随着时间跨度的增大，内存消耗跟着提高，甚至出现内存不足导致 Broker 节点无响应的问题。</p>
+<h4 id="一个-Broker-处理一个请求"><a href="#一个-Broker-处理一个请求" class="headerlink" title="一个 Broker 处理一个请求"></a>一个 Broker 处理一个请求</h4><p>在调研了 Druid 执行原理以后，我们发现一个查询请求只会被 Router 路由到一个 Broker 节点，经由 Broker 节点去 Historical 节点上查找目标数据在 Deep Storage 的存储位置，最后返回的数据也是经过 Broker 节点来合并返回结果。查询的时间跨度越长，对 Broker 的压力也越大，内存消耗越多。</p>
+<img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/6.webp">
+<h4 id="多个-Broker-处理一个请求"><a href="#多个-Broker-处理一个请求" class="headerlink" title="多个 Broker 处理一个请求"></a>多个 Broker 处理一个请求</h4><p>单个 Broker 的性能无法满足长时间跨度的查询，为了让提高查询性能，我们尝试把一个查询 N 天数据的请求，拆分成 N 个查询，每个只查询一天，然后异步地将这些请求发出，结果这 N 个请求都被很快得返回了。和拆分前的查询耗时相比，拆分后的耗时大大减小。</p>
+<img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/7.webp">
+<p>从 Broker 节点的监控来看，当一个长时间的查询请求被多个 Broker 一起处理，可以减少单个 Broker 内存消耗，并且加快了整体的查询速度 。提速程度请参考下图的测试比对，测试用例采用平台一天的所有查询，测试方式是在不命中 Redis 的情况下异步地「回放」这些查询到 Druid。</p>
+<img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/8.webp">
+<p>根据上述 Broker 在查询过程中的工作原理，想达到长时间跨度查询的提速，我们需要在用户发起查询之后把请求拆分。拆分的机制是根据每个查询请求的查询时间粒度而定，例如上述中的一个 N 天跨度的天粒度请求，在查询到达 Druid 集群之前，我们尝试把它拆分成 N 个 1 天跨度的天级别粒度请求。整个查询从拆分到命中 Druid 的过程如下图所示（在 Druid 内部的工作细节请参考上文）。</p>
+<img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/9.webp">
+<h3 id="缓存结果过期"><a href="#缓存结果过期" class="headerlink" title="缓存结果过期"></a>缓存结果过期</h3><p>前两步的演进完成了从高负载下查询性能低、查询时间跨度长而速度慢、Redis 复用率低，到查询性能高、Redis IO 稳定。</p>
+<p>分析平台的数据源来自于离线数仓的 Hive 和实时数仓的 Kafka。重新摄入上游数据到 Druid 后， 对应时间列的 Segment 文件会进行重建索引。在 Segment 文件索引重建之后，对应的 Druid 查询结果也会发生改变。当这个情况发生时，用户从 Redis 获取到的结果并没有及时得到更新，这时就会出现数据不一致的情况。因此一套平台用户无感的缓存自动失效机制就显得尤为重要。</p>
+<h4 id="缓存自动失效"><a href="#缓存自动失效" class="headerlink" title="缓存自动失效"></a>缓存自动失效</h4><p>在 Druid 查询链路下，数据源的最近成功摄入的时间可以被抽象为它的最新版本号，利用这一的思想，我们可以给每个数据源都打上数据版本的标签，在数据更新后，给更新的数据源替换新的标签。这样一来，每次校验 Druid 查询结果是否过期时就有了参照对象。</p>
+<p>Druid 支持 MySQL 存储元数据信息（Metastore Storage），元数据中的时间戳就恰好可以作为数据版本。在用户查询请求发起后，先后取出 Redis 缓存结果中携带的时间戳和 MySQL 元数据版本，然后比较两个时间。Redis 缓存的时间较新的话说明缓存未过期，可以直接返回缓存结果；反之，说明 Redis 缓存数据已经过期，这一对 Key-Value 会被直接删除，然后去查询 Druid。</p>
+<img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/10.webp">
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文重点介绍了知乎数据分析平台对 Druid 的查询优化。通过自研的一整套缓存机制和查询改造，该平台目前在较长的时间内，满足了业务固化的指标需求和灵活的分析需求，减少了数据开发者的开发成本。</p>
+<p>数据分析平台在上线后，提供了非常灵活的能力。在实践中，我们发现过度的自由未必是用户想要的。适当的流程约束，有助于降低用户的学习成本，以及大幅度改善业务在该平台上的查询体验。早期我们对数据的摄入并没有做过多的约束，在整个数据稳定性提升过程中，通过和数仓团队的大力配合，我们对摄入的数据源做了优化，包括限制高基数维度等治理的工作。本文的缓存思想不仅仅可以用在 Druid 上，同样可以用在 ClickHouse，Impala 等其他的 OLAP 引擎的查询优化上。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/">http://code-monkey.top/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/数据平台/">数据平台</a>
+            
+              <a href="/tags/Druid/">Druid</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/02/28/埋点数据/">
+        <span class="next-text nav-default">埋点数据(转)</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
