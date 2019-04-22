@@ -336,10 +336,17 @@
       
         
         
+          
+        
 
         
           <p>Spark主要是由Scala语言开发，为了方便和其他系统集成而不引入scala相关依赖，部分实现使用Java语言开发，例如External Shuffle Service等。总体来说，Spark是由JVM语言实现，会运行在JVM中。然而，Spark除了提供Scala/Java开发接口外，还提供了Python、R等语言的开发接口，为了保证Spark核心实现的独立性，Spark仅在外围做包装，实现对不同语言的开发支持，本文主要介绍Python Spark的实现原理，剖析pyspark应用程序是如何运行起来的。</p>
-
+<h2 id="Spark运行时架构"><a href="#Spark运行时架构" class="headerlink" title="Spark运行时架构"></a>Spark运行时架构</h2><p>首先我们先回顾下Spark的基本运行时架构，如下图所示，其中橙色部分表示为JVM，Spark应用程序运行时主要分为Driver和Executor，Driver负载总体调度及UI展示，Executor负责Task运行，Spark可以部署在多种资源管理系统中，例如Yarn、Mesos等，同时Spark自身也实现了一种简单的Standalone(独立部署)资源管理系统，可以不用借助其他资源管理系统即可运行。更多细节请参考<a href="https://code-monkey.top/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/">Spark Scheduler内部原理剖析</a>。</p>
+<img src="/2019/04/18/PySpark-的背后原理/spark-structure.png">
+<p>用户的Spark应用程序运行在Driver上(某种程度上说，用户的程序就是Spark Driver程序)，经过Spark调度封装成一个个Task，再将这些Task信息发给Executor执行，Task信息包括代码逻辑以及数据信息，Executor不直接运行用户的代码。</p>
+          <div class="read-more">
+            <a href="/2019/04/18/PySpark-的背后原理/" class="read-more-link">阅读更多</a>
+          </div>
         
       
     </div>
