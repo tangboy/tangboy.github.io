@@ -208,6 +208,66 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/09/20/解密谷歌机器学习工程最佳实践/">解密谷歌机器学习工程最佳实践</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-09-20
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>转载于 <strong>张相於</strong></p>
+<p>本文是对<rules of="" machine="" learning:="" best="" practices="" for="" ml="" engineering="">一文的翻译+解读。看过我翻译文章的同学知道我翻译文章一般都不太老实，没有那么“忠于原著”，本篇也不例外，本篇对于原文的解读大概有三种形式：</rules></p>
+<ol>
+<li><strong>原文翻译</strong> 对于作者本身阐述的比较好，而我也没什么可补充的部分，基本会原文翻译。</li>
+<li><strong>半翻译半解读</strong> 有的条目我觉得有些自己的经验和感想可以和大家分享，就会加一些自己的解读在里面。</li>
+<li><strong>省略</strong> 还有一些时候我觉得作者说的太仔（luo）细（suo），或者这个条目说得比较基本，无需太多解释，我就会不同程度的省略原文。</li>
+</ol>
+<p>这种形式对于有的同学来讲可能会对原文信息有所损失，所以想要读到原文的同学，可以在网上搜索。 或者去搜一些其他人比较忠于原著的翻译。</p>
+<h2 id="作者介绍"><a href="#作者介绍" class="headerlink" title="作者介绍"></a>作者介绍</h2><p>什么样的NB人物写东西敢起号称”Rules of Machine Learning”这种不怕闪了腰的题目？首先我们来简单介绍一下本文的作者Martin Zinkevich。</p>
+<p>Martin Zinkevich现在是谷歌大脑的高级科学家，负责和参与了YouTube、Google Play 以及Google Plus等产品中的机器学习项目，本文也是基于作者在这三个产品上面做机器学习项目的各种经验和教训提炼而成。在加入谷歌之前是雅虎的高级科学家，曾在2010年和2011年两度获得雅虎的最高荣誉Yahoo Team Superstar Awards，对雅虎的广告系统做出过很多杰出贡献。</p>
+<p>拥有如此NB的背景，我们有理由相信这哥们儿写出来的东西还是具有足够的参考价值的。</p>
+<h2 id="梗概介绍"><a href="#梗概介绍" class="headerlink" title="梗概介绍"></a>梗概介绍</h2><p>本文把在产品中应用机器学习的过程从浅到深分成了三个大的阶段，又在这三个大的阶段中细分出了一些方面，以此对43条规则进行逻辑分类。简单来说，如果你是从头开始做机器学习系统，那么就可以在不同阶段参考这里面对应的条目，来保证自己走在正确的道路上。</p>
+<h2 id="正文开始"><a href="#正文开始" class="headerlink" title="正文开始"></a>正文开始</h2><blockquote>
+<p>To make great products:<br><strong> do machine learning like the great engineer you are, not like the great machine learning expert you aren’t. </strong></p>
+</blockquote>
+<p>这句话一定程度上是对整篇文章（叫手册可能更合适）的一个高度概括，ML在实际工作确实更多是工程问题，而不是算法问题。优先从工程效率中要效果，当把这部分榨干后，再考虑算法的升级。</p>
+          <div class="read-more">
+            <a href="/2017/09/20/解密谷歌机器学习工程最佳实践/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/09/10/Word2vec原理浅析及tensorflow实现/">Word2vec原理浅析及tensorflow实现</a>
         
       </h1>
@@ -690,58 +750,6 @@
 <p>操作这些参数的接口是两对函数。为了控制样式，使用axesstyle()和setstyle()函数。为了扩展绘图，请使用plotting_context()和set_context()函数。在这两种情况下，第一个函数返回一个参数字典，第二个函数则设置matplotlib默认属性。</p>
           <div class="read-more">
             <a href="/2017/07/08/introduction-to-seaborn/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/01/23/introduction-to-neo4j/">introduction_to_neo4j</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-01-23
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>“Neo4j是一个高性能的，非关系的，具有完全事务特性的,鲁棒的图数据库。” neo4j在处理复杂的网络数据时候，具有很好的性能表现[1]，适用于社交网络，动态网络等场景。它基于java语言实现，有两个分发版本，社区版(community version)以GPLv3的许可在Github上开源，源码地址:<a href="https://github.com/neo4j/community；企业版，同时遵循AGPLv3和商业许可，它在社区版基础上增加了包括高可用性(High" target="_blank" rel="noopener">https://github.com/neo4j/community；企业版，同时遵循AGPLv3和商业许可，它在社区版基础上增加了包括高可用性(High</a> Availability)，全天侯支持等特性。Neo4j的开发非常活跃，围绕它有非常多的项目，包括 REST API 绑定（各种语言实现列表），空间数据库支持（源码地址）等。</p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="Git-安装"><a href="#Git-安装" class="headerlink" title="Git 安装"></a>Git 安装</h2><p>Git的安装非常简单，大多数的Linux发行版本的源中都打包好。以Ubuntu 为例(仅测试Oneiric，Precise)，只需要输入如下命令即可安装。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo  apt-get install git</span><br></pre></td></tr></table></figure>
-<h2 id="Maven-安装"><a href="#Maven-安装" class="headerlink" title="Maven 安装"></a>Maven 安装</h2><p>同样的Ubuntu（我最爱系统）下，安装Maven3非常简单，输入如下命令:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get maven</span><br></pre></td></tr></table></figure>
-<h2 id="Neo4j-安装"><a href="#Neo4j-安装" class="headerlink" title="Neo4j 安装"></a>Neo4j 安装</h2><p>安装好以上两者后，我们直接从github的源码，并用maven来安装neo4j，命令如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir neo4j</span><br><span class="line"><span class="built_in">cd</span> ./neo4j</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/neo4j/community.git</span><br><span class="line">mvn clean install</span><br></pre></td></tr></table></figure>
-<p>如此，neo4j即安装成功。如果需要build不同的版本可以遵照参考文献5Readme的指示来实现。</p>
-          <div class="read-more">
-            <a href="/2017/01/23/introduction-to-neo4j/" class="read-more-link">阅读更多</a>
           </div>
         
       
