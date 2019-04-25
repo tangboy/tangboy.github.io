@@ -208,6 +208,73 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/10/14/聚类算法/">聚类算法</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-10-14
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="K-Means"><a href="#K-Means" class="headerlink" title="K-Means"></a>K-Means</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>K-means算法是最为经典的基于划分的聚类方法，是十大经典数据挖掘算法之一。K-means算法的基本思想是：以空间中k个点为中心进行聚类，对最靠近他们的对象归类。通过迭代的方法，逐次更新各聚类中心的值，直至得到最好的聚类结果。</p>
+<h3 id="算法大致流程"><a href="#算法大致流程" class="headerlink" title="算法大致流程"></a>算法大致流程</h3><ol>
+<li>随机选取k个点作为种子点(这k个点不一定属于数据集)</li>
+<li>分别计算每个数据点到k个种子点的距离，离哪个种子点最近，就属于哪类</li>
+<li>重新计算k个种子点的坐标(简单常用的方法是求坐标值的平均值作为新的坐标值)</li>
+<li>重复2、3步，直到种子点坐标不变或者循环次数完成</li>
+</ol>
+<h3 id="完整计算过程"><a href="#完整计算过程" class="headerlink" title="完整计算过程"></a>完整计算过程</h3><ol>
+<li><p>设置实验数据<br>运行之后，效果如下图所示：</p>
+<img src="/2017/10/14/聚类算法/kmeans_1.png">
+<p>在图中，ABCDE五个点是待分类点，k1、k2是两个种子点。</p>
+</li>
+<li><p>计算ABCDE五个点到k1、k2的距离，离哪个点近，就属于哪个点，进行初步分类。<br>  结果如图：</p>
+  <img src="/2017/10/14/聚类算法/kmeans_2.png">
+<p>   A、B属于k1，C、D、E属于k2</p>
+</li>
+<li><p>重新计算k1、k2的坐标。这里使用简单的坐标的平均值，使用其他算法也可以(例如以下三个公式)<br> a) Minkowski Distance公式——λ可以随意取值，可以是负数，也可以是正数，或是无穷大。<br> b) Euclidean Distance公式——也就是第一个公式λ=2的情况<br> c) CityBlock Distance公式——也就是第一个公式λ=1的情况</p>
+<p> 采用坐标平均值算法的结果如图：</p>
+  <img src="/2017/10/14/聚类算法/kmeans_3.png">
+</li>
+<li><p>重复2、3步，直到最终分类完毕。下面是完整的示例代码：</p>
+</li>
+</ol>
+          <div class="read-more">
+            <a href="/2017/10/14/聚类算法/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/09/20/解密谷歌机器学习工程最佳实践/">解密谷歌机器学习工程最佳实践</a>
         
       </h1>
@@ -695,65 +762,6 @@
         
       
     </p></div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/07/08/introduction-to-seaborn/">introduction to seaborn</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-07-08
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="Seaborn-sns-官方文档学习笔记"><a href="#Seaborn-sns-官方文档学习笔记" class="headerlink" title="Seaborn(sns)官方文档学习笔记"></a>Seaborn(sns)官方文档学习笔记</h1><p>一直苦于没有系统学习seanborn的教程，似乎市面上也还没有完整的官方文档的学习资料。终于下决心用几天的时间通读下官方文档，并把记录下来。</p>
-<p>基于官方<a href="seaborn.pydata.org/tutorial.html">0.71版本</a>，所有代码和图片皆已验证，与官方结论不符的地方会进行标注。如果有翻译失当或理解有误的地方，敬请随意指正！</p>
-<h2 id="第一章-艺术化的图表控制"><a href="#第一章-艺术化的图表控制" class="headerlink" title="第一章 艺术化的图表控制"></a>第一章 艺术化的图表控制</h2><p>一个引人入胜的图表非常重要，赏心悦目的图形不但能让数据探索中一些重要的细节更容易被挖掘，也能更有利于在与观众交流分析结果的过程中吸引观众的注意力并使观众们更容易记住结论。</p>
-<p>Matplotlib无疑是高度可定制的，但快速实施出吸引人的细节就变得有些复杂。Seaborn作为一个带着定制主题和高级界面控制的Matplotlib扩展包，能让绘图变得更轻松，本部分主要介绍seaborn是如何对matplotlib输出的外观进行控制的。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">%matplotlib inline</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib <span class="keyword">as</span> mpl</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">np.random.seed(sum(map(ord,<span class="string">"aesthetics"</span>)))  <span class="comment"># 定义种子</span></span><br></pre></td></tr></table></figure>
-<p>定义一个含偏移的正弦图像，来比较传统的matplotlib和seaborn的不同：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sinplot</span><span class="params">(flip=<span class="number">1</span>)</span>:</span></span><br><span class="line">    x = np.linspace(<span class="number">0</span>,<span class="number">14</span>,<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">7</span>):</span><br><span class="line">        plt.plot(x,np.sin(x+i*<span class="number">.5</span>)*(<span class="number">7</span>-i)*flip)</span><br></pre></td></tr></table></figure>
-<p>使用matplotlib默认设置的图形效果：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_7_0.png">
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_8_0.png">
-<p>seaborn默认的灰色网格底色灵感来源于matplotlib却更加柔和。大多数情况下，图应优于表。seaborn的默认灰色网格底色避免了刺目的干扰，对于多个方面的图形尤其有用，是一些更复杂的工具的核心。</p>
-<p>Seaborn将matplotlib参数分成两个独立的组。第一组设定了美学风格，第二组则是不同的度量元素，这样就可以很容易地添加到代码当中了。</p>
-<p>操作这些参数的接口是两对函数。为了控制样式，使用axesstyle()和setstyle()函数。为了扩展绘图，请使用plotting_context()和set_context()函数。在这两种情况下，第一个函数返回一个参数字典，第二个函数则设置matplotlib默认属性。</p>
-          <div class="read-more">
-            <a href="/2017/07/08/introduction-to-seaborn/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
 
     
 

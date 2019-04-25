@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Spark-Streaming状态管理应用优化之路(转)">
+
+
+
+
+  <meta name="keywords" content="spark, 分布式计算, 大数据, streaming, updateStateByKey, mapWithState, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2019/04/24/Spark-Streaming状态管理应用优化之路/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Spark-Streaming状态管理应用优化之路(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Spark-Streaming状态管理应用优化之路(转)
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-04-24
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#updateStateByKey"><span class="toc-text">updateStateByKey</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mapWithState"><span class="toc-text">mapWithState</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用Redis管理状态"><span class="toc-text">使用Redis管理状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试及优化选项"><span class="toc-text">测试及优化选项</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>通常来说，使用Spark-Streaming做无状态的流式计算是很方便的，每个batch时间间隔内仅需要计算当前时间间隔的数据即可，不需要关注之前的状态。但是很多时候，我们需要对一些数据做跨周期的统计，例如我们需要统计一个小时内每个用户的行为，我们定义的计算间隔(batch-duration)肯定会比一个小时小，一般是数十秒到几分钟左右，每个batch的计算都要更新最近一小时的用户行为，所以需要在整个计算过程中维护一个状态来保存近一个小时的用户行为。在Spark-1.6以前，可以通过updateStateByKey操作实现有状态的流式计算，从spark-1.6开始，新增了mapWithState操作，引入了一种新的流式状态管理机制。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>为了更形象的介绍Spark-Streaming中的状态管理，我们从一个简单的问题展开：我们需要实时统计近一小时内每个用户的行为(点击、购买等)，为了简单，就把这个行为看成点击列表吧，来一条记录，则加到指定用户的点击列表中，并保证点击列表无重复。计算时间间隔为1分钟，即每1分钟更新近一小时用户行为，并将有状态变化的用户行为输出。</p>
+<a id="more"></a>
+<h2 id="updateStateByKey"><a href="#updateStateByKey" class="headerlink" title="updateStateByKey"></a>updateStateByKey</h2><p>在Spark-1.6以前，可以通过updateStateByKey实现状态管理，其内部维护一个状态流来保存状态，上述问题可以通过如下实现完成：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 更新一个用户的状态</span></span><br><span class="line"><span class="comment">// values: 单个用户实时过来的数据，这里为Seq类型，表示一分钟内可能有多条数据.</span></span><br><span class="line"><span class="comment">// state：单个用户上一个时刻的状态，如果没有这个用户的状态，则默认为空.</span></span><br><span class="line"><span class="keyword">val</span> updateState = (values: <span class="type">Seq</span>[<span class="type">Int</span>], state: <span class="type">Option</span>[<span class="type">Set</span>[<span class="type">Int</span>]]) =&gt; &#123;</span><br><span class="line">  <span class="keyword">val</span> currentValues = values.toSet</span><br><span class="line">  <span class="keyword">val</span> previousValues = state.getOrElse(<span class="type">Set</span>.empty[<span class="type">Int</span>])</span><br><span class="line">  <span class="type">Some</span>(currentValues ++ previousValues)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新一个分区内用户的状态</span></span><br><span class="line"><span class="keyword">val</span> updateFunc =</span><br><span class="line">  (iterator: <span class="type">Iterator</span>[(<span class="type">String</span>, <span class="type">Seq</span>[<span class="type">Int</span>], <span class="type">Option</span>[<span class="type">Set</span>[<span class="type">Int</span>]])]) =&gt; &#123;</span><br><span class="line">  iterator.flatMap(t =&gt; updateFunc(t._2, t._3).map(s =&gt; (t._1, s)))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 原始数据流，经过过滤清洗，得到的记录形式为(userId, clickId)</span></span><br><span class="line"><span class="keyword">val</span> liveDStream = ... <span class="comment">// (userId, clickId)</span></span><br><span class="line"><span class="comment">// 使用updateStateByKey更新状态</span></span><br><span class="line"><span class="keyword">val</span> stateDstream = liveDStream.updateStateByKey(updateFunc)</span><br><span class="line"></span><br><span class="line">stateDstream.foreach(...)</span><br></pre></td></tr></table></figure>
+<p>上述代码显示，我们只需要定义一个状态更新函数，传给updateStateByKey即可，Spark-Streaming会根据我们定义的更新函数，在每个计算时间间隔内更新内部维护的状态，最后把更新后的状态返回给我们。那么其内部是怎么做到的呢，简单来说就是cache+checkpoint+cogroup，状态更新流程如下图所示。</p>
+<img src="/2019/04/24/Spark-Streaming状态管理应用优化之路/spark-streaming-updateStateByKey.png">
+<p>上图左边蓝色箭头为实时过来的数据流liveDStream，通过liveDStream.updateStateByKey的调用，会得到一个StateDStream，为方框中上面浅绿色的箭头，实际更新状态时，Spark-Streaming会将当前时间间隔内的数据rdd-x，与上一个时间间隔的状态state-(x-1)做cogroup操作，cogroup中做的更新操作就是我们前面定义的updateState函数。程序开始时，state-0状态为空，即由rdd-1去初始化state-1。另外，出于容错考虑，状态数据流StateDStream一般会做cache和定期checkpoint，程序因为机器宕机等原因挂掉可以从checkpoint处恢复状态。</p>
+<p>但是，我们之前的问题描述是“输出有状态变化的用户行为”，通过updateStateByKey得到的是整个状态数据，这并不是我们想要的。同时在每次状态更新时，都需要将实时过来的数据跟全量的状态做cogroup计算，也就是说，每次计算都要将全量状态扫一遍进行比对，当计算随着时间的进行，状态数据逐步覆盖到全量用户，数据量慢慢增大，在做cogroup时遍历就变的越来越慢，使得在一个batch的时间内完成不了计算，导致后续数据堆积，最终挂掉。所以说，updateStateByKey并不能解决我们之前描述的那个问题。</p>
+<h2 id="mapWithState"><a href="#mapWithState" class="headerlink" title="mapWithState"></a>mapWithState</h2><p>从Spark-1.6开始，Spark-Streaming引入一种新的状态管理机制mapWithState，支持输出全量的状态和更新的状态，还支持对状态超时管理，用户可以自行选择需要的输出，通过mapWithState操作可以很方便地实现前面提出的问题。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 状态更新函数，output是输出，state是状态</span></span><br><span class="line"><span class="keyword">val</span> mappingFunc = (</span><br><span class="line">    userId: <span class="type">Long</span>,</span><br><span class="line">    value: <span class="type">Option</span>[<span class="type">Int</span>],</span><br><span class="line">    state: <span class="type">State</span>[<span class="type">Set</span>[<span class="type">Int</span>]]) =&gt; &#123;</span><br><span class="line">  <span class="keyword">val</span> previousValues = state.getOption.getOrElse(<span class="type">Set</span>.empty[<span class="type">Int</span>])</span><br><span class="line">  <span class="keyword">val</span> newValues = <span class="keyword">if</span> (value.isDefined)&#123;</span><br><span class="line">    previousValues.add(value.get)</span><br><span class="line">  &#125; <span class="keyword">else</span> previousValues</span><br><span class="line">  <span class="keyword">val</span> output = (userId, newValues)</span><br><span class="line">  state.update(newValues)</span><br><span class="line">  output</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 原始数据流，经过过滤清洗，得到的记录形式为(userId, clickId)</span></span><br><span class="line"><span class="keyword">val</span> liveDStream = ... <span class="comment">// (userId, clickId)</span></span><br><span class="line"><span class="comment">// 使用mapWithState更新状态，并设置状态超时时间为1小时</span></span><br><span class="line"><span class="keyword">val</span> stateDstream = liveDStream.mapWithState(</span><br><span class="line">  <span class="type">StateSpec</span>.function(mappingFunc).timeout(<span class="type">Minutes</span>(<span class="number">60</span>)))</span><br><span class="line"><span class="comment">// stateDstream默认只返回新数据经过mappingFunc后的结果</span></span><br><span class="line"><span class="comment">// 通过stateDstream.snapshot()返回当前的全量状态</span></span><br><span class="line">stateDstream.foreach(...)</span><br></pre></td></tr></table></figure>
+<p>上述代码显示，我们需要定义一个状态更新函数mappingFunc，该函数会更新指定用户的状态，同时会返回更新后的状态，将该函数传给mapWithState，并设置状态超时时间，Spark-Streaming通过根据我们定义的更新函数，在每个计算时间间隔内更新内部维护的状态，同时返回经过mappingFunc后的结果数据流，其内部执行流程如下图所示。</p>
+<img src="/2019/04/24/Spark-Streaming状态管理应用优化之路/spark-streaming-mapWithState-1.png">
+<p>上图左边蓝色箭头为实时过来的数据流liveDStream，通过liveDStream.mapWithState的调用，会得到一个MapWithStateDStream，为方框中上面浅绿色的箭头，计算过程中，Spark-Streaming会遍历当前时间间隔内的数据rdd-x，在上一个时间间隔的状态state-(x-1)中查找指定的记录，并更新状态，更新操作就是我们前面定义的mappingFunc函数。这里的状态更新不再需要全量扫描状态数据了，状态数据是存在hashmap中，可以根据过来的数据快速定位到，详细的状态更新流程如下图所示。</p>
+<img src="/2019/04/24/Spark-Streaming状态管理应用优化之路/spark-streaming-mapWithState-2.png">
+<p>首先通过partitionBy将新来的数据分区到对应的状态分区上，每个状态分区中的仅有一条记录，类型为MapWithStateRDDRecord，它打包了两份数据，如下代码所示。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">MapWithStateRDDRecord</span>[<span class="type">K</span>, <span class="type">S</span>, <span class="type">E</span>](<span class="params"></span></span></span><br><span class="line"><span class="class"><span class="params">    var stateMap: <span class="type">StateMap</span>[<span class="type">K</span>, <span class="type">S</span>], var mappedData: <span class="type">Seq</span>[<span class="type">E</span>]</span>)</span></span><br></pre></td></tr></table></figure>
+<p>其中stateMap保存当前分区内所有的状态，底层为hashmap类型，mappedData保存经过mappingFunc处理后的结果。这样，liveDStream经过mapWithState后就可以得到两份数据，默认输出的是mappedData这份，如果需要输出全量状态，则可以在mapWithState后调用snapshot函数获取。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">输入</th>
+<th style="text-align:center">mapWithState后的结果</th>
+<th style="text-align:center">调用stateSnapshots后的结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">(200100101, 1)</td>
+<td style="text-align:center">(200100101, Set(1))</td>
+<td style="text-align:center">(200100101, Set(1, 2))</td>
+</tr>
+<tr>
+<td style="text-align:center">(200100101, 2)</td>
+<td style="text-align:center">(200100101, Set(1, 2))</td>
+<td style="text-align:center">(200100102, Set(1))</td>
+</tr>
+<tr>
+<td style="text-align:center">(200100102, 1)</td>
+<td style="text-align:center">(200100102, Set(1))</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">(200100101, 2)</td>
+<td style="text-align:center">(200100101, Set(1, 2))</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>上述实现看似很美好，基本可以满足大部分的流式计算状态管理需求。但是，经过实际测试发现，状态缓存太耗内存了，出于容错考虑，状态数据会做cache和定期checkpoint，默认情况下是10个batch的时间做一次checkpoint，cache的记忆时间是20个batch时间，也就是说最多会缓存20份历史状态，我们的用户数是10亿，不可能hold住这么大的量。最最奇葩的是，checkpoint时间间隔和cache记忆时间都是代码里写死的，而且缓存方式采用MEMORY_ONLY也是写死的(估计是出于hashmap查找性能的考虑)。</p>
+<p>既然写死了，那我们就修改源代码，将cache的记忆时间改为一个batch的时间，即每次仅缓存最新的那份，但是实际运行时，状态缓存数据量还是很大，膨胀了10倍以上，原因是Spark-Streaming在存储状态时，除了存储我们必要的数据外，还会带一些额外数据，例如时间戳、是否被删除标记、是否更新标记等，再加上JVM本身内存布局的膨胀，最终导致10倍以上的膨胀，而且在状态没有完全更新完毕时，旧的状态不会删除，所以中间会有两份的临时状态，如下图所示。</p>
+<img src="/2019/04/24/Spark-Streaming状态管理应用优化之路/spark-streaming-cache.png">
+<p>所以说，在状态数据量较大的情况下，mapWithState还是处理不了，看其源码的注释也是@Experimental状态，这大概也解释了为什么有些可调参数写死在代码里:)，对于状态数据量较小的情况，还是可以一试。</p>
+<p>综上分析，我们之前提出的那个问题当前Spark-Streaming是没法儿解决了，那就这样放弃了么？既然Spark-Streaming的状态管理做的那么差，那我们不用它的状态管理就是了，看看是否可以通过其他方式来存状态。我们最后想到了Redis，它是全内存的KV存储，具有较高的访问性能，同时它还支持超时管理，可以通过借助Redis来缓存状态，实现mapWithState类似的工作。</p>
+<h2 id="使用Redis管理状态"><a href="#使用Redis管理状态" class="headerlink" title="使用Redis管理状态"></a>使用Redis管理状态</h2><p>通过前面的分析，我们不使用Spark自身的缓存机制来存储状态，而是使用Redis来存储状态。来一批新数据，先去redis上读取它们的上一个状态，然后更新写回Redis，逻辑非常简单，如下图所示。</p>
+<img src="/2019/04/24/Spark-Streaming状态管理应用优化之路/sparkstreaming+redis.png">
+<p>在实际实现过程中，为了避免对同一个key有多次get/set请求，所以在更新状态前，使用groupByKey对相同key的记录做个归并，对于前面描述的问题，我们可以先这样做：</p>
+<p>为了减少访问Redis的次数，我们使用pipeline的方式批量访问，即在一个分区内，一个一个批次的get/set，以提高Redis的访问性能，那么我们的更新逻辑就可以做到mapPartitions里面，如下代码所示。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> updateAndflush = (</span><br><span class="line">      records: <span class="type">Seq</span>[(<span class="type">Long</span>, <span class="type">Set</span>(<span class="type">Int</span>))],</span><br><span class="line">      states: <span class="type">Seq</span>[<span class="type">Response</span>[<span class="type">String</span>]],</span><br><span class="line">      pipeline: <span class="type">Pipeline</span>) =&gt; &#123;</span><br><span class="line">  pipeline.sync() <span class="comment">// wait for getting</span></span><br><span class="line">  <span class="keyword">var</span> i = <span class="number">0</span></span><br><span class="line">  <span class="keyword">while</span> (i &lt; records.size) &#123;</span><br><span class="line">    <span class="keyword">val</span> (userId, values) = records(i)</span><br><span class="line">    <span class="comment">// 从字符串中解析出上一个状态中的点击列表</span></span><br><span class="line">    <span class="keyword">val</span> oldValues: <span class="type">Set</span>[<span class="type">Int</span>] = parseFrom(states(i).get())</span><br><span class="line">    <span class="keyword">val</span> newValues = values ++ oldValues</span><br><span class="line">    <span class="comment">// toString函数将Set[Int]编码为字符串</span></span><br><span class="line">    pipeline.setex(userId.toString, <span class="number">3600</span>, toString(newValues))</span><br><span class="line">    i += <span class="number">1</span></span><br><span class="line">  &#125;</span><br><span class="line">  pipeline.sync() <span class="comment">// wait for setting</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> mappingFunc = (iter: <span class="type">Iterator</span>[(<span class="type">Long</span>, <span class="type">Iterable</span>[<span class="type">Int</span>])]) =&gt; &#123;</span><br><span class="line">  <span class="keyword">val</span> jedis = <span class="type">ConnectionPool</span>.getConnection()</span><br><span class="line">  <span class="keyword">val</span> pipeline = jedis.pipelined()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> records = <span class="type">ArrayBuffer</span>.empty[(<span class="type">Long</span>, <span class="type">Set</span>(<span class="type">Int</span>))]</span><br><span class="line">  <span class="keyword">val</span> states = <span class="type">ArrayBuffer</span>.empty[<span class="type">Response</span>[<span class="type">String</span>]]</span><br><span class="line">  <span class="keyword">while</span> (iter.hasNext) &#123;</span><br><span class="line">    <span class="keyword">val</span> (userId, values) = iter.next()</span><br><span class="line">    records += ((userId, values.toSet))</span><br><span class="line">    states += pipeline.get(userId.toString)</span><br><span class="line">    <span class="keyword">if</span> (records.size == batchSize) &#123;</span><br><span class="line">      updateAndflush(records, states, pipeline)</span><br><span class="line">      records.clear()</span><br><span class="line">      states.clear()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  updateAndflush(records, states, pipeline)</span><br><span class="line">  <span class="type">Iterator</span>[<span class="type">Int</span>]()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">liveDStream.groupByKey()</span><br><span class="line">  .mapPartitions(mappingFunc)</span><br><span class="line">  .foreachRDD &#123; rdd =&gt;</span><br><span class="line">  rdd.foreach(_ =&gt; <span class="type">Unit</span>) <span class="comment">// force action</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码没有加容错等操作，仅描述实现逻辑，可以看到，函数mappingFunc会对每个分区的数据处理，实际计算时，会累计到batchSize才去访问Redis并更新，以降低访问Redis的频率。这样就不再需要cache和checkpoint了，程序挂了，快速拉起来即可，不需要从checkpoint处恢复状态，同时可以节省相当大的计算资源。</p>
+<h2 id="测试及优化选项"><a href="#测试及优化选项" class="headerlink" title="测试及优化选项"></a>测试及优化选项</h2><p>经过上述改造后，实际测试中，我们的batch时间为一分钟，每个batch约200W条记录，使用资源列表如下：</p>
+<ul>
+<li>driver-memory: 4g</li>
+<li>num-executors: 10</li>
+<li>executor-memory: 4g</li>
+<li>executor-cores: 3</li>
+</ul>
+<p>每个executor上启一个receiver，则总共启用10个receiver收数据，一个receiver占用一个core，则总共剩下10*2=20个core可供计算用，通过调整如下参数，可控制每个batch的分区数为 10*(60*1000)/10000=60（10个receiver，每个receiver上(60*1000)/10000个分区）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark.streaming.blockInterval=10000</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">spark.streaming.backpressure.enabled=<span class="literal">true</span></span><br><span class="line">spark.streaming.receiver.maxRate=5000</span><br></pre></td></tr></table></figure>
+<p>如果程序因为机器故障挂掉，我们应该迅速把拉重新拉起来，为了保险起见，我们应该加上如下参数让Driver失败重试4次，并在相应的任务调度平台上配置失败重试。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark.yarn.maxAppAttempts=4</span><br></pre></td></tr></table></figure>
+<p>此外，为了防止少数任务太慢影响整个计算的速度，可以开启推测，并增加任务的失败容忍次数，这样在少数几个任务非常慢的情况下，会在其他机器上尝试拉起新任务做同样的事，哪个先做完，就干掉另外那个。但是开启推测有个条件，每个任务必须是幂等的，否则就会存在单条数据被计算多次。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">spark.speculation=<span class="literal">true</span></span><br><span class="line">spark.task.maxFailures=8</span><br></pre></td></tr></table></figure>
+<p>经过上述配置优化后，基本可以保证程序7*24小时稳定运行，实际测试显示每个batch的计算时间可以稳定在30秒以内，没有上升趋势。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2019/04/24/Spark-Streaming状态管理应用优化之路/">http://code-monkey.top/2019/04/24/Spark-Streaming状态管理应用优化之路/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/spark/">spark</a>
+            
+              <a href="/tags/分布式计算/">分布式计算</a>
+            
+              <a href="/tags/大数据/">大数据</a>
+            
+              <a href="/tags/streaming/">streaming</a>
+            
+              <a href="/tags/updateStateByKey/">updateStateByKey</a>
+            
+              <a href="/tags/mapWithState/">mapWithState</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/04/22/Spark-Scheduler内部原理剖析/">
+        <span class="next-text nav-default">Spark Scheduler内部原理剖析(转)</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
