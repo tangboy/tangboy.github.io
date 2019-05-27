@@ -208,6 +208,56 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/">Zeppelin源码分析---目录结构与modules分析</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-05-27
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p><a href="https://zeppelin.apache.org" target="_blank" rel="noopener">Zeppelin</a>，于2016-5-18日从Apache孵化器项目毕业成为Apache顶级项目，采用Java（主要）+Scala+R+PythonR+Bash+JS混合开发，采用maven作为build工具。涉及的主要技术stack如下：</p>
+<ol>
+<li><strong>前台</strong> : AngularJS、Node.JS、WebSocket、Grunt、Bower、Highlight.js、BootStrap3js</li>
+<li><strong>后台</strong> : Jetty（embedding）、Thrift、Shiro（权限）、Apache common-exec、Jersey REST API</li>
+</ol>
+<p>zeppelin本质上是一个web应用程序，它以独立的jvm进程的方式来启动Interpreter（解释器），交互式（repl）执行各种语言的代码片段，并将结果以html代码片段的形式返回给前端UI。</p>
+          <div class="read-more">
+            <a href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/04/28/Spark-应用程序调优/">Spark 应用程序调优(转)</a>
         
       </h1>
@@ -686,54 +736,6 @@
 <h2 id="数据分析平台架构"><a href="#数据分析平台架构" class="headerlink" title="数据分析平台架构"></a>数据分析平台架构</h2><img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/2.webp">
           <div class="read-more">
             <a href="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/02/28/埋点数据/">埋点数据(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-02-28
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <img src="/2019/02/28/埋点数据/1.webp">
-<h2 id="导读"><a href="#导读" class="headerlink" title="导读"></a>导读</h2><p>埋点作为商业智能（BI）和人工智能（AI）体系中重要的一环，是公司提升产品工程质量、实施 AB Testing、个性化推荐服务重要的数据来源。在传统的纯 Web 和 Native 开发的产品中，埋点从技术的角度来说未必多深奥，但从业务的角度来说要做到埋点设计规范、流程高效和保证质量却是很难。本文重点介绍一下知乎客户端的埋点模型、流程和平台技术。</p>
-<h2 id="客户端埋点为什么难？"><a href="#客户端埋点为什么难？" class="headerlink" title="客户端埋点为什么难？"></a>客户端埋点为什么难？</h2><p>Web 端的埋点可以随着新代码上线即时生效，对版本的发车概念相对较弱，即使埋点错漏，修复成本较低。</p>
-<p>对客户端而言，如果使用 Native 技术开发的功能埋点有问题，则需要等下一个版本才能修复，并且还有版本覆盖度的问题。修复埋点的这个时间窗口一般都比较长，会对业务的产品快速迭代产生很负面的影响。从业务的角度来说，客户端在发布功能之前，对于要做的数据分析不见得想得全，无计划收集非常多的埋点，对于埋点设计人员、客户端开发、测试人员来说是很大的工作量。反过来说，真正要用数时才发现重要的埋点没有采集，则会 「点」 到用时方恨少。因此，如何综合规划一个版本要采集的埋点，也是颇有挑战的事情，颇有「养兵千日，用兵一时」的感觉。</p>
-          <div class="read-more">
-            <a href="/2019/02/28/埋点数据/" class="read-more-link">阅读更多</a>
           </div>
         
       

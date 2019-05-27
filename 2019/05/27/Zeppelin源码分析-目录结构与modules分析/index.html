@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Zeppelin源码分析---目录结构与modules分析">
+
+
+
+
+  <meta name="keywords" content="spark, zeppelin, java, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2019/05/27/Zeppelin源码分析-目录结构与modules分析/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Zeppelin源码分析---目录结构与modules分析 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Zeppelin源码分析---目录结构与modules分析
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-05-27
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#distribution结构分析"><span class="toc-text">distribution结构分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#bin"><span class="toc-text">bin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#conf"><span class="toc-text">conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#interpreter"><span class="toc-text">interpreter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#notebook"><span class="toc-text">notebook</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码结构分析"><span class="toc-text">源码结构分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#module组成"><span class="toc-text">module组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#module间依赖关系"><span class="toc-text">module间依赖关系</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p><a href="https://zeppelin.apache.org" target="_blank" rel="noopener">Zeppelin</a>，于2016-5-18日从Apache孵化器项目毕业成为Apache顶级项目，采用Java（主要）+Scala+R+PythonR+Bash+JS混合开发，采用maven作为build工具。涉及的主要技术stack如下：</p>
+<ol>
+<li><strong>前台</strong> : AngularJS、Node.JS、WebSocket、Grunt、Bower、Highlight.js、BootStrap3js</li>
+<li><strong>后台</strong> : Jetty（embedding）、Thrift、Shiro（权限）、Apache common-exec、Jersey REST API</li>
+</ol>
+<p>zeppelin本质上是一个web应用程序，它以独立的jvm进程的方式来启动Interpreter（解释器），交互式（repl）执行各种语言的代码片段，并将结果以html代码片段的形式返回给前端UI。</p>
+<a id="more"></a>
+<h2 id="distribution结构分析"><a href="#distribution结构分析" class="headerlink" title="distribution结构分析"></a>distribution结构分析</h2><p>编译完成之后，会在zeppelin-distribution/target/目录下生成如下结构的分发包：</p>
+<img src="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/1.png">
+<h3 id="bin"><a href="#bin" class="headerlink" title="bin"></a>bin</h3><p>bin目录存储了zeppelin的启停控制脚本：</p>
+<img src="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/2.png">
+<p>各个脚本作用如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">脚本</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">zeppelin-daemon.sh</td>
+<td style="text-align:center">提供以daemon形式启停org.apache.zeppelin.server.ZeppelinServer服务，并调用common.sh和function.sh设置env和classpath</td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin.sh</td>
+<td style="text-align:center">以foreground的形式启动ZeppelinServer</td>
+</tr>
+<tr>
+<td style="text-align:center">Interpreter.sh</td>
+<td style="text-align:center">采用单独进程启动org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer服务，该脚本不会被其他脚本直接调用，实际是通过apache common-exec来调用的</td>
+</tr>
+<tr>
+<td style="text-align:center">common.sh</td>
+<td style="text-align:center">设置zeppelin运行时需要的env和classpath，如果${ZEPPELIN_HOME}/conf/目录中存在zeppelin-env.sh，则会调用该脚本</td>
+</tr>
+<tr>
+<td style="text-align:center">function.sh</td>
+<td style="text-align:center">一些公共基础函数</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="conf"><a href="#conf" class="headerlink" title="conf"></a>conf</h3><img src="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/3.png">
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置文件</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">shiro.ini</td>
+<td style="text-align:center">供apache shiro框架使用的权限控制文件</td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin-env.sh</td>
+<td style="text-align:center">供${ZEPPELIN_HOME}/bin/common.sh脚本调用，设置诸如：SPARK_HOME、HADOOP_CONF_DIR等zeppelin与外围环境集成的环境变量</td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin-site.xml.template</td>
+<td style="text-align:center">zeppelin的配置模板，被注释掉的property是zeppelin的默认配置，可以rename成zeppelin-site.xml然后根据需要override</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="interpreter"><a href="#interpreter" class="headerlink" title="interpreter"></a>interpreter</h3><img src="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/4.png">
+<p>每个针对具体的某种语言实现的Interpreter，存放的是编译好的jar包,以及该interpreter的依赖，其中spark子目录的结构如下：</p>
+<img src="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/5.png">
+<p>需要注意的是：如果定义了SPARK_HOME环境变量，该目录下的zeppelin-spark*.jar脚本将通过${SPARK_HOME}/bin/spark-submit到spark集群上去执行。</p>
+<p>详情参见${ZEPPELIN_HOME}/bin/interpreter.sh脚本。</p>
+<h3 id="notebook"><a href="#notebook" class="headerlink" title="notebook"></a>notebook</h3><img src="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/6.png">
+<p>该目录是默认的notebook的持久化存储目录，zeppelin默认的notebook持久化实现类是org.apache.zeppelin.notebook.repo.VFSNotebookRepo，该实现会以zeppelin.notebook.dir配置参数指定的路径来存储notebook（默认是json格式）</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>zeppelin.notebook.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>notebook<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">description</span>&gt;</span>path or URI for notebook persist<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>由于该value指定的uri不带scheme，默认会在${ZEPPELIN_HOME}目录下创建notebook子目录用于存储各个notebook，以notebook的id为子目录名字。</p>
+<h3 id="源码结构分析"><a href="#源码结构分析" class="headerlink" title="源码结构分析"></a>源码结构分析</h3><h3 id="module组成"><a href="#module组成" class="headerlink" title="module组成"></a>module组成</h3><p>zeppelin的maven项目共有26个module，其中7个框架相关的module如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Module</th>
+<th style="text-align:center">作用</th>
+<th style="text-align:center">开发语言</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">zeppelin-server</td>
+<td style="text-align:center">项目的主入口，通过内嵌Jetty的方式提供Web UI和REST服务，并且提供了基本的权限验证服务</td>
+<td style="text-align:center">java</td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin-zengine</td>
+<td style="text-align:center">实现Notebook的持久化、检索实现interpreter的自动加载，以及maven式的依赖自动加载</td>
+<td style="text-align:center">java</td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin-interpreter</td>
+<td style="text-align:center">为了支持多语言Notebook，抽象出了每种语言都要事先的Interpreter接口，包括：显示、调度、依赖以及和zeppelin-engine之间的Thirft通信协议</td>
+<td style="text-align:center">java</td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin-web</td>
+<td style="text-align:center">AngluarJS开发的web页面</td>
+<td style="text-align:center">Javascript（主要是AngularJS、Node.JS以及使用websocket）</td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin-display</td>
+<td style="text-align:center">实现向前台Angular元素绑定后台数据</td>
+<td style="text-align:center">scala</td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin-spark-dependencies</td>
+<td style="text-align:center">无具体功能，maven的最佳实践，将多个module都要依赖的公共类单独抽离出来，供其他module依赖。目前zeppelin-zinterpreter和zeppelin-spark这2个module依赖它</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">zeppelin-distribution</td>
+<td style="text-align:center">为了将整个项目打包成发布版，而设置的module，打包格式见src/assembly/distribution.xml</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>zeppelin的框架部分代码主要是以上几个module，余下19个module全部是为了支持各种语言的interpreter实现的module，如下：</p>
+<p>|Module|作用|开发语言|<br>|zeppelin-spark|实现Spark、PySpark、SparkR、SparkSql等Interpreter|java+scala|<br>|zeppelin-zinterpreter|实现R Interpreter (PS:需要在${ZEPPELIN_HOME}/pom.xml中增加<module>r</module>)|R+java+scala|<br>|zeppelin-hive|实现HiveQL Interpreter，需要hive client|java|<br>|zeppelin-hbase|实现HBase Interpreter，需要hbase client，实际使用ruby脚本${HBASE_HOME}/bin/hirb.rb，来执行UI传入的脚本|java|<br>|zeppelin-shell|实现shell interpreter|java|<br>|zeppelin-file|使用WebHDFS实现hdfs fs命令|java|<br>|zeppelin-postgresql|实现带自动补全功能的psql interpreter，使用jline实现自动补全|java|<br>|zeppelin-jdbc|实现通用的jdbc sql Interpreter|java|<br>|zeppelin-markdown|实现MarkDown Interpreter|java|<br>|zeppelin-phoenix|实现phoenixInterpreter|java|<br>|zeppelin-elasticsearch|实现ES interpreter|java|<br>|zeppelin-canssandra|实现canssandra Interpreter|java+scala|<br>|zeppelin-kylin|实现支持kylin OLAP引擎的interpreter|java|<br>|zeppelin-angular|实现支持angularJS引擎|java|<br>|zeppelin-alluxio|实现alluxio Interpreter，原tacyon|java|<br>|zeppelin-lens|实现lens interpreter|java|<br>|zeppelin-ignite|实现ignite Interpreter|java|<br>|zeppelin-flink|实现flink interpreter|java|<br>|zeppelin-tajo|实现tajo Interpreter|java|</p>
+<h3 id="module间依赖关系"><a href="#module间依赖关系" class="headerlink" title="module间依赖关系"></a>module间依赖关系</h3><p>Module之间的依赖关系如下：</p>
+<img src="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/7.png">
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2019/05/27/Zeppelin源码分析-目录结构与modules分析/">http://code-monkey.top/2019/05/27/Zeppelin源码分析-目录结构与modules分析/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/spark/">spark</a>
+            
+              <a href="/tags/zeppelin/">zeppelin</a>
+            
+              <a href="/tags/java/">java</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/04/28/Spark-应用程序调优/">
+        <span class="next-text nav-default">Spark 应用程序调优(转)</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>

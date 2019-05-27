@@ -208,6 +208,52 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2016/12/25/mathjax-test/">mathjax 在hexo应用</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2016-12-25
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="Hexo支持公式"><a href="#Hexo支持公式" class="headerlink" title="Hexo支持公式"></a>Hexo支持公式</h1><h2 id="常规方法"><a href="#常规方法" class="headerlink" title="常规方法"></a>常规方法</h2><p>在 Hexo 中使用 Mathjax 最常规的方法就是主题的 after_footer.ejs 里加入 (该 Mathjax 代码根据 Math StackExchange 所用修改)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">"text/x-mathjax-config"</span>&gt;</span><br><span class="line">    MathJax.Hub.Config(&#123;<span class="string">"HTML-CSS"</span>: &#123; <span class="attr">preferredFont</span>: <span class="string">"TeX"</span>, <span class="attr">availableFonts</span>: [<span class="string">"STIX"</span>,<span class="string">"TeX"</span>], <span class="attr">linebreaks</span>: &#123; <span class="attr">automatic</span>:<span class="literal">true</span> &#125;, <span class="attr">EqnChunk</span>: (MathJax.Hub.Browser.isMobile ? <span class="number">10</span> : <span class="number">50</span>) &#125;,</span><br><span class="line">        tex2jax: &#123; <span class="attr">inlineMath</span>: [ [<span class="string">"$"</span>, <span class="string">"$"</span>], [<span class="string">"\\("</span>,<span class="string">"\\)"</span>] ], <span class="attr">processEscapes</span>: <span class="literal">true</span>, <span class="attr">ignoreClass</span>: <span class="string">"tex2jax_ignore|dno"</span>,<span class="attr">skipTags</span>: [<span class="string">'script'</span>, <span class="string">'noscript'</span>, <span class="string">'style'</span>, <span class="string">'textarea'</span>, <span class="string">'pre'</span>, <span class="string">'code'</span>]&#125;,</span><br><span class="line">        TeX: &#123;  <span class="attr">noUndefined</span>: &#123; <span class="attr">attributes</span>: &#123; <span class="attr">mathcolor</span>: <span class="string">"red"</span>, <span class="attr">mathbackground</span>: <span class="string">"#FFEEEE"</span>, <span class="attr">mathsize</span>: <span class="string">"90%"</span> &#125; &#125;, <span class="attr">Macros</span>: &#123; <span class="attr">href</span>: <span class="string">"&#123;&#125;"</span> &#125; &#125;,</span><br><span class="line">        messageStyle: <span class="string">"none"</span></span><br><span class="line">    &#125;); </span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">&lt;script type="text/</span>x-mathjax-config<span class="string">"&gt;</span></span><br><span class="line"><span class="string">    MathJax.Hub.Queue(function() &#123;</span></span><br><span class="line"><span class="string">        var all = MathJax.Hub.getAllJax(), i;</span></span><br><span class="line"><span class="string">        for(i=0; i &lt; all.length; i += 1) &#123;</span></span><br><span class="line"><span class="string">            all[i].SourceElement().parentNode.className += ' has-jax';</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">    &#125;);</span></span><br><span class="line"><span class="string">&lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;script type="</span>text/javascript<span class="string">" src="</span>http:<span class="comment">//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"&gt;</span></span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2016/12/25/mathjax-test/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2016/12/25/rewrite/">rewrite</a>
         
       </h1>
@@ -391,7 +437,24 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
   </body>
 </html>
