@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Zeppelin源码分析——主要的class分析">
+
+
+
+
+  <meta name="keywords" content="zeppelin, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2019/05/29/Zeppelin源码分析——主要的class分析/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Zeppelin源码分析——主要的class分析 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Zeppelin源码分析——主要的class分析
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-05-29
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Interperter"><span class="toc-text">Interperter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreterService-Thrift协议分析"><span class="toc-text">RemoteInterpreterService Thrift协议分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InterpreterGroup"><span class="toc-text">InterpreterGroup</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreterProcess"><span class="toc-text">RemoteInterpreterProcess</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreter"><span class="toc-text">RemoteInterpreter</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>zeppelin的module、package、class众多，如何快速地理清头绪，抓住重点？本文分析zeppelin主要module中重点的类以及它们之间的关系，理清这些类的职责，对于理解zeppelin的运行过程至关重要。<br>经过之前文章的分析，我们已经了解了zeppelin涉及到框架层面的几个module为：zeppelin-server、zeppelin-zengine、zeppelin-interpreter，并且三者之间有如下的依赖关系： </p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/1.png">
+<p>本文要分析的主要的class，也都来自于这三个module。</p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/2.png">
+<p>以上类图中省略了字段和方法，以避免过早引入太多细节，重点关注类与类之间的关系组成。由于篇幅的限制，再加上zeppelin提供的核心价值是与Interpreter相关的多语言repl解释器，笔者就选择从右上角黄色的区域开始，分多篇分析。</p>
+<a id="more"></a>
+<h2 id="Interperter"><a href="#Interperter" class="headerlink" title="Interperter"></a>Interperter</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/3.jpeg">
+<p>Interpreter是一个抽象类，该类是zeppelin核心类，Zeppelin提供的核心价值：解释执行各种语言的代码，都是通过该抽象类的每个具体的实现类完成的。Interpreter主要规定了各语言repl解释器需要遵循的“规范(contract)”，包括： </p>
+<ol>
+<li>repl解释器的生命周期管理。如open(), close(), destroy(）,规定了产生和销毁repl解释器。 </li>
+<li>解释执行代码的接口——interpreter()，这些真正产生价值的地方。 </li>
+<li>执行代码过程中交互控制和易用性增强，如cancel(), getProgress(), completion()，分别是终止代码的执行、获取执行进度以及代码自动完成。 </li>
+<li>解释器的配置接口，如setProperty()、setClassLoaderURL(URL[])等。 </li>
+<li>性能优化接口，如getScheduler(),getIntepreterGroup()等。 </li>
+<li>解释器注册接口（已经deprecated了），如一系列重载的register接口。 </li>
+</ol>
+<p>以上体现了zeppelin的repl解释器进程需要受其主进程ZeppelinServer的控制，也是zeppelin设计决策在代码中的体现。 </p>
+<p><strong>注：现在的解释器注册通过如下2种方式进行:</strong></p>
+<blockquote>
+<ol>
+<li>将interpreter-setting.json打包到解释器的jar文件中</li>
+<li>放置到如下位置：interpreter/{interpreter}/interpreter-setting.json</li>
+</ol>
+</blockquote>
+<h2 id="RemoteInterpreterService-Thrift协议分析"><a href="#RemoteInterpreterService-Thrift协议分析" class="headerlink" title="RemoteInterpreterService Thrift协议分析"></a>RemoteInterpreterService Thrift协议分析</h2><p>Apache Thrift是跨语言RPC通信框架，提供了相应的DSL(Domain Specific Language)和支持多种语言的代码生成工具，使得代码开发人员可以只关注具体的业务，而不用关注底层的通信细节。zeppelin使用Thrift定义了其主进程ZeppelinServer与需要采用独立JVM进程运行的各repl解释器之间的通信协议。 </p>
+<p>关于为什么要采用单独的JVM进程来启动repl解释器进程，本系列的第3篇也有提及，这里再赘述一下： </p>
+<ol>
+<li>zeppelin旨在提供一个开放的框架，支持多种语言和产品，由于每种语言和产品都是各自独立演进的，各自的运行时依赖也各不相同，甚至是相互冲突的，如果放在同一JVM中，仅解决冲突，维护各个产品之间的兼容性都是一项艰巨的任务，某些产品版本甚至是完全不能兼容的。 </li>
+<li>大数据分析，是否具有横向扩展能力是production-ready一项重要的衡量指标，如果将repl进程与主进程合在一起，会严重影响系统性能。 </li>
+</ol>
+<p>因此，在有必要的时候，zeppelin采用独立JVM的方式来启动repl进程，并且采用Thrift协议定义了主进程与RemoteInterpreterService进程之间的通信协议，具体如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">service RemoteInterpreterService &#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">createInterpreter</span><span class="params">(<span class="number">1</span>: string intpGroupId, <span class="number">2</span>: string noteId, <span class="number">3</span>: string className, <span class="number">4</span>: map&lt;string, string&gt; properties)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">open</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string className)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">close</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string className)</span></span>;</span><br><span class="line">  <span class="function">RemoteInterpreterResult <span class="title">interpret</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string className, <span class="number">3</span>: string st, <span class="number">4</span>: RemoteInterpreterContext interpreterContext)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">cancel</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string className, <span class="number">3</span>: RemoteInterpreterContext interpreterContext)</span></span>;</span><br><span class="line">  <span class="function">i32 <span class="title">getProgress</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string className, <span class="number">3</span>: RemoteInterpreterContext interpreterContext)</span></span>;</span><br><span class="line">  <span class="function">string <span class="title">getFormType</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string className)</span></span>;</span><br><span class="line">  <span class="function">list&lt;InterpreterCompletion&gt; <span class="title">completion</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string className, <span class="number">3</span>: string buf, <span class="number">4</span>: i32 cursor)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="function">string <span class="title">getStatus</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>:string jobId)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="function">RemoteInterpreterEvent <span class="title">getEvent</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="comment">// as a response, ZeppelinServer send list of resources to Interpreter process</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">resourcePoolResponseGetAll</span><span class="params">(<span class="number">1</span>: list&lt;string&gt; resources)</span></span>;</span><br><span class="line">  <span class="comment">// as a response, ZeppelinServer send serialized value of resource</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">resourceResponseGet</span><span class="params">(<span class="number">1</span>: string resourceId, <span class="number">2</span>: binary object)</span></span>;</span><br><span class="line">  <span class="comment">// get all resources in the interpreter process</span></span><br><span class="line">  <span class="function">list&lt;string&gt; <span class="title">resourcePoolGetAll</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="comment">// get value of resource</span></span><br><span class="line">  <span class="function">binary <span class="title">resourceGet</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string paragraphId, <span class="number">3</span>: string resourceName)</span></span>;</span><br><span class="line">  <span class="comment">// remove resource</span></span><br><span class="line">  <span class="function">bool <span class="title">resourceRemove</span><span class="params">(<span class="number">1</span>: string noteId, <span class="number">2</span>: string paragraphId, <span class="number">3</span>:string resourceName)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">angularObjectUpdate</span><span class="params">(<span class="number">1</span>: string name, <span class="number">2</span>: string noteId, <span class="number">3</span>: string paragraphId, <span class="number">4</span>: string</span></span></span><br><span class="line"><span class="function"><span class="params">  object)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">angularObjectAdd</span><span class="params">(<span class="number">1</span>: string name, <span class="number">2</span>: string noteId, <span class="number">3</span>: string paragraphId, <span class="number">4</span>: string object)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">angularObjectRemove</span><span class="params">(<span class="number">1</span>: string name, <span class="number">2</span>: string noteId, <span class="number">3</span>: string paragraphId)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">angularRegistryPush</span><span class="params">(<span class="number">1</span>: string registry)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>与前面的Interpreter类的定义进行对比不难发现，RemoteInterpreterService Thrift接口与Interpreter抽象类定义的接口大部分相同，不同之处在于： </p>
+<ol>
+<li>RemoteInterpreterService接口的实现类由于运行在不同的JVM中，需要在每个接口方法中额外传递环境信息，如noteId和className等，如createInterpreter、open、close、cancel等。 </li>
+<li>RemoteInterpreterService接口中多出了两种类型的接口，一种是为了完成ZeppelinServer进程和RemoteInterpreter进程之间的resource协商（neigotiation），如resourceXXX接口；另一种是为了完成2者之间angular object的前后台双向绑定，如augularXXX接口。</li>
+</ol>
+<p>具体文件位置见：<br>${ZEPPELIN_HOME}/zeppelin-interpreter/src/main/thrift/RemoteInterpreterService.thrift。在其同级目录下，zeppelin还提供了代码生成脚本genthrift.sh：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">thrift --gen java RemoteInterpreterService.thrift</span><br><span class="line">mv gen-java/org/apache/zeppelin/interpreter/thrift ../java/org/apache/zeppelin/interpreter/thrift</span><br><span class="line">rm -rf gen-java</span><br></pre></td></tr></table></figure>
+<p>可以看出，<br>${ZEPPELIN_HOME}/zeppelin-interpreter/src/main/java/org/apache/zeppelin/interpreter/thrift目录下所有文件都是Thrift的代码生成器根据该接口文件自动生成的。如果我们修改过该接口文件，则需要重新执行该脚本。</p>
+<h2 id="InterpreterGroup"><a href="#InterpreterGroup" class="headerlink" title="InterpreterGroup"></a>InterpreterGroup</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/4.jpeg">
+<p>InterpterGroup继承了ConcurrentHashMap</p>
+<h2 id="RemoteInterpreterProcess"><a href="#RemoteInterpreterProcess" class="headerlink" title="RemoteInterpreterProcess"></a>RemoteInterpreterProcess</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/5.jpeg">
+<p>RemoteInterpreterProcess是采用独立JVM启动repl进程的具体执行类，它采用Apache Commons Exec框架来根据Zeppelin主进程的”指示”启动独立进程，具体逻辑如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">port = RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces();</span><br><span class="line">CommandLine cmdLine = CommandLine.parse(interpreterRunner);</span><br><span class="line">cmdLine.addArgument(<span class="string">"-d"</span>, <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(interpreterDir, <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(<span class="string">"-p"</span>, <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(Integer.toString(port), <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(<span class="string">"-l"</span>, <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(localRepoDir, <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">executor = <span class="keyword">new</span> DefaultExecutor();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">watchdog = <span class="keyword">new</span> ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);</span><br><span class="line">executor.setWatchdog(watchdog);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">running = <span class="keyword">true</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">   Map procEnv = EnvironmentUtils.getProcEnvironment();</span><br><span class="line">   procEnv.putAll(env);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   logger.info(<span class="string">"Run interpreter process &#123;&#125;"</span>, cmdLine);</span><br><span class="line">   executor.execute(cmdLine, procEnv, <span class="keyword">this</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">   <span class="comment">//省略...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里有几点主要注意： </p>
+<ol>
+<li>该进程端口是zeppelin自动寻找操作系统中当前可用的端口 </li>
+<li>RemoteInterpreterProcess并非在在构造函数中，就启动JVM，而是在被引用(reference方法被调用）之后，才启动的 </li>
+<li>具体的interpterRunner脚本为${ZEPPELIN_HOME}/bin/interpreter.sh，参见 ZeppelinConfiguration.getInterpreterRemoteRunnerPath()</li>
+</ol>
+<p>interpreter.sh文件重点部分如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##省略环境变量和classpath拼接等内容</span></span><br><span class="line">ZEPPELIN_SERVER=org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SPARK_APP_JAR=<span class="string">"<span class="variable">$(ls $&#123;ZEPPELIN_HOME&#125;/interpreter/spark/zeppelin-spark*.jar)</span>"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ -n <span class="string">"<span class="variable">$&#123;SPARK_SUBMIT&#125;</span>"</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="variable">$&#123;SPARK_SUBMIT&#125;</span> --class <span class="variable">$&#123;ZEPPELIN_SERVER&#125;</span> --driver-class-path <span class="string">"<span class="variable">$&#123;ZEPPELIN_INTP_CLASSPATH_OVERRIDES&#125;</span>:<span class="variable">$&#123;CLASSPATH&#125;</span>"</span> --driver-java-options <span class="string">"<span class="variable">$&#123;JAVA_INTP_OPTS&#125;</span>"</span> <span class="variable">$&#123;SPARK_SUBMIT_OPTIONS&#125;</span> <span class="variable">$&#123;SPARK_APP_JAR&#125;</span> <span class="variable">$&#123;PORT&#125;</span> &amp;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="variable">$&#123;ZEPPELIN_RUNNER&#125;</span> <span class="variable">$&#123;JAVA_INTP_OPTS&#125;</span> <span class="variable">$&#123;ZEPPELIN_INTP_MEM&#125;</span> -cp <span class="variable">$&#123;ZEPPELIN_INTP_CLASSPATH_OVERRIDES&#125;</span>:<span class="variable">$&#123;CLASSPATH&#125;</span> <span class="variable">$&#123;ZEPPELIN_SERVER&#125;</span> <span class="variable">$&#123;PORT&#125;</span> &amp;</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<p>可以看出，在单机环境下，主要是在启动单独JVM进程，执行RemoteInterpreterServer，并向其main方法，传递必要的参数。在spark环境下，我们会单独分析，此处暂时略过。</p>
+<h2 id="RemoteInterpreter"><a href="#RemoteInterpreter" class="headerlink" title="RemoteInterpreter"></a>RemoteInterpreter</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/6.jpeg">
+<p>RemoteInterpreter可能是zeppelin中最误导人的类命名了，笔者认为其命名为RemoteIntepreterProxy，或者是InterpterProxy、InterpterStub更合适一些，因为其本质是远程Interpter的本地代理，是Proxy模式的典型应用，其运行在zeppelin主进程中，通过Thrift服务的Client来控制远程Interpreter的执行。<br>通过其初始化代码，可见一斑:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//省略掉了出错处理等其他内容</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    RemoteInterpreterProcess interpreterProcess = getInterpreterProcess();</span><br><span class="line">    <span class="keyword">final</span> InterpreterGroup interpreterGroup = getInterpreterGroup();</span><br><span class="line">    interpreterProcess.reference(interpreterGroup);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">synchronized</span> (interpreterProcess) &#123;</span><br><span class="line">      Client client = interpreterProcess.getClient();</span><br><span class="line">      client.createInterpreter(groupId, noteId, getClassName(), (Map) property);</span><br><span class="line">    &#125;  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2019/05/29/Zeppelin源码分析——主要的class分析/">http://code-monkey.top/2019/05/29/Zeppelin源码分析——主要的class分析/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/zeppelin/">zeppelin</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/">
+        <span class="next-text nav-default">Zeppelin源码分析---目录结构与modules分析</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>
