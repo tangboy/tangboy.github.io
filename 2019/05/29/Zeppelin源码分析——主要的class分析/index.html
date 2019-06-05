@@ -224,7 +224,7 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Interperter"><span class="toc-text">Interperter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreterService-Thrift协议分析"><span class="toc-text">RemoteInterpreterService Thrift协议分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InterpreterGroup"><span class="toc-text">InterpreterGroup</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreterProcess"><span class="toc-text">RemoteInterpreterProcess</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreter"><span class="toc-text">RemoteInterpreter</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Interperter"><span class="toc-text">Interperter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreterService"><span class="toc-text">RemoteInterpreterService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Thrift协议分析"><span class="toc-text">Thrift协议分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InterpreterGroup"><span class="toc-text">InterpreterGroup</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreterProcess"><span class="toc-text">RemoteInterpreterProcess</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RemoteInterpreter"><span class="toc-text">RemoteInterpreter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InterpreterInfoSaving"><span class="toc-text">InterpreterInfoSaving</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InterpreterSetting"><span class="toc-text">InterpreterSetting</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Shared模式"><span class="toc-text">Shared模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Scoped模式"><span class="toc-text">Scoped模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Isolated模式"><span class="toc-text">Isolated模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SparkInterpreter的Shared-Scoped-Isolated模式"><span class="toc-text">SparkInterpreter的Shared/Scoped/Isolated模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SparkInterpreter-Shared"><span class="toc-text">SparkInterpreter Shared</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SparkInterpreter-Scoped"><span class="toc-text">SparkInterpreter Scoped</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SparkInterpreter-Isolated"><span class="toc-text">SparkInterpreter Isolated</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InterpreterOption"><span class="toc-text">InterpreterOption</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InterpreterFactory"><span class="toc-text">InterpreterFactory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Note"><span class="toc-text">Note</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Paragraph"><span class="toc-text">Paragraph</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Notebook"><span class="toc-text">Notebook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NotebookServer"><span class="toc-text">NotebookServer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ZeppelinServer"><span class="toc-text">ZeppelinServer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NotebookRepo以及Note持久化子系统"><span class="toc-text">NotebookRepo以及Note持久化子系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SearchService以及Note的全文检索子系统"><span class="toc-text">SearchService以及Note的全文检索子系统</span></a></li></ol>
     </div>
   </div>
 
@@ -256,7 +256,7 @@
 <li>放置到如下位置：interpreter/{interpreter}/interpreter-setting.json</li>
 </ol>
 </blockquote>
-<h2 id="RemoteInterpreterService-Thrift协议分析"><a href="#RemoteInterpreterService-Thrift协议分析" class="headerlink" title="RemoteInterpreterService Thrift协议分析"></a>RemoteInterpreterService Thrift协议分析</h2><p>Apache Thrift是跨语言RPC通信框架，提供了相应的DSL(Domain Specific Language)和支持多种语言的代码生成工具，使得代码开发人员可以只关注具体的业务，而不用关注底层的通信细节。zeppelin使用Thrift定义了其主进程ZeppelinServer与需要采用独立JVM进程运行的各repl解释器之间的通信协议。 </p>
+<h2 id="RemoteInterpreterService"><a href="#RemoteInterpreterService" class="headerlink" title="RemoteInterpreterService"></a>RemoteInterpreterService</h2><h3 id="Thrift协议分析"><a href="#Thrift协议分析" class="headerlink" title="Thrift协议分析"></a>Thrift协议分析</h3><p>Apache Thrift是跨语言RPC通信框架，提供了相应的DSL(Domain Specific Language)和支持多种语言的代码生成工具，使得代码开发人员可以只关注具体的业务，而不用关注底层的通信细节。zeppelin使用Thrift定义了其主进程ZeppelinServer与需要采用独立JVM进程运行的各repl解释器之间的通信协议。 </p>
 <p>关于为什么要采用单独的JVM进程来启动repl解释器进程，本系列的第3篇也有提及，这里再赘述一下： </p>
 <ol>
 <li>zeppelin旨在提供一个开放的框架，支持多种语言和产品，由于每种语言和产品都是各自独立演进的，各自的运行时依赖也各不相同，甚至是相互冲突的，如果放在同一JVM中，仅解决冲突，维护各个产品之间的兼容性都是一项艰巨的任务，某些产品版本甚至是完全不能兼容的。 </li>
@@ -289,6 +289,203 @@
 <h2 id="RemoteInterpreter"><a href="#RemoteInterpreter" class="headerlink" title="RemoteInterpreter"></a>RemoteInterpreter</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/6.jpeg">
 <p>RemoteInterpreter可能是zeppelin中最误导人的类命名了，笔者认为其命名为RemoteIntepreterProxy，或者是InterpterProxy、InterpterStub更合适一些，因为其本质是远程Interpter的本地代理，是Proxy模式的典型应用，其运行在zeppelin主进程中，通过Thrift服务的Client来控制远程Interpreter的执行。<br>通过其初始化代码，可见一斑:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//省略掉了出错处理等其他内容</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    RemoteInterpreterProcess interpreterProcess = getInterpreterProcess();</span><br><span class="line">    <span class="keyword">final</span> InterpreterGroup interpreterGroup = getInterpreterGroup();</span><br><span class="line">    interpreterProcess.reference(interpreterGroup);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">synchronized</span> (interpreterProcess) &#123;</span><br><span class="line">      Client client = interpreterProcess.getClient();</span><br><span class="line">      client.createInterpreter(groupId, noteId, getClassName(), (Map) property);</span><br><span class="line">    &#125;  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="InterpreterInfoSaving"><a href="#InterpreterInfoSaving" class="headerlink" title="InterpreterInfoSaving"></a>InterpreterInfoSaving</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/7.jpeg">
+<p>InterpreterInfoSaving是一个convenient类(提供的功能可以由其他类组合完成，设计目的是为了方便调用)，定义其目的就是为了将原来分散存储在各个interpreter子文件夹中的InterpreterSetting、intepreterBindings和interpreterRepositories集中到一处，方便进行查找和持久化。</p>
+<p>原来Interpter的注册方式是static注册方式：即每个Interpreter的实现类都定义一段static初始化段，在该类被第一次加载的时候，将其注册到zeppelin中。例如：下面是Python interpreter的注册代码。</p>
+<p>原来Interpter的注册方式是static注册方式：即每个Interpreter的实现类都定义一段static初始化段，在该类被第一次加载的时候，将其注册到zeppelin中。例如：下面是Python interpreter的注册代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    Interpreter.register(</span><br><span class="line">        <span class="string">"python"</span>,</span><br><span class="line">        <span class="string">"python"</span>,</span><br><span class="line">        PythonInterpreter.class.getName(),</span><br><span class="line">        <span class="keyword">new</span> InterpreterPropertyBuilder()</span><br><span class="line">            .add(ZEPPELIN_PYTHON, DEFAULT_ZEPPELIN_PYTHON,</span><br><span class="line">                <span class="string">"Python directory. Default : python (assume python is in your $PATH)"</span>)</span><br><span class="line">            .build()</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>现在这种方式已经Deprecated了，新的Interpreter采用了json配置文件的方式来保存这些配置，并且由zeppelin加载时来解析这些配置，该文件约定为interpreter-setting.json，该文件可以放到如下2种位置： </p>
+<ol>
+<li>作为main resources打包到interpreter的jar包中 </li>
+<li>将其放到${ZEPPELIN_HOME}/interpreter/{interpreter}/interpreter-setting.json，位置下 </li>
+</ol>
+<p>interpreter-settings.json就近与interpreter的jar包存储在一起，符合封装的原则，但是zeppelin需要知道全局已经注册了哪些interpreter，以及这些interpreter的配置<br>InterpreterInfoSaving类的唯一实例会被持久化到${ZEPPELIN_HOME}/conf/interpreter.json文件，如下图：</p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/8.jpeg">
+<p>可以看出，InterpreterInfoSaving类是${ZEPPELIN_HOME}/conf/interpreter.json持久化文件相对应的内存对象。</p>
+<h2 id="InterpreterSetting"><a href="#InterpreterSetting" class="headerlink" title="InterpreterSetting"></a>InterpreterSetting</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/9.jpeg">
+<p>InterpreterSettings是一份Interpreter创建的”contract”，其职责如下： </p>
+<ol>
+<li>维护了interpreter相关的元信息，这些信息对于正确运行intepreter进程至关重要，如：与外界环境进行交互（如spark on Yarn集群）、第三方依赖加载等 </li>
+<li>维护了note和intepreterGroup之间的关系</li>
+</ol>
+<p>上篇中我们提到InterpreterGroup是创建jvm、note bind的最小单位，因此，也就决定了在多个note时，创建jvm的个数以及在多个note之间进行变量共享的程度。每个interpreter进程可以有一个或者多个interpreterGroup，每个interpreter实例都从属于其中某一个InterpreterGroup。三者之间的关系如下图： </p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/10.png">
+<p>如下是spark interpreter的settings：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">"2C6QR3FVF": &#123;</span><br><span class="line">   "id": "2C6QR3FVF",</span><br><span class="line">   "name": "spark",</span><br><span class="line">   "group": "spark",</span><br><span class="line">   "properties": &#123;</span><br><span class="line">     "spark.executor.memory": "",</span><br><span class="line">     "args": "",</span><br><span class="line">     "zeppelin.spark.printREPLOutput": "true",</span><br><span class="line">     "spark.cores.max": "",</span><br><span class="line">     "zeppelin.dep.additionalRemoteRepository": "spark-packages,http://dl.bintray.com/spark-packages/maven,false;",</span><br><span class="line">     "zeppelin.spark.importImplicit": "true",</span><br><span class="line">     "zeppelin.spark.sql.stacktrace": "false",</span><br><span class="line">     "zeppelin.spark.concurrentSQL": "false",</span><br><span class="line">     "zeppelin.spark.useHiveContext": "true",</span><br><span class="line">     "zeppelin.pyspark.python": "python",</span><br><span class="line">     "zeppelin.dep.localrepo": "local-repo",</span><br><span class="line">     "zeppelin.interpreter.localRepo": "..//local-repo/2C6QR3FVF",</span><br><span class="line">     "zeppelin.R.knitr": "true",</span><br><span class="line">     "zeppelin.spark.maxResult": "1000",</span><br><span class="line">     "master": "local[*]",</span><br><span class="line">     "spark.app.name": "Zeppelin",</span><br><span class="line">     "zeppelin.R.image.width": "100%",</span><br><span class="line">     "zeppelin.R.render.options": "out.format \u003d \u0027html\u0027, comment \u003d NA, echo \u003d FALSE, results \u003d \u0027asis\u0027, message \u003d F, warning \u003d F",</span><br><span class="line">     "zeppelin.R.cmd": "R"</span><br><span class="line">   &#125;,</span><br><span class="line">   "interpreterGroup": [</span><br><span class="line">     &#123;</span><br><span class="line">       <span class="attr">"class"</span>: <span class="string">"org.apache.zeppelin.spark.SparkInterpreter"</span>,</span><br><span class="line">       <span class="attr">"name"</span>: <span class="string">"spark"</span></span><br><span class="line">     &#125;,</span><br><span class="line">     &#123;</span><br><span class="line">       <span class="attr">"class"</span>: <span class="string">"org.apache.zeppelin.spark.SparkSqlInterpreter"</span>,</span><br><span class="line">       <span class="attr">"name"</span>: <span class="string">"sql"</span></span><br><span class="line">     &#125;,</span><br><span class="line">     &#123;</span><br><span class="line">       <span class="attr">"class"</span>: <span class="string">"org.apache.zeppelin.spark.DepInterpreter"</span>,</span><br><span class="line">       <span class="attr">"name"</span>: <span class="string">"dep"</span></span><br><span class="line">     &#125;,</span><br><span class="line">     &#123;</span><br><span class="line">       <span class="attr">"class"</span>: <span class="string">"org.apache.zeppelin.spark.PySparkInterpreter"</span>,</span><br><span class="line">       <span class="attr">"name"</span>: <span class="string">"pyspark"</span></span><br><span class="line">     &#125;,</span><br><span class="line">     &#123;</span><br><span class="line">       <span class="attr">"class"</span>: <span class="string">"org.apache.zeppelin.spark.SparkRInterpreter"</span>,</span><br><span class="line">       <span class="attr">"name"</span>: <span class="string">"r"</span></span><br><span class="line">     &#125;</span><br><span class="line">   ],</span><br><span class="line">   "dependencies": [],</span><br><span class="line">   "option": &#123;</span><br><span class="line">     "remote": true,</span><br><span class="line">     "perNoteSession": false,</span><br><span class="line">     "perNoteProcess": false,</span><br><span class="line">     "isExistingProcess": false,</span><br><span class="line">     "port": "-1"</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>InterpreterSettings实例被InterpreterFactory对象初始化并填充。<br>多个note时，究竟是为每个note创建不同的interpreter进程还是共享同一个interpreter进程，zeppelin UI上提供了三种不同的模式可供选择：<br></p>
+<h3 id="Shared模式"><a href="#Shared模式" class="headerlink" title="Shared模式"></a>Shared模式</h3><p>一种解释器只有一个Interpreter进程，并且该进程中只有一个InterpreterGroup，所有的Interpreter实例都从属于该InterpreterGroup，当然，也肯定在同一个进程内部。多个note之间，可以很容易的共享变量。 </p>
+
+<h3 id="Scoped模式"><a href="#Scoped模式" class="headerlink" title="Scoped模式"></a>Scoped模式</h3><p>一种repl解释器只有一个Interpreter进程，但是与Shared模式不同，会创建多个InterpreterGroup，每个note关联一个InterpreterGroup。这样每个note相当于有了自己的session，session与session相互隔离，但是仍然由于这些InterpreterGroup仍然在同一个进程中，仍然可以在它们之间共享变量。</p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/12.png">
+<h3 id="Isolated模式"><a href="#Isolated模式" class="headerlink" title="Isolated模式"></a>Isolated模式</h3><p>独占式，为每个note创建一个独立的intepreter进程，该进程中创建一个InterpreterGroup实例，为该note的服务的Interpreter实例从属于该InterpreterGroup。</p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/12.png">
+<h2 id="SparkInterpreter的Shared-Scoped-Isolated模式"><a href="#SparkInterpreter的Shared-Scoped-Isolated模式" class="headerlink" title="SparkInterpreter的Shared/Scoped/Isolated模式"></a>SparkInterpreter的Shared/Scoped/Isolated模式</h2><p>以SparkInterpreter为例，说明这三种模式对SparkContext和Scala repl共享方式上的差别：</p>
+<h3 id="SparkInterpreter-Shared"><a href="#SparkInterpreter-Shared" class="headerlink" title="SparkInterpreter Shared"></a>SparkInterpreter Shared</h3><p>所有的note共享同一个SparkContext和Scala REPL实例，因此，如果其中一个note定义了变量a，另外一个note可以访问并且修改该变量a。 </p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/13.png">
+<h3 id="SparkInterpreter-Scoped"><a href="#SparkInterpreter-Scoped" class="headerlink" title="SparkInterpreter Scoped"></a>SparkInterpreter Scoped</h3><p>所有的note共享同一个SparkContext，所有的spark job都是通过同一个SparkContext提交的，但是不同的Scala repl解释器，由于不同享Scala repl，故不存在一个note访问并修改了另一个note定义的变量的问题。</p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/14.png">
+<h3 id="SparkInterpreter-Isolated"><a href="#SparkInterpreter-Isolated" class="headerlink" title="SparkInterpreter Isolated"></a>SparkInterpreter Isolated</h3><p>独占式，每个note都有自己的SparkContext和Scala repl，不共享。</p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/15.png">
+<h2 id="InterpreterOption"><a href="#InterpreterOption" class="headerlink" title="InterpreterOption"></a>InterpreterOption</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/16.jpeg">
+<p>虽然InterpreterOption是一个简单的POJO，但是其字段取值，直接决定了zeppelin在创建interpreter进程时的处理方式，直接体现了”性能和资源占用之间进行trade-off”多种策略：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">property</th>
+<th style="text-align:center">含义</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">existingProcess</td>
+<td style="text-align:center">是否连接已有intepreter进程</td>
+<td style="text-align:center">intepreter进程可以独立启动，如在远程(不同与zeppelin运行的其他host）节点上，可以采用该手段将repl进程进行分布式部署，并且先于zeppelin启动，让zeppelin连接到这些已有的线程，以解决intepreter进程横向扩展的问题。该模式需要显式指定host和port，表示zeppelin主进程(ZeppelinServer所在进程）与该interpreter进程进行的IPC时，通信的socket。</td>
+</tr>
+<tr>
+<td style="text-align:center">perNoteProcess</td>
+<td style="text-align:center">每个Note创建一个IntereterGroup进程</td>
+<td style="text-align:center">这是最细粒度的interpreter进程创建方式，同时也是最粗放的资源使用的方式，如果interpreter都在运行zeppelin的host上启动的话， note数量很多的话，很可能造该host内存耗尽</td>
+</tr>
+<tr>
+<td style="text-align:center">perNoteSession</td>
+<td style="text-align:center">每个Note的在同一个IntereterGroup进程中创建不同的Interpreter实例</td>
+<td style="text-align:center">创建interpreter进程时只创建一个，但是在该进程内部，创建不同的interpreter实例。这种方式比perNoteProcess要节省内存资源。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>InterpreterSettings是InterpreterOption的使用方，重要的地方见其getInterpreterGroup和getInterpreterProcessKey方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">getInterpreterProcessKey</span><span class="params">(String noteId)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (getOption().isExistingProcess) &#123;</span><br><span class="line">      <span class="keyword">return</span> Constants.EXISTING_PROCESS;<span class="comment">//existingProcess模式，共享现有的IntereterGroup进程</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (getOption().isPerNoteProcess()) &#123;</span><br><span class="line">      <span class="keyword">return</span> noteId;<span class="comment">//perNoteProcess模式，每个note都会创建一个新的进程</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> SHARED_PROCESS;<span class="comment">//sharedProcess模式，所有note共享同一个interpreter进程</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//为note创建新的InterpreterGroup或者是关联现有的InterpreterGroup</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> InterpreterGroup <span class="title">getInterpreterGroup</span><span class="params">(String noteId)</span> </span>&#123;</span><br><span class="line">    String key = getInterpreterProcessKey(noteId);</span><br><span class="line">    <span class="keyword">synchronized</span> (interpreterGroupRef) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!interpreterGroupRef.containsKey(key)) &#123;</span><br><span class="line">        String interpreterGroupId = id() + <span class="string">":"</span> + key;</span><br><span class="line">        InterpreterGroup intpGroup =</span><br><span class="line">            interpreterGroupFactory.createInterpreterGroup(interpreterGroupId, getOption());</span><br><span class="line">        interpreterGroupRef.put(key, intpGroup);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> interpreterGroupRef.get(key);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="InterpreterFactory"><a href="#InterpreterFactory" class="headerlink" title="InterpreterFactory"></a>InterpreterFactory</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/17.jpeg">
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/18.jpeg">
+<p>InterpreterFactory是InterpreterGroupFactory的实现类，承担如下职责： </p>
+<ol>
+<li>interpreter实例的实际创建者 </li>
+<li>interpreter配置文件的加载与持久化，如loadFromFile()和saveToFile() </li>
+<li>interpreterSettings的管理 </li>
+<li>第三方依赖加载器 </li>
+<li>在zeppelin主进程中建立远程AngularObjectRegistry的本地Proxy——RemoteAngularObjectRegistry，以保证远程interpreter进程与前端angular对象双向绑定。</li>
+</ol>
+<p>InterpreterFactory实际执行创建interpreter实例的方式为createInterpretersForNote，具体实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createInterpretersForNote</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">      InterpreterSetting interpreterSetting,</span></span></span><br><span class="line"><span class="function"><span class="params">      String noteId,</span></span></span><br><span class="line"><span class="function"><span class="params">      String key)</span> </span>&#123;</span><br><span class="line">    InterpreterGroup interpreterGroup = interpreterSetting.getInterpreterGroup(noteId);<span class="comment">//调用interpreterSetting.getInterpreterGroup以确定创建InterpreterGroup的策略</span></span><br><span class="line">    String groupName = interpreterSetting.getGroup();</span><br><span class="line">    InterpreterOption option = interpreterSetting.getOption();</span><br><span class="line">    Properties properties = interpreterSetting.getProperties();</span><br><span class="line">    <span class="keyword">if</span> (option.isExistingProcess) &#123;</span><br><span class="line">      properties.put(Constants.ZEPPELIN_INTERPRETER_HOST, option.getHost());</span><br><span class="line">      properties.put(Constants.ZEPPELIN_INTERPRETER_PORT, option.getPort());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//省略了同步等到相同key interpreterGroup终止的代码</span></span><br><span class="line">    logger.info(<span class="string">"Create interpreter instance &#123;&#125; for note &#123;&#125;"</span>, interpreterSetting.getName(), noteId);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (String className : interpreterClassList) &#123;</span><br><span class="line">      Set&lt;String&gt; keys = Interpreter.registeredInterpreters.keySet();</span><br><span class="line">      <span class="keyword">for</span> (String intName : keys) &#123;</span><br><span class="line">        RegisteredInterpreter info = Interpreter.registeredInterpreters.get(intName);</span><br><span class="line">        <span class="keyword">if</span> (info.getClassName().equals(className)</span><br><span class="line">            &amp;&amp; info.getGroup().equals(groupName)) &#123;</span><br><span class="line">          Interpreter intp;</span><br><span class="line"></span><br><span class="line">          <span class="keyword">if</span> (option.isRemote()) &#123;<span class="comment">//在单独启动的intepreter进程中创建Interpreter实例</span></span><br><span class="line">            intp = createRemoteRepl(info.getPath(),</span><br><span class="line">                key,</span><br><span class="line">                info.getClassName(),</span><br><span class="line">                properties,</span><br><span class="line">                interpreterSetting.id());</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;<span class="comment">//在zeppelin主进程中，动态加载并反射创建Interpreter实例</span></span><br><span class="line">            intp = createRepl(info.getPath(),</span><br><span class="line">                info.getClassName(),</span><br><span class="line">                properties);</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">          <span class="keyword">synchronized</span> (interpreterGroup) &#123;</span><br><span class="line">            List&lt;Interpreter&gt; interpreters = interpreterGroup.get(key);</span><br><span class="line">            <span class="keyword">if</span> (interpreters == <span class="keyword">null</span>) &#123;</span><br><span class="line">              interpreters = <span class="keyword">new</span> LinkedList&lt;Interpreter&gt;();</span><br><span class="line">              interpreterGroup.put(key, interpreters);<span class="comment">//完成noteId:interpreters实例或者interpreterGroup：interpreters实例之间的映射</span></span><br><span class="line">            &#125;</span><br><span class="line">            interpreters.add(intp);</span><br><span class="line">          &#125;</span><br><span class="line">          logger.info(<span class="string">"Interpreter "</span> + intp.getClassName() + <span class="string">" "</span> + intp.hashCode() + <span class="string">" created"</span>);</span><br><span class="line">          intp.setInterpreterGroup(interpreterGroup);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>以下是createRemoteRepl方法实现，重点是用LazyOpenInterpreter Proxy了一个RemoteInterpreter实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Interpreter <span class="title">createRemoteRepl</span><span class="params">(String interpreterPath, String noteId, String className,</span></span></span><br><span class="line"><span class="function"><span class="params">     Properties property, String interpreterSettingId)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> connectTimeout = conf.getInt(ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT);</span><br><span class="line">   String localRepoPath = conf.getInterpreterLocalRepoPath() + <span class="string">"/"</span> + interpreterSettingId;</span><br><span class="line">   <span class="keyword">int</span> maxPoolSize = conf.getInt(ConfVars.ZEPPELIN_INTERPRETER_MAX_POOL_SIZE);</span><br><span class="line"></span><br><span class="line">   LazyOpenInterpreter intp = <span class="keyword">new</span> LazyOpenInterpreter(<span class="keyword">new</span> RemoteInterpreter(</span><br><span class="line">       property, noteId, className, conf.getInterpreterRemoteRunnerPath(),</span><br><span class="line">       interpreterPath, localRepoPath, connectTimeout,</span><br><span class="line">       maxPoolSize, remoteInterpreterProcessListener));</span><br><span class="line">   <span class="keyword">return</span> intp;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>InterpreterFactory执行解除note和interpreter实例之间的关系方法见removeInterpretersForNote：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeInterpretersForNote</span><span class="params">(InterpreterSetting interpreterSetting,</span></span></span><br><span class="line"><span class="function"><span class="params">                                        String noteId)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (interpreterSetting.getOption().isPerNoteProcess()) &#123;<span class="comment">//perNoteProcess，直接关闭process</span></span><br><span class="line">      interpreterSetting.closeAndRemoveInterpreterGroup(noteId);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (interpreterSetting.getOption().isPerNoteSession()) &#123;<span class="comment">//perNoteSession,由于process是共享的，note关闭，只关闭该note相关的interpreter实例，process不关闭</span></span><br><span class="line">      InterpreterGroup interpreterGroup = interpreterSetting.getInterpreterGroup(noteId);</span><br><span class="line"></span><br><span class="line">      interpreterGroup.close(noteId);</span><br><span class="line">      interpreterGroup.destroy(noteId);</span><br><span class="line">      <span class="keyword">synchronized</span> (interpreterGroup) &#123;</span><br><span class="line">        interpreterGroup.remove(noteId);</span><br><span class="line">        interpreterGroup.notifyAll(); <span class="comment">// notify createInterpreterForNote()</span></span><br><span class="line">      &#125;</span><br><span class="line">      logger.info(<span class="string">"Interpreter instance &#123;&#125; for note &#123;&#125; is removed"</span>,</span><br><span class="line">          interpreterSetting.getName(),</span><br><span class="line">          noteId);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>接下来，我们主要讲解图中右下角部分class，这些class主要决定了Note的运行机制<br><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/19.png"></p>
+<h2 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/20.jpeg">
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/21.jpeg">
+<p>Note是单个’记事本’的内存对象，是zeppelin管理的最小单位，无论是做权限控制、共享、还是持久化，都是以Note为粒度的。从类关系上看，Note是由一些列的有序Paragraph组成，因此其绝大部分职责都是与管理Paragraph有关： </p>
+<ol>
+<li>Paragraph的CRUD、相对顺序控制 </li>
+<li>与处理前后端数据双向推送的AngularObject的管理 </li>
+<li>整体和单个Paragraph 执行，以及执行过程的基于Observer模式的执行过程Hook </li>
+<li>Note基本的样式外观控制 </li>
+</ol>
+<p>为了“分离关注点”，其他的功能，如： </p>
+<ol>
+<li>Note相关的Interpreter加载和初始化 </li>
+<li>持久化与反持久化，包括延迟持久化 </li>
+<li>权限控制 </li>
+</ol>
+<p>都交给Note“依赖的服务”来解决，这些服务在运行时，会由“组合”Note的Notebook类来负责注入。这些依赖的注入顺序为： </p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/22.png">
+<h2 id="Paragraph"><a href="#Paragraph" class="headerlink" title="Paragraph"></a>Paragraph</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/23.jpeg">
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/24.jpeg">
+<p>Paragraph代表着一段代码以及支撑其执行所需要的“环境信息”，是代码执行的最小单位。Paragraph的职责如下： </p>
+<ol>
+<li>获取代码文本，并解析分离类似%spark的interpreter声明段和可执行代码段。 </li>
+<li>代码执行，以及执行过程控制（进度和终止） </li>
+<li>代码执行结果获取 </li>
+<li>代码中变量查找以及替换</li>
+</ol>
+<h2 id="Notebook"><a href="#Notebook" class="headerlink" title="Notebook"></a>Notebook</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/25.jpeg">
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/26.jpeg">
+<p>Notebook实际上是Note的Manager，职责如下：</p>
+<ol>
+<li>Note的CRUD，克隆、导入/导出</li>
+<li>Note和相关Interpreter配置时和运行时映射关系维护</li>
+<li>Note cron式调度执行控制 </li>
+</ol>
+<p>其他所有Note公共的服务，都交给ZeppelinServer类来注入，具体的有：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">服务</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">NotebookRepo</td>
+<td style="text-align:center">Note的持久化服务</td>
+</tr>
+<tr>
+<td style="text-align:center">SearchService</td>
+<td style="text-align:center">Note的全文检索服务</td>
+</tr>
+<tr>
+<td style="text-align:center">NotebookAuthorization</td>
+<td style="text-align:center">Note的Authorization服务</td>
+</tr>
+<tr>
+<td style="text-align:center">Credentials</td>
+<td style="text-align:center">数据源相关的“用户/密码”服务</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="NotebookServer"><a href="#NotebookServer" class="headerlink" title="NotebookServer"></a>NotebookServer</h2><img src="/2019/05/29/Zeppelin源码分析——主要的class分析/27.jpeg">
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/28.jpeg">
+<p>NotebookServer的主要功能是将Notebook、Note、Paragraph、Interpreter等类封装的能力，通过WebSocket的形式对web 客户端提供出去，所以其具体的职责包括：</p>
+<ol>
+<li>维护WebSocket连接与Note之间映射关系 </li>
+<li>处理客户端和服务器之间的双向通信（通过WebSocket，具体的通信协议见：Message类），包括消息的序列化/反序列化，消息解析和服务端处理、处理结果的向客户端广播/单播发送等。 </li>
+<li>Note的CRUD操作以及Paragraph的CRUD操作、执行、导入、导出时的权限控制 </li>
+<li>前后端AngularObject的双向bind处理 </li>
+<li>WebSocket客户端合法性校验(checkOrigin)</li>
+</ol>
+<p>关于zeppelin采用WebSocket技术的必要性问题，这里也做一下简单分析。zeppelin是共享式、Notebook式的大数据分析环境，以repl的方式执行以Paragraph为最小粒度的代码段。 </p>
+<ol>
+<li>首先repl的方式强调实时反馈执行结果，特别是在大数据环境下，一段代码可能需要执行很长时间，在执行的过程中，zeppelin的用户期望看到执行进度和中间结果，需要在前后端之间建立一个长连接，便于实时传递数据。 </li>
+<li>另外zeppelin的另一个亮点是其结果可视化能力，需要在前后台传递图片，并且支持较大数据量的传输的能力（相对传统http技术）</li>
+<li>再者，由于是共享式环境，一个Note可能被多个用户同时看到、甚至编辑，需要在各个已经打开了同一个Note的web客户端之间同步Note的代码、执行结果和进度信息。</li>
+</ol>
+<h2 id="ZeppelinServer"><a href="#ZeppelinServer" class="headerlink" title="ZeppelinServer"></a>ZeppelinServer</h2><p>ZeppelinServer是各个组件的”组装者”，它是系统的主入口，职责如下： </p>
+<ol>
+<li>内嵌jetty服务器，支持以WebSocket和REST两种方式对外暴露系统功能 </li>
+<li>创建NotebookServer实例，建立起处理WebSocket Connection和消息处理的服务端 </li>
+<li>创建Notebook需要的相关依赖，如Note持久化服务(NotebookRepo)、Note的全文索引服务（SearchService），并完成向Note、Paragraph的注入。 </li>
+<li>Note权限配置文件的加载以及初始化 </li>
+<li>InterpreterFactory的初始化 </li>
+<li>初始化动态依赖加载器(DependencyResolver)</li>
+</ol>
+<h2 id="NotebookRepo以及Note持久化子系统"><a href="#NotebookRepo以及Note持久化子系统" class="headerlink" title="NotebookRepo以及Note持久化子系统"></a>NotebookRepo以及Note持久化子系统</h2><p>Notebook的持久化子系统主要由NotebookRepo以及其子类组成。各类主要的职责如下： </p>
+<ol>
+<li>NotebookRepo是顶层接口，规定了持久化层基本的CRUD接口。 </li>
+<li>NotebookVersioned定义了Note的版本管理接口，目前其实现类只有 GitNotebookRepo。GitNotebookRepo是以JGit库实现的基于本地文件系统的、支持以Note为粒度进行checkin和show log的Note仓库。 </li>
+<li>VFSNotebookRepo是zeppelin的默认实现类（配置参数zeppelin.notebook.storage控制，参见：ZeppelinConfiguration。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZEPPELIN_NOTEBOOK_STORAGE(<span class="string">"zeppelin.notebook.storage"</span>, VFSNotebookRepo.class.getName()),</span><br></pre></td></tr></table></figure>
+<p>使用apache common-vfs来实现多文件系统支持。 </p>
+<ol>
+<li>NotebookRepoSync的初衷是为了让2个NotebookRepo之间进行自动同步修改，实现：在本地repo保存修改的同时，让zeppelin自动将修改同步到远程的repo上。 </li>
+</ol>
+<p>要启用2个repo之间的同步，做如下修改：</p>
+<blockquote>
+<ol>
+<li>在zeppelin-site.xml中修改配置参数zeppelin.notebook.storage，以逗号分隔2个实现类的完整类名 </li>
+<li>注意顺序，一般是将VFSNotebookRepo作为一个，而S3NotebookRepo或者是AzureNotebookRepo等作为第二个。zeppelin目前只支持最大2个Repo（maxRepoNum=2作为编译时常量），不能通过配置修改。</li>
+</ol>
+</blockquote>
+<ol>
+<li>S3NotebookRepo和AzureNotebookRepo，实现向2大云存储系统的持久化Notebook。</li>
+<li>ZeppelinHubRepo是为了向zeppelinhub持久化Notebook而设计的，zeppelinhub是一个类似于Github的分享网站，区别在于Github是分享git仓库的，zeppelinhub是分享note的。</li>
+</ol>
+<h2 id="SearchService以及Note的全文检索子系统"><a href="#SearchService以及Note的全文检索子系统" class="headerlink" title="SearchService以及Note的全文检索子系统"></a>SearchService以及Note的全文检索子系统</h2><p>Note的全文检索子系统由SearchService接口和其子类组成，目前只有一个实现类LuceneSearch，采用基于内存的索引，在Notebook每次重新加载所有的Note、或者Note有更新、删除的时候会重新索引该Note，保证全文索引与持久化的Note文件一致性。</p>
+<p>截止目前为止，zeppelin的所有重点的类我们就分析完了。通过分析单个类的职责和类之间的关系，我们清楚的了解了zeppelin如何将自己要解决的主要问题——支持多个语言repl的解释器——这个庞大的目标，一步步进行关注点拆分，并且合理的组合到各个类，乃至各个模块中，形成一个可实现的设计方案。</p>
 
       
     </div>
