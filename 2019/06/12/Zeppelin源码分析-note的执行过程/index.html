@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Zeppelin源码分析-note的执行过程">
+
+
+
+
+  <meta name="keywords" content="Zeppelin, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2019/06/12/Zeppelin源码分析-note的执行过程/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Zeppelin源码分析-note的执行过程 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Zeppelin源码分析-note的执行过程
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-06-12
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        <img src="/2019/06/12/Zeppelin源码分析-note的执行过程/1.png">
+<p>上图是zeppelin的前后台交互模型，zeppelin采用单独的jvm来启动interpreter进程，该Interpreter进程与zeppelinServer进程之间采用Thrift协议通信，其中RemoteInterpreterProcess是Thrift-Client端，而相应的RemoteInterpreterServer是Thrift-Server端。</p>
+<p>Paragraph的执行分成“从前端UI提交ParagraphJob到其相关的Interpreter的Scheduler”和“Sheduler执行”2个部分，这2个部分是异步执行的。</p>
+<img src="/2019/06/12/Zeppelin源码分析-note的执行过程/2.png">
+<p>以上是从前台请求执行指定的Note的指定的Paragraph开始，到该Paragraph提交到Scheduler之间的时序图。这个执行逻辑是与语言无关的。任何语言写的脚本（存储在Paragraph之中）都是上述提交执行的过程。</p>
+<a id="more"></a>
+<p>下面是Scheduler执行该ParagraphJob的时序图：</p>
+<img src="/2019/06/12/Zeppelin源码分析-note的执行过程/3.png">
+<p>这里有如下的几点需要注意：</p>
+<ol>
+<li>InterpreterFactory目前将所有的Interpreter都被实例化成了RemoteInterpreter，参见其createInterpretersForNote方法：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (String intName : keys) &#123;</span><br><span class="line">  RegisteredInterpreter info = Interpreter.registeredInterpreters.get(intName);</span><br><span class="line">  <span class="keyword">if</span> (info.getClassName().equals(className)</span><br><span class="line">      &amp;&amp; info.getGroup().equals(groupName)) &#123;</span><br><span class="line">    Interpreter intp;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (option.isRemote()) &#123;<span class="comment">//根据option配置来创建</span></span><br><span class="line">      intp = createRemoteRepl(info.getPath(),</span><br><span class="line">          key,</span><br><span class="line">          info.getClassName(),</span><br><span class="line">          properties,</span><br><span class="line">          interpreterSetting.id());</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      intp = createRepl(info.getPath(),</span><br><span class="line">          info.getClassName(),</span><br><span class="line">          properties);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>虽然InterpreterFactory在创建的时候做了判断，但是其实所有的Option.remote属性都为true，参见InterpreterFactory初始化的方法loadFromFile()：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">loadFromFile</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"><span class="comment">//省略了部分代码</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (String k : info.interpreterSettings.keySet()) &#123;</span><br><span class="line">  InterpreterSetting setting = info.interpreterSettings.get(k);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Always use separate interpreter process</span></span><br><span class="line">  <span class="comment">// While we decided to turn this feature on always (without providing</span></span><br><span class="line">  <span class="comment">// enable/disable option on GUI).</span></span><br><span class="line">  <span class="comment">// previously created setting should turn this feature on here.</span></span><br><span class="line">  setting.getOption().setRemote(<span class="keyword">true</span>);<span class="comment">//全部置为true了</span></span><br><span class="line"><span class="comment">//省略了部分代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>RemoteInterpreterProcess在reference相关的InterpreterGroup的时候，会使用apache common-exec框架创建新的进程。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">reference</span><span class="params">(InterpreterGroup interpreterGroup)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (referenceCount) &#123;</span><br><span class="line">  <span class="keyword">if</span> (executor == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="comment">// start server process</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      port = RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces();<span class="comment">//随机可用端口</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e1) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> InterpreterException(e1);</span><br><span class="line">    &#125;</span><br><span class="line">CommandLine cmdLine = CommandLine.parse(interpreterRunner);</span><br><span class="line">cmdLine.addArgument(<span class="string">"-d"</span>, <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(interpreterDir, <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(<span class="string">"-p"</span>, <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(Integer.toString(port), <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(<span class="string">"-l"</span>, <span class="keyword">false</span>);</span><br><span class="line">cmdLine.addArgument(localRepoDir, <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">executor = <span class="keyword">new</span> DefaultExecutor();</span><br><span class="line"></span><br><span class="line">watchdog = <span class="keyword">new</span> ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);</span><br><span class="line">executor.setWatchdog(watchdog);</span><br><span class="line"></span><br><span class="line">running = <span class="keyword">true</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  Map procEnv = EnvironmentUtils.getProcEnvironment();</span><br><span class="line">  procEnv.putAll(env);</span><br><span class="line"></span><br><span class="line">  logger.info(<span class="string">"Run interpreter process &#123;&#125;"</span>, cmdLine);</span><br><span class="line">  executor.execute(cmdLine, procEnv, <span class="keyword">this</span>);<span class="comment">//启动新的进程</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">  running = <span class="keyword">false</span>;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> InterpreterException(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中interpreterRunner会指向bin/interpreter.sh脚本，该脚本的主要功能根据是否定义了SPARK_HOME环境变量（定位到spark-submit脚本），构建classpath，然后以指定的port运行ZEPPELIN_SERVER指定的主类，该变量被定义为： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZEPPELIN_SERVER=org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer</span><br></pre></td></tr></table></figure>
+<p>启动进程的代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [[ -n <span class="string">"<span class="variable">$&#123;SPARK_SUBMIT&#125;</span>"</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="variable">$&#123;SPARK_SUBMIT&#125;</span> --class <span class="variable">$&#123;ZEPPELIN_SERVER&#125;</span> --driver-class-path <span class="string">"<span class="variable">$&#123;ZEPPELIN_CLASSPATH_OVERRIDES&#125;</span>:<span class="variable">$&#123;CLASSPATH&#125;</span>"</span> --driver-java-options <span class="string">"<span class="variable">$&#123;JAVA_INTP_OPTS&#125;</span>"</span> <span class="variable">$&#123;SPARK_SUBMIT_OPTIONS&#125;</span> <span class="variable">$&#123;SPARK_APP_JAR&#125;</span> <span class="variable">$&#123;PORT&#125;</span> &amp;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="variable">$&#123;ZEPPELIN_RUNNER&#125;</span> <span class="variable">$&#123;JAVA_INTP_OPTS&#125;</span> <span class="variable">$&#123;ZEPPELIN_INTP_MEM&#125;</span> -cp <span class="variable">$&#123;ZEPPELIN_CLASSPATH_OVERRIDES&#125;</span>:<span class="variable">$&#123;CLASSPATH&#125;</span> <span class="variable">$&#123;ZEPPELIN_SERVER&#125;</span> <span class="variable">$&#123;PORT&#125;</span> &amp;</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<p>而RemoteInterpreterServer实现了RemoteInterpreterService.Iface，是Thrift的Server端，RemoteInterpreterProcess是Thrift的client端。</p>
+<ol>
+<li>Remote的含义是（至少目前是）“另外一个进程“，与zeppelinServer所在的进程不是同一个，该进程并非启动在另外一个独立的的机器上，zeppelin目前还不支持集群，所有的Interpreter jvm都启动在localhost上。因此如果想调试Interpreter的方法是如何工作的，需要为该Interpreter启动独立的调试进程，在zeppelinServer所在的调试进程中设置Interpreter.interpret(Stringst, InterpreterContext context)断点想要命中是行不通的。</li>
+</ol>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2019/06/12/Zeppelin源码分析-note的执行过程/">http://code-monkey.top/2019/06/12/Zeppelin源码分析-note的执行过程/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Zeppelin/">Zeppelin</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/06/12/Zeppelin源码分析-notebook持久化/">
+        <span class="next-text nav-default">Zeppelin源码分析-notebook持久化</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>
