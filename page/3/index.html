@@ -208,6 +208,61 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/">Adaptive Execution 让 Spark SQL 更高效更智能</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-21
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>前面<a href="https://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">《Spark SQL / Catalyst 内部原理 与 RBO》</a>与<a href="https://code-monkey.top/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/">《Spark SQL 性能优化再进一步 CBO 基于代价的优化》</a>介绍的优化，从查询本身与目标数据的特点的角度尽可能保证了最终生成的执行计划的高效性。但是</p>
+<ul>
+<li>执行计划一旦生成，便不可更改，即使执行过程中发现后续执行计划可以进一步优化，也只能按原计划执行</li>
+<li>CBO 基于统计信息生成最优执行计划，需要提前生成统计信息，成本较大，且不适合数据更新频繁的场景</li>
+<li>CBO 基于基础表的统计信息与操作对数据的影响推测中间结果的信息，只是估算，不够精确</li>
+</ul>
+<p>本文介绍的 Adaptive Execution 将可以根据执行过程中的中间数据优化后续执行，从而提高整体执行效率。核心在于两点</p>
+<ul>
+<li>执行计划可动态调整</li>
+<li>调整的依据是中间结果的精确统计信息</li>
+</ul>
+          <div class="read-more">
+            <a href="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/">Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)</a>
         
       </h1>
@@ -661,111 +716,6 @@
 </ul>
           <div class="read-more">
             <a href="/2018/12/02/PostgreSQL实现事务和多版本并发控制的精华/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/24/两阶段提交及JTA/">两阶段提交及JTA(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-12-24
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h3 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h3><h4 id="分布式事务简介"><a href="#分布式事务简介" class="headerlink" title="分布式事务简介"></a>分布式事务简介</h4><p>分布式事务是指会涉及到操作多个数据库（或者提供事务语义的系统，如JMS）的事务。其实就是将对同一数据库事务的概念扩大到了对多个数据库的事务。目的是为了保证分布式系统中事务操作的原子性。分布式事务处理的关键是必须有一种方法可以知道事务在任何地方所做的所有动作，提交或回滚事务的决定必须产生统一的结果（全部提交或全部回滚）。</p>
-<h4 id="分布式事务实现机制"><a href="#分布式事务实现机制" class="headerlink" title="分布式事务实现机制"></a>分布式事务实现机制</h4><p>如同作者在<a href="https://tangboy.github.io/2018/12/02/PostgreSQL%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1%E5%92%8C%E5%A4%9A%E7%89%88%E6%9C%AC%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E7%9A%84%E7%B2%BE%E5%8D%8E/" target="_blank" rel="noopener">《MVCC PostgreSQL实现事务和多版本并发控制的精华》</a>一文中所讲，事务包含原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）和持久性（Durability）。</p>
-<p>PostgreSQL针对ACID的实现技术如下表所示。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>ACID</th>
-<th>实现技术</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>原子性（Atomicity</td>
-<td>MVCC</td>
-</tr>
-<tr>
-<td>一致性（Consistency）</td>
-<td>约束（主键、外键等）</td>
-</tr>
-<tr>
-<td>隔离性</td>
-<td>MVCC</td>
-</tr>
-<tr>
-<td>持久性</td>
-<td>WAL</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>分布式事务的实现技术如下表所示。（以PostgreSQL作为事务参与方为例）</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>分布式ACID</th>
-<th>实现技术</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>原子性（Atomicity</td>
-<td>MVCC + 两阶段提交</td>
-</tr>
-<tr>
-<td>一致性（Consistency）</td>
-<td>约束（主键、外键等）</td>
-</tr>
-<tr>
-<td>隔离性</td>
-<td>MVCC</td>
-</tr>
-<tr>
-<td>持久性</td>
-<td>WAL</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>从上表可以看到，一致性、隔离性和持久性靠的是各分布式事务参与方自己原有的机制，而两阶段提交主要保证了分布式事务的原子性。</p>
-          <div class="read-more">
-            <a href="/2017/12/24/两阶段提交及JTA/" class="read-more-link">阅读更多</a>
           </div>
         
       

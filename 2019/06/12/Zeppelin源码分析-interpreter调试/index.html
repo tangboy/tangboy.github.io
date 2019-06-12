@@ -17,10 +17,12 @@
 
 
 
-  <meta name="description" content="机器学习，编程，玩">
+  <meta name="description" content="Zeppelin源码分析-interpreter调试">
 
 
 
+
+  <meta name="keywords" content="Zeppelin, Anthon">
 
 
 
@@ -40,7 +42,7 @@
 
 
 
-<link rel="canonical" href="http://code-monkey.top/archives/page/4/">
+<link rel="canonical" href="http://code-monkey.top/2019/06/12/Zeppelin源码分析-interpreter调试/">
 
 
 
@@ -88,11 +90,7 @@
   window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title>
-  
-    归档 - Anthon
-  
-</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> Zeppelin源码分析-interpreter调试 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -204,261 +202,113 @@
           <div id="content" class="content">
             
   
-  
-  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Zeppelin源码分析-interpreter调试
+        
+      </h1>
 
-  <section id="archive" class="archive">
+      <div class="post-meta">
+        <span class="post-time">
+          2019-06-12
+        </span>
+        
+        
+      </div>
+    </header>
+
     
+    
+
+
+    <div class="post-content">
+      
+        <p>前面提到了interpreter是以单独的process启动的，想要debug interpreter，需要设置启动interpreter进程的jvm以debug方式启动，然后让IDE进行remote debug，具体步骤如下：</p>
+<ol>
+<li>在bin/interpreter.sh脚本中JAVA_INTP_OPTS变量中加入如下参数：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JAVA_INTP_OPTS+=<span class="string">" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=**`expr <span class="variable">$&#123;PORT&#125;</span> + 1`**  -Dzeppelin.log.file=<span class="variable">$&#123;ZEPPELIN_LOGFILE&#125;</span>"</span></span><br></pre></td></tr></table></figure>
+<p>加粗部分保证启动interpreter的jvm以debug方式启动，监听的端口号比RemoteInterpreterServer process监听的端口号+1（采用<code>expr${PORT} + 1</code>）这里不能写成固定的端口，因为每种interpreter都会启动一个独立的process，该process监听的socket端口是zeppelin在运行时随机获取一个可用的端口（没有被占用的端口）。如果写成固定的端口，那么每种interpreter process在进行remote debug的时候，端口就会冲突。</p>
+<ol>
+<li>启动ZeppelinServer的调试，可以直接run，不用以debug方式启动。</li>
+<li>打开浏览器，访问<a href="http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter" target="_blank" rel="noopener">http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter</a> binding了spark。insert一个paragraph，首行写入%spark (表明采用SparkInterpreter来解释此paragrapph中的代码)，换行，写入scala代码println(“hello,world”)，由于这里主要演示debug interpreter，以最简单的hello world说明问题。然后点击运行该paragraph。此时zeppelin server会调用bin/interpreter.sh脚本，传入“端口、interpreter加载的目录(这里是${ZEPPELIN_HOME}/interpreter/spark)、interpreter各自的log file位置”这些参数以启动该interpreter jvm。由于之前在JAVA_INTP_OPTS设置了jvm支持远程调试的参数，该jvm可以通过IDE remote debug。</li>
+<li>通过ps –ef|grep interpreter来查找RemoteInterpreterServer process启动的参数，可以看到-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=58679类似的输出，表明该jvm在58679端口上支持remote debug。</li>
+</ol>
+<p>在SparkInterpreter.java中的重点位置设置断点，如在方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open()和interpret(String line, InterpreterContext context)</span><br></pre></td></tr></table></figure></p>
+<p>首行设置断点。</p>
+<ol>
+<li>在IDE，以Idea为例：创建Remote Run/Debug Configuration，填入端口号58679</li>
+</ol>
+<img src="/2019/06/12/Zeppelin源码分析-interpreter调试/1.png">
+<p>即可启动remote debug。</p>
+<p>需要注意的是，由于hello world代码简短，可能在你在IDE中启动Remote debug时该Interpreter已经执行完了。再次点击执行该paragraph即可命中SparkInterpreter中的断点。</p>
+
+      
+    </div>
 
     
       
-        
-        
+      
 
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2019/06/12/Zeppelin源码分析-interpreter调试/">http://code-monkey.top/2019/06/12/Zeppelin源码分析-interpreter调试/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
         
-          
-          <div class="collection-title">
-            <h2 class="archive-year">2017</h2>
+          <div class="post-tags">
+            
+              <a href="/tags/Zeppelin/">Zeppelin</a>
+            
           </div>
         
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            07-15
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/07/15/how-to-read-source-code/" class="archive-post-link">
-            我是如何阅读开源项目的源代码的
-          </a>
-        </span>
-      </div>
+        
+        
+  <nav class="post-nav">
     
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            07-09
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/07/09/Learn-Java-Collection/" class="archive-post-link">
-            Java 集合学习指南
-          </a>
-        </span>
-      </div>
     
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            07-08
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/07/08/introduction-to-seaborn/" class="archive-post-link">
-            introduction to seaborn
-          </a>
-        </span>
-      </div>
-    
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            01-23
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/01/23/introduction-to-neo4j/" class="archive-post-link">
-            introduction_to_neo4j
-          </a>
-        </span>
-      </div>
-    
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            01-04
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/01/04/matrix-summary-in-linear-algebra/" class="archive-post-link">
-            线性代数之各种各样的矩阵
-          </a>
-        </span>
-      </div>
-    
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            01-04
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/01/04/develop-lbs-using-mongodb/" class="archive-post-link">
-            结合MongoDB开发LBS应用
-          </a>
-        </span>
-      </div>
-    
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            01-02
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/01/02/spring-boot-in-action/" class="archive-post-link">
-            spring_boot_in_action
-          </a>
-        </span>
-      </div>
-    
-      
-        
-        
-
-        
-          
-          <div class="collection-title">
-            <h2 class="archive-year">2016</h2>
-          </div>
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            12-28
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2016/12/28/emmet-usage/" class="archive-post-link">
-            emmet_usage
-          </a>
-        </span>
-      </div>
-    
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            12-26
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2016/12/26/spacemacs-usage/" class="archive-post-link">
-            spacemacs使用指南
-          </a>
-        </span>
-      </div>
-    
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            12-25
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2016/12/25/mathjax-test/" class="archive-post-link">
-            mathjax 在hexo应用
-          </a>
-        </span>
-      </div>
-    
-      
-        
-        
-
-        
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            12-25
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2016/12/25/rewrite/" class="archive-post-link">
-            rewrite
-          </a>
-        </span>
-      </div>
-    
-  </section>
-
-  
-  <nav class="pagination">
-    
-      <a class="prev" href="/archives/page/3/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text">上一页</span>
+      <a class="next" href="/2019/06/12/Zeppelin源码分析-note的执行过程/">
+        <span class="next-text nav-default">Zeppelin源码分析-note的执行过程</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
       </a>
-    
     
   </nav>
 
 
+      </footer>
+    
+
+  </article>
 
 
           </div>
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
       </main>
@@ -547,6 +397,11 @@
     </div>
 
     
+  
+  
+
+  
+
 
 
     
@@ -582,7 +437,24 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
   </body>
 </html>
