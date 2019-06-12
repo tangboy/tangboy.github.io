@@ -208,6 +208,62 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">Spark SQL / Catalyst 内部原理 与 RBO(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-13
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="Spark-SQL-架构"><a href="#Spark-SQL-架构" class="headerlink" title="Spark SQL 架构"></a>Spark SQL 架构</h2><p>Spark SQL 的整体架构如下图所示</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql.png">
+<p>从上图可见，无论是直接使用 SQL 语句还是使用 DataFrame，都会经过如下步骤转换成 DAG 对 RDD 的操作</p>
+<ul>
+<li>Parser 解析 SQL，生成 Unresolved Logical Plan</li>
+<li>由 Analyzer 结合 Catalog 信息生成 Resolved Logical Plan</li>
+<li>Optimizer根据预先定义好的规则对 Resolved Logical Plan 进行优化并生成 Optimized Logical Plan</li>
+<li>Query Planner 将 Optimized Logical Plan 转换成多个 Physical Plan</li>
+<li>CBO 根据 Cost Model 算出每个 Physical Plan 的代价并选取代价最小的 Physical Plan 作为最终的 Physical Plan</li>
+<li>Spark 以 DAG 的方法执行上述 Physical Plan</li>
+<li>在执行 DAG 的过程中，Adaptive Execution 根据运行时信息动态调整执行计划从而提高执行效率</li>
+</ul>
+          <div class="read-more">
+            <a href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">Spark CommitCoordinator 保证数据一致性(转)</a>
         
       </h1>
@@ -697,59 +753,6 @@
 <p>本节通过几组实验说明了不同场景下不同query的不同效率，同时分析性能差异的原因。 （本文所有实验皆基于PostgreSQL 9.3.5平台）<br>分别使用count distinct 和 count group by对 bigint, macaddr, text三种类型的字段做查询。<br>首先创建如下结构的表</p>
           <div class="read-more">
             <a href="/2017/12/24/快速计算Distinct-Count/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/">Merge Join vs. Hash Join vs. Nested Loop(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-12-24
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="Nested-Loop"><a href="#Nested-Loop" class="headerlink" title="Nested Loop"></a>Nested Loop</h2><p>对于被连接的数据子集较小的情况，Nested Loop是个较好的选择。Nested Loop就是扫描一个表（外表），每读到一条记录，就根据Join字段上的索引去另一张表（内表）里面查找，若Join字段上没有索引查询优化器一般就不会选择 Nested Loop。在Nested Loop中，内表（一般是带索引的大表）被外表（也叫“驱动表”，一般为小表——不紧相对其它表为小表，而且记录数的绝对值也较小，不要求有索引）驱动，外表返回的每一行都要在内表中检索找到与它匹配的行，因此整个查询返回的结果集不能太大（大于1 万不适合）。</p>
-<h2 id="Hash-Join"><a href="#Hash-Join" class="headerlink" title="Hash Join"></a>Hash Join</h2><p>Hash Join是做大数据集连接时的常用方式，优化器使用两个表中较小（相对较小）的表利用Join Key在内存中建立散列表，然后扫描较大的表并探测散列表，找出与Hash表匹配的行。<br>这种方式适用于较小的表完全可以放于内存中的情况，这样总成本就是访问两个表的成本之和。但是在表很大的情况下并不能完全放入内存，这时优化器会将它分割成若干不同的分区，不能放入内存的部分就把该分区写入磁盘的临时段，此时要求有较大的临时段从而尽量提高I/O 的性能。它能够很好的工作于没有索引的大表和并行查询的环境中，并提供最好的性能。大多数人都说它是Join的重型升降机。Hash Join只能应用于等值连接(如WHERE A.COL3 = B.COL4)，这是由Hash的特点决定的。</p>
-<h2 id="Merge-Join"><a href="#Merge-Join" class="headerlink" title="Merge Join"></a>Merge Join</h2><p>通常情况下Hash Join的效果都比排序合并连接要好，然而如果两表已经被排过序，在执行排序合并连接时不需要再排序了，这时Merge Join的性能会优于Hash Join。Merge join的操作通常分三步：</p>
-<ol>
-<li>对连接的每个表做table access full;</li>
-<li>对table access full的结果进行排序。</li>
-<li>进行merge join对排序结果进行合并。</li>
-</ol>
-<p>在全表扫描比索引范围扫描再进行表访问更可取的情况下，Merge Join会比Nested Loop性能更佳。当表特别小或特别巨大的时候，实行全表访问可能会比索引范围扫描更有效。Merge Join的性能开销几乎都在前两步。Merge Join可适于于非等值Join（&gt;，&lt;，&gt;=，&lt;=，但是不包含!=，也即&lt;&gt;）</p>
-          <div class="read-more">
-            <a href="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/" class="read-more-link">阅读更多</a>
           </div>
         
       

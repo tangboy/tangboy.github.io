@@ -208,6 +208,174 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-notebook持久化/">Zeppelin源码分析-notebook持久化</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-06-12
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>Notebook的持久化系统主要的类图如下：<br><img src="/2019/06/12/Zeppelin源码分析-notebook持久化/1.png"></p>
+<p>各类主要的职责如下：</p>
+<ol>
+<li>NotebookRepo是顶层接口，规定了持久化层基本的CRUD接口。</li>
+<li>NotebookVersioned定义了Note的版本管理接口，目前其实现类只有GitNotebookRepo（该功能目前实现的不完善，既没有实现按照rev log进行过滤检索，界面上目前也没有检索或者是回退到具体某个版本的入口），采用JGit实现。</li>
+<li>VFSNotebookRepo是zeppelin的默认实现类，使用apache common-vfs来实现多文件系统支持。（受配置参数zeppelin.notebook.storage控制，参见：ZeppelinConfiguration。</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZEPPELIN_NOTEBOOK_STORAGE("zeppelin.notebook.storage", VFSNotebookRepo.class.getName()),</span><br></pre></td></tr></table></figure>
+<p>目前common-vfs支持的文件系统虽然很多，但是由于Notebook持久化时需要RW、Create/Delete权限，实际上可用的只有如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">File System</th>
+<th style="text-align:center">Directory Contents</th>
+<th style="text-align:center">Authentication</th>
+<th style="text-align:center">Read</th>
+<th style="text-align:center">Write</th>
+<th style="text-align:center">Create/Delete</th>
+<th style="text-align:center">Random</th>
+<th style="text-align:center">Version</th>
+<th style="text-align:center">Rename</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">File</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Read/Write</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">FTP</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Read</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">FTPS</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td style="text-align:center">RAM</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Read/Write</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">RES</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Read/Write</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">SFTP</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Read</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">Temp</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Read/Write</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">WebDAV</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Read/Write</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>需要注意的是：不支持HDFS，由于vfs对hdfs://不支持Write、Create/Delete</p>
+<ol>
+<li><p>NotebookRepoSync的初衷是为了让2个NotebookRepo之间进行自动同步修改，实现：在本地repo保存修改的同时，让zeppelin自动将修改同步到远程的repo上。<br>要启用2个repo之间的同步，需要：<br> a. 在zeppelin-site.xml中修改配置参数zeppelin.notebook.storage，以逗号分隔2个实现类的完整类名<br> b. 注意顺序，一般是将VFSNotebookRepo作为一个，而S3NotebookRepo或者是AzureNotebookRepo等作为第二个。zeppelin目前只支持最大2个Repo（maxRepoNum=2作为编译时常量），不能通过配置修改。</p>
+</li>
+<li><p>S3NotebookRepo和AzureNotebookRepo，实现向2大云存储系统的持久化Notebook。</p>
+</li>
+<li>ZeppelinHubRepo是为了向zeppelinhub持久化Notebook而设计的，zeppelinhub是一个类似于Github的分享网站，区别在于Github是分享git仓库的，zeppelinhub是分享notebook的。</li>
+</ol>
+          <div class="read-more">
+            <a href="/2019/06/12/Zeppelin源码分析-notebook持久化/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/05/29/Zeppelin源码分析——主要的class分析/">Zeppelin源码分析——主要的class分析</a>
         
       </h1>
@@ -667,60 +835,6 @@
 </ul>
           <div class="read-more">
             <a href="/2019/04/09/Kafka深度解析/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/">美团DB数据同步到数据仓库的架构与实践(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-01
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在数据仓库建模中，未经任何加工处理的原始业务层数据，我们称之为ODS(Operational Data Store)数据。在互联网企业中，常见的ODS数据有业务日志数据（Log）和业务DB数据（DB）两类。对于业务DB数据来说，从MySQL等关系型数据库的业务数据进行采集，然后导入到Hive中，是进行数据仓库生产的重要环节。</p>
-<p>如何准确、高效地把MySQL数据同步到Hive中？一般常用的解决方案是批量取数并Load：直连MySQL去Select表中的数据，然后存到本地文件作为中间存储，最后把文件Load到Hive表中。这种方案的优点是实现简单，但是随着业务的发展，缺点也逐渐暴露出来：</p>
-<ul>
-<li>性能瓶颈：随着业务规模的增长，Select From MySQL -&gt; Save to Localfile -&gt; Load to Hive这种数据流花费的时间越来越长，无法满足下游数仓生产的时间要求。</li>
-<li>直接从MySQL中Select大量数据，对MySQL的影响非常大，容易造成慢查询，影响业务线上的正常服务。</li>
-<li>由于Hive本身的语法不支持更新、删除等SQL原语，对于MySQL中发生Update/Delete的数据无法很好地进行支持。</li>
-</ul>
-<p>为了彻底解决这些问题，我们逐步转向CDC (Change Data Capture) + Merge的技术方案，即实时Binlog采集 + 离线处理Binlog还原业务数据这样一套解决方案。Binlog是MySQL的二进制日志，记录了MySQL中发生的所有数据变更，MySQL集群自身的主从同步就是基于Binlog做的。</p>
-<p>本文主要从Binlog实时采集和离线处理Binlog还原业务数据两个方面，来介绍如何实现DB数据准确、高效地进入数仓。</p>
-<h2 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h2><img src="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/1.png">
-          <div class="read-more">
-            <a href="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/" class="read-more-link">阅读更多</a>
           </div>
         
       
