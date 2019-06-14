@@ -208,6 +208,51 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/22/LeetCode-算法题目解答/">LeetCode 算法题目解答</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-22
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>为了督促自己能够每天刷一道算法题，特将LeetCode常见题目列出，之后每天一题，每完成一题都会总结解答并链接到该博客相应的题目上。</p>
+          <div class="read-more">
+            <a href="/2018/12/22/LeetCode-算法题目解答/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/">Adaptive Execution 让 Spark SQL 更高效更智能</a>
         
       </h1>
@@ -665,57 +710,6 @@
 <p>MCMC 通过在概率空间中随机采样以近似兴趣参数（parameter of interest）的后验分布。</p>
           <div class="read-more">
             <a href="/2018/12/02/马尔可夫链蒙特卡洛方法/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/02/PostgreSQL实现事务和多版本并发控制的精华/">PostgreSQL实现事务和多版本并发控制的精华(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-02
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h3 id="PostgreSQL针对ACID的实现机制"><a href="#PostgreSQL针对ACID的实现机制" class="headerlink" title="PostgreSQL针对ACID的实现机制"></a>PostgreSQL针对ACID的实现机制</h3><h4 id="数据库ACID"><a href="#数据库ACID" class="headerlink" title="数据库ACID"></a>数据库ACID</h4><p>数据库事务包含如下四个特性</p>
-<ul>
-<li><strong>原子性（Atomicity</strong>  指一个事务要么全部执行，要么不执行。也即一个事务不可能只执行一半就停止（哪怕是因为意外也不行）。比如从取款机取钱，这个事务可以分成两个步骤：1)划卡；2)出钱。不可能划了卡，而钱却没出来。这两步必须同时完成，或者同时不完成。</li>
-<li><strong>一致性（Consistency）</strong> 事务的运行不可改变数据库中数据的一致性，事务必须将数据库中的数据从一个正确的状态带到另一个正确的状态。事务在开始时，完全可以假定数据库中的数据是处于正确（一致）状态的，而不必作过多验证（从而提升效率），同时也必须保证事务结束时数据库数据处于正确（一致）状态。例如，完整性约束了a+b=10，一个事务改变了a，那么b也应该随之改变。</li>
-<li><strong>隔离性（Isolation）</strong> 在并发数据操作时，不同的事务拥有各自的数据空间，其操作不会对对方产生干扰。隔离性允许事务行为独立或隔离于其它事务并发运行。</li>
-<li><strong>持久性（Durability）</strong> 事务执行成功以后，该事务对数据库所作的更改是持久的保存在数据库之中，不会无缘无故的回滚。</li>
-</ul>
-          <div class="read-more">
-            <a href="/2018/12/02/PostgreSQL实现事务和多版本并发控制的精华/" class="read-more-link">阅读更多</a>
           </div>
         
       
