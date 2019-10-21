@@ -349,7 +349,7 @@
 </ol>
 <p>写入到本地磁盘时，对数据进行排序，实际上是对<strong>kvoffsets</strong>这个偏移量索引数组进行排序。</p>
 <h2 id="Reduce"><a href="#Reduce" class="headerlink" title="Reduce"></a>Reduce</h2><p>Reduce过程的经典流程图如下：</p>
-<img src="/2019/06/13/MapReduce之Shuffle过程详述/reduce-shuffle.png">
+
 <h3 id="copy过程"><a href="#copy过程" class="headerlink" title="copy过程"></a>copy过程</h3><ul>
 <li>作用：拉取数据；</li>
 <li>过程：Reduce进程启动一些数据copy线程(Fetcher)，通过HTTP方式请求map task所在的TaskTracker获取map task的输出文件。因为这时map task早已结束，这些文件就归TaskTracker管理在本地磁盘中。</li>
@@ -410,6 +410,12 @@
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">深入理解JVM(1)——Java内存区域与Java对象(转载)</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
     
     
       <a class="next" href="/2019/06/12/Zeppelin源码分析-interpreter调试/">
