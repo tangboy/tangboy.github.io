@@ -208,6 +208,119 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">Spark CommitCoordinator 保证数据一致性(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-11
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Spark 输出数据到 HDFS 时，需要解决如下问题：</p>
+<ol>
+<li>由于多个 Task 同时写数据到 HDFS，如何保证要么所有 Task 写的所有文件要么同时对外可见，要么同时对外不可见，即保证数据一致性</li>
+<li>同一 Task 可能因为 Speculation 而存在两个完全相同的 Task 实例写相同的数据到 HDFS中，如何保证只有一个 commit 成功</li>
+<li>对于大 Job（如具有几万甚至几十万 Task），如何高效管理所有文件</li>
+</ol>
+<h2 id="commit-原理"><a href="#commit-原理" class="headerlink" title="commit 原理"></a>commit 原理</h2><p>本文通过 Local mode 执行如下 Spark 程序详解 commit 原理</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sparkContext.textFile(<span class="string">"/jason/input.zstd"</span>)</span><br><span class="line">  .map(_.split(<span class="string">","</span>))</span><br><span class="line">  .saveAsTextFile(<span class="string">"/jason/test/tmp"</span>)</span><br></pre></td></tr></table></figure>
+<p>在详述 commit 原理前，需要说明几个述语</p>
+<ul>
+<li>Task，即某个 Application 的某个 Job 内的某个 Stage 的一个 Task</li>
+<li>TaskAttempt，Task 每次执行都视为一个 TaskAttempt。对于同一个 Task，可能同时存在多个 TaskAttemp</li>
+<li>Application Attempt，即 Application 的一次执行</li>
+</ul>
+<p>在本文中，会使用如下缩写</p>
+<ul>
+<li>${output.dir.root} 即输出目录根路径</li>
+<li>${appAttempt} 即 Application Attempt ID，为整型，从 0 开始</li>
+<li>${taskAttemp} 即 Task Attetmp ID，为整型，从 0 开始</li>
+</ul>
+          <div class="read-more">
+            <a href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/">Spark性能优化之道——解决Spark数据倾斜</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-10
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文结合实例详细阐明了Spark数据倾斜的几种场景以及对应的解决方案，包括避免数据源倾斜，调整并行度，使用自定义Partitioner，使用Map侧Join代替Reduce侧Join，给倾斜Key加上随机前缀等。</p>
+<h2 id="为何要处理数据倾斜（Data-Skew）"><a href="#为何要处理数据倾斜（Data-Skew）" class="headerlink" title="为何要处理数据倾斜（Data Skew）"></a>为何要处理数据倾斜（Data Skew）</h2><h3 id="什么是数据倾斜"><a href="#什么是数据倾斜" class="headerlink" title="什么是数据倾斜"></a>什么是数据倾斜</h3><p>对Spark/Hadoop这样的大数据系统来讲，数据量大并不可怕，可怕的是数据倾斜。</p>
+<p>何谓数据倾斜？数据倾斜指的是，并行处理的数据集中，某一部分（如Spark或Kafka的一个Partition）的数据显著多于其它部分，从而使得该部分的处理速度成为整个数据集处理的瓶颈。</p>
+<p>对于分布式系统而言，理想情况下，随着系统规模（节点数量）的增加，应用整体耗时线性下降。如果一台机器处理一批大量数据需要120分钟，当机器数量增加到三时，理想的耗时为120 / 3 = 40分钟，如下图所示</p>
+<img src="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/non_skew_time.png">
+          <div class="read-more">
+            <a href="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/07/SQL之Join实现/">SQL之Join实现</a>
         
       </h1>
@@ -638,109 +751,6 @@
           <div class="read-more">
             <a href="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/" class="read-more-link">阅读更多</a>
           </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/24/评分卡模型WOE-IV-ROC/">评分卡模型WOE+IV+ROC</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-12-24
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="WOE（Weight-Of-Evidence：证据权重）"><a href="#WOE（Weight-Of-Evidence：证据权重）" class="headerlink" title="WOE（Weight Of Evidence：证据权重）"></a>WOE（Weight Of Evidence：证据权重）</h2><p>WOE的全称是“Weight of Evidence”，即证据权重。WOE是对原始自变量的一种编码形式。<br>要对一个变量进行WOE编码，需要首先把这个变量进行分组处理（也叫离散化、分箱等等，说的都是一个意思）。分组后，对于第i组，<strong>WOE的计算公式</strong>如下：</p>
-<script type="math/tex; mode=display">
-WOE_i = \ln(\frac{py_i}{pn_i}) = \ln(\frac{\#y_i / \#y_T}{\#n_i / \#n_T})</script><p>其中，$py_i$是这个组中响应客户（风险模型中，对应的是违约客户，总之，指的是模型中预测变量取值为“是”或者说1的个体）占所有样本中所有响应客户的比例，$pn_i$是这个组中未响应客户占样本中所有未响应客户的比例，$\#y_i$是这个组中响应客户的数量，$\#n_i$是这个组中未响应客户的数量，$\#y_T$是样本中所有响应客户的数量，$\#n_T$是样本中所有未响应客户的数量。</p>
-<p>从这个公式中我们可以体会到，<strong>WOE表示的实际上是“当前分组中响应客户占所有响应客户的比例”和“当前分组中没有响应的客户占所有没有响应的客户的比例”的差异</strong>。</p>
-          <div class="read-more">
-            <a href="/2017/12/24/评分卡模型WOE-IV-ROC/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/11/养成早起习惯/">养成早起习惯(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-12-11
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <p>在这一个月里，我几乎每天早六点起床。从几乎不吃到按时吃早餐，晚上也懒得刷微信刷知乎，到点就上床睡觉。睡眠略有反复，但总之是越来越好。更让我开心的是，我开始忘记焦虑了。有什么能比内心的平和更重要呢？关于如何早起和早起做什么，有一点小感悟，共享一下。</p>
-<ol>
-<li><p>为什么早起？这似乎是一个多余的问题，其实不然。有些人早起是被逼的，要上课，要上班，总之是完成任务，一到周末，晚睡、赖床，放纵到死。我曾经在云南的小山村里做过老师，每天早六点带学生跑步、出操，真是太痛苦了，一结束赶紧回去补觉。如果你准备早起，一定是你要早起，而不是被逼的。人大多数时候的焦虑，其实是期待和失望的恶性循环，而所谓安全感，不过是对自己的人生多一点把控。你都不能把控个人的生活，谁相信你会真正平衡好工作和家庭？从容，从容，多来一点从容吧。</p>
-</li>
-<li><p>壮士断腕。十一点了，一个声音说，该睡了该睡了。另一个声音说，再刷会微信吧。读库老六分享了一套新的笔记本，我到底要不要拿下呢？世相那篇又长又有逼格的文章还没读完呢。陌陌上市了，跌破发行价是怎么回事？姜文的新电影好像被骂得惨，我周末要不要去看呢？你睡前还舍不得放下手机，真好像会错过多少万的买卖。其实，你该做的就是扔掉手机，上床睡觉。睡不着怎么办？我刚开始也是这样。第一，尽量做有助睡眠的活动，泡脚，数羊，数星星。第二，还是睡不着就随它去，狠狠心先早六点起床。于是一天昏沉，没关系，晚上甜甜地睡眠等着你。什么？一次都起不来？那你还是继续睡吧。早起的第一步是先尽量早点入睡，并果断早起几次，这个需要一点勇气。</p>
-</li>
-<li><p>让朋友看到。早起好几天了？看到了清晨初升的太阳，吃到了好久不见的早餐，睡得比较舒坦了，是不是有点小改变带来的兴奋？没关系，很多人到这一步就马上回到从前了。我的做法是在朋友圈和改变会群里发一条状态，从“我是明亮的晨星”到“不知不觉走到这里，细细长长的这条路”，从“知止而后有定”到到“温柔的人有福了”，基本上我都是头天晚上想好，然后起来拿手机打字发出。 这好像是一个打卡，也好像一个承诺的宣告。你写字的过程已经开始思想，比单纯的闹铃要有效得多。这样发了一个月状态后，渐渐就成了习惯。如果你已经毫无障碍地起床了，那么让朋友看到已经不重要了，但是和队友分享还是要坚持的。</p>
-</li>
-<li><p>倾听和引导身体的变化。说实话，如果晚上没有睡够，早起是非常痛苦的。如果你每天都是这么痛苦，我想神也帮不了你——人怎么能长久地和自己的身体对抗呢？其实，身心从来不是绝对二分。你首先要倾听身体的变化，比如深受睡不够的痛苦，那就保证至少六小时的睡眠，因人而异。还有也要引导身体的变化，做一些愉悦的事情，饮一杯蜂蜜水，看一会日出，听一段广播或音乐等等。要知道，人是不能靠坚持做事的，但如果在坚持中发现乐趣，那么坚持本身就是一件充满乐趣的事情。</p>
-</li>
-<li><p>无用之大用。早起做什么？如果你六点晨起，除掉洗漱等的时间，你可能比之前多出一两个小时可以自由支配，那么做什么呢？我的意见是，做点和学习和工作无关的事情，多点和自己的生命有关的事情。可以是灵修，比如基督徒可以读经祷告；可以是练习书法，抄一段《般若波罗蜜多心经》；也可以什么都不做，只是冥想。总之，我们并非要把一段多出的时间用另一段匆忙填满，更重要的是你提升生命的状态，以圆融平和的心去面对每一天的劳作和争战。</p>
-</li>
-<li><p>早起这件小事。或许有几次看到别人睡眼惺忪的时候，而你已经精神抖擞，微微一笑，深藏功与名。其实，早起并不是一件什么大不了的事。它不能定义你的个性，不能让你快速通过雅思托福，也不能提升你的职业技能，但是它是关乎你自己的生活质量的。早起是一个触点，带动整个生活有阵痛但可喜悦的改变。早起是并不能决定你的终点，但最起码可以重新定义你的起点。</p>
-</li>
-</ol>
-
         
       
     </div>

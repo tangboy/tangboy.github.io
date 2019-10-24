@@ -208,6 +208,105 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/05/29/Zeppelin源码分析——主要的class分析/">Zeppelin源码分析——主要的class分析</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-05-29
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>zeppelin的module、package、class众多，如何快速地理清头绪，抓住重点？本文分析zeppelin主要module中重点的类以及它们之间的关系，理清这些类的职责，对于理解zeppelin的运行过程至关重要。<br>经过之前文章的分析，我们已经了解了zeppelin涉及到框架层面的几个module为：zeppelin-server、zeppelin-zengine、zeppelin-interpreter，并且三者之间有如下的依赖关系： </p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/1.png">
+<p>本文要分析的主要的class，也都来自于这三个module。</p>
+<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/2.png">
+<p>以上类图中省略了字段和方法，以避免过早引入太多细节，重点关注类与类之间的关系组成。由于篇幅的限制，再加上zeppelin提供的核心价值是与Interpreter相关的多语言repl解释器，笔者就选择从右上角黄色的区域开始，分多篇分析。</p>
+          <div class="read-more">
+            <a href="/2019/05/29/Zeppelin源码分析——主要的class分析/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/">Zeppelin源码分析---目录结构与modules分析</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-05-27
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p><a href="https://zeppelin.apache.org" target="_blank" rel="noopener">Zeppelin</a>，于2016-5-18日从Apache孵化器项目毕业成为Apache顶级项目，采用Java（主要）+Scala+R+PythonR+Bash+JS混合开发，采用maven作为build工具。涉及的主要技术stack如下：</p>
+<ol>
+<li><strong>前台</strong> : AngularJS、Node.JS、WebSocket、Grunt、Bower、Highlight.js、BootStrap3js</li>
+<li><strong>后台</strong> : Jetty（embedding）、Thrift、Shiro（权限）、Apache common-exec、Jersey REST API</li>
+</ol>
+<p>zeppelin本质上是一个web应用程序，它以独立的jvm进程的方式来启动Interpreter（解释器），交互式（repl）执行各种语言的代码片段，并将结果以html代码片段的形式返回给前端UI。</p>
+          <div class="read-more">
+            <a href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/04/28/Spark-应用程序调优/">Spark 应用程序调优(转)</a>
         
       </h1>
@@ -622,118 +721,6 @@
 <h2 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h2><img src="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/1.png">
           <div class="read-more">
             <a href="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/">知乎如何基于开源Druid打造下一代数据平台(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-02-28
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/1.webp">
-<h2 id="导读"><a href="#导读" class="headerlink" title="导读"></a>导读</h2><p>本文重点介绍了知乎数据分析平台对 Druid 的查询优化。通过自研的一整套缓存机制和查询改造，该平台目前在较长的时间内，满足了业务固化的指标需求和灵活的分析需求，减少了数据开发者的开发成本。</p>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>知乎作为知名中文知识内容平台，业务增长和产品迭代速度很快，如何满足业务快速扩张中的灵活分析需求，是知乎数据平台组要面临的一大挑战。</p>
-<p>知乎数据平台团队基于开源的 Druid 打造的业务自助式的数据分析平台，经过研发迭代，目前支撑了全业务的数据分析需求，是业务数据分析的重要工具。</p>
-<p>目前，平台主要的能力如下：</p>
-<ol>
-<li>统一的数据源管理，支持摄入离线数仓的 Hive 表和实时数仓的 Kafka 流</li>
-<li>自助式报表配置，支持多维分析报表、留存分析报表</li>
-<li>灵活的多维度多指标的组合分析，秒级响应速度，支持嵌套式「与」和「或」条件筛选</li>
-<li>自助式仪表盘配置</li>
-<li>开发平台接口，为其他系统提供数据服务</li>
-<li>统一的数据权限管理</li>
-</ol>
-<p>目前，业务使用平台的数据如下：</p>
-<ol>
-<li>自助式配置仪表盘数：495 个，仪表盘内报表共计：2399 张</li>
-<li>日请求量 3w+</li>
-<li>为 A/B Testing、渠道管理、APM 、数据邮件等系统提供数据 API</li>
-</ol>
-<h2 id="数据分析平台架构"><a href="#数据分析平台架构" class="headerlink" title="数据分析平台架构"></a>数据分析平台架构</h2><img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/2.webp">
-          <div class="read-more">
-            <a href="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/02/28/埋点数据/">埋点数据(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-02-28
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <img src="/2019/02/28/埋点数据/1.webp">
-<h2 id="导读"><a href="#导读" class="headerlink" title="导读"></a>导读</h2><p>埋点作为商业智能（BI）和人工智能（AI）体系中重要的一环，是公司提升产品工程质量、实施 AB Testing、个性化推荐服务重要的数据来源。在传统的纯 Web 和 Native 开发的产品中，埋点从技术的角度来说未必多深奥，但从业务的角度来说要做到埋点设计规范、流程高效和保证质量却是很难。本文重点介绍一下知乎客户端的埋点模型、流程和平台技术。</p>
-<h2 id="客户端埋点为什么难？"><a href="#客户端埋点为什么难？" class="headerlink" title="客户端埋点为什么难？"></a>客户端埋点为什么难？</h2><p>Web 端的埋点可以随着新代码上线即时生效，对版本的发车概念相对较弱，即使埋点错漏，修复成本较低。</p>
-<p>对客户端而言，如果使用 Native 技术开发的功能埋点有问题，则需要等下一个版本才能修复，并且还有版本覆盖度的问题。修复埋点的这个时间窗口一般都比较长，会对业务的产品快速迭代产生很负面的影响。从业务的角度来说，客户端在发布功能之前，对于要做的数据分析不见得想得全，无计划收集非常多的埋点，对于埋点设计人员、客户端开发、测试人员来说是很大的工作量。反过来说，真正要用数时才发现重要的埋点没有采集，则会 「点」 到用时方恨少。因此，如何综合规划一个版本要采集的埋点，也是颇有挑战的事情，颇有「养兵千日，用兵一时」的感觉。</p>
-          <div class="read-more">
-            <a href="/2019/02/28/埋点数据/" class="read-more-link">阅读更多</a>
           </div>
         
       

@@ -208,6 +208,122 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/08/05/Python中的进程和线程/">Python中的进程和线程</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-08-05
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>对于操作系统来说，一个任务就是一个进程（Process），比如打开一个浏览器就是启动一个浏览器进程，打开一个记事本就启动了一个记事本进程，打开两个记事本就启动了两个记事本进程，打开一个Word就启动了一个Word进程。</p>
+<p>使用top命令看有哪些进程在跑:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Processes: 371 total, 2 running, 15 stuck, 354 sleeping, 3142 threads  17:27:27</span><br><span class="line">Load Avg: 2.57, 2.29, 2.07  CPU usage: 5.26% user, 4.79% sys, 89.94% idle</span><br><span class="line">SharedLibs: 151M resident, 18M data, 17M linkedit.</span><br><span class="line">MemRegions: 107884 total, 6773M resident, 131M private, 2803M shared.</span><br><span class="line">PhysMem: 15G used (2386M wired), 988M unused.</span><br><span class="line">VM: 1564G vsize, 527M framework vsize, 20146031(0) swapins, 21455983(0) swapouts</span><br><span class="line">Networks: packets: 39381163/32G in, 38877596/18G out.</span><br><span class="line">Disks: 4762039/190G read, 7146822/247G written.</span><br><span class="line"></span><br><span class="line">PID    COMMAND      %CPU TIME     #TH   #WQ  #PORT MEM    PURG   CMPRS  PGRP</span><br><span class="line">96223- Microsoft Ex 0.1  15:30.25 356   2    2216  46M    0B     298M   96223</span><br><span class="line">96200  Microsoft AU 0.0  00:11.45 5     0    169   5956K  0B     2480K  96200</span><br><span class="line">91030  nwjs Helper  0.0  02:06.91 9     0    139   2920K  0B     15M    91027</span><br><span class="line">91029  nwjs Helper  0.0  02:37:00 21    0    178   650M   10M    70M    91027</span><br><span class="line">91028  nwjs Helper  0.0  19:01.66 5     0    76    34M    0B     9464K  91027</span><br></pre></td></tr></table></figure></p>
+<p>有些进程还不止同时干一件事，比如Word，它可以同时进行打字、拼写检查、打印等事情。在一个进程内部，要同时干多件事，就需要同时运行多个“子任务”，我们把进程内的这些“子任务”称为线程（Thread）。</p>
+<p>由于每个进程至少要干一件事，所以，一个进程至少有一个线程。当然，像Word这种复杂的进程可以有多个线程，多个线程可以同时执行，多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。</p>
+<p>我们前面编写的所有的Python程序，都是执行单任务的进程，也就是只有一个线程。如果我们要同时执行多个任务怎么办？</p>
+<p>有两种解决方案：</p>
+<ul>
+<li>一种是启动多个进程，每个进程虽然只有一个线程，但多个进程可以一块执行多个任务。</li>
+<li>还有一种方法是启动一个进程，在一个进程内启动多个线程，这样，多个线程也可以一块执行多个任务。</li>
+<li>当然还有第三种方法，就是启动多个进程，每个进程再启动多个线程，这样同时执行的任务就更多了，当然这种模型更复杂，实际很少采用。</li>
+</ul>
+<p>总结一下就是，多任务的实现有3种方式：</p>
+<ul>
+<li>多进程模式；</li>
+<li>多线程模式；</li>
+<li>多进程+多线程模式。</li>
+</ul>
+<p>线程是最小的执行单元，而进程由至少一个线程组成。如何调度进程和线程，完全由操作系统决定，程序自己不能决定什么时候执行，执行多长时间。</p>
+<p>多进程和多线程的程序涉及到同步、数据共享的问题，编写起来更复杂。</p>
+<p>来啊，征服进程和线程，越过Python学习的一个大坎儿吧。</p>
+          <div class="read-more">
+            <a href="/2017/08/05/Python中的进程和线程/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/30/model-evaluation/">机器学习模型评测指标</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-07-30
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>假定有一个二分类问题，比如判定商品是否是假货。给系统一个样本，系统将会判断该样本为“真”（Predicted positive），或“假”（Predicted Negative）。但是当然，系统的判断与真实判断（actual positive/negative）是有误差的，将原本是真的判为真，就是TP（True Positive），原本真的判为假，就是FN（False Negative），原本假的判为真，就是FP（False Positive），原本假的判为假，就是TN（True Negative）。<br><img src="/2017/07/30/model-evaluation/metric.png"></p>
+<p><strong>精确率(Precision)</strong>是指在所有系统判定的“真”的样本中，确实是真的占比，就是<strong>TP/(TP+FP)</strong></p>
+<p><strong>召回率(Recall)</strong>是指在所有确实为真的样本中，被判为“真”的占比，就是<strong>TP/(TP + FN)</strong></p>
+<p><strong>TPR(True Positive Rate)</strong>的定义和Recall定义一样</p>
+<p><strong>FPR(False Positive Rate)</strong>, 又被称为”Probability of False Alarm”, <strong>就是所有确实为“假”的样本中，被误判为真的样本，或者FP/(TN + FP)</strong></p>
+<p><strong>F1</strong> 是为了综合考量精确率和召回率而设计的一个指标，一般公式为取P和R的 <strong>harmonic mean:2<em>Precision</em>Recall/(Precision+Recall)</strong>。</p>
+<p><strong>ROC=Receiver Operating Characteristic</strong>，是TPR vs FPR的曲线；与之对应的是Precision-Recall Curve，展示的是Precision vs Recall的曲线。</p>
+<img src="/2017/07/30/model-evaluation/metric2.png">
+          <div class="read-more">
+            <a href="/2017/07/30/model-evaluation/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/07/15/how-to-read-source-code/">我是如何阅读开源项目的源代码的</a>
         
       </h1>
@@ -608,101 +724,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/12/26/spacemacs-usage/">spacemacs使用指南</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016-12-26
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Spacemacs是一份emacs的配置文件，想要使用它，你先要有emacs，本文主要介绍在Mac上安装和使用Spacemacs，同时本文在Spacemacs基础上使用了子龙山人的Spacemacs-private</p>
-<h1 id="安装-amp-使用"><a href="#安装-amp-使用" class="headerlink" title="安装&amp;使用"></a>安装&amp;使用</h1><h2 id="Mac平台推荐安装Emacs的方法"><a href="#Mac平台推荐安装Emacs的方法" class="headerlink" title="Mac平台推荐安装Emacs的方法"></a>Mac平台推荐安装Emacs的方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew tap railwaycat/emacsmacport;</span><br><span class="line">brew install emacs-mac --with-spacemacs-icon --HEAD --with-gnutls</span><br></pre></td></tr></table></figure>
-<p>注意：—with-gnutls是用来支持ssl的</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#clone spacemacs repo and use develop branch</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/syl20bnr/spacemacs.git ~/.emacs.d -b develop</span><br><span class="line"></span><br><span class="line"><span class="comment">#clone zilongshanren layer and checkout develop branch</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zilongshanren/spacemacs-private.git ~/.spacemacs.d/</span><br></pre></td></tr></table></figure>
-<p>详细的配置说明以及安装powershell支持，可以参考<a href="https://github.com/zilongshanren/spacemacs-private" target="_blank" rel="noopener">spacemacs-private</a></p>
-          <div class="read-more">
-            <a href="/2016/12/26/spacemacs-usage/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/12/25/mathjax-test/">mathjax 在hexo应用</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016-12-25
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="Hexo支持公式"><a href="#Hexo支持公式" class="headerlink" title="Hexo支持公式"></a>Hexo支持公式</h1><h2 id="常规方法"><a href="#常规方法" class="headerlink" title="常规方法"></a>常规方法</h2><p>在 Hexo 中使用 Mathjax 最常规的方法就是主题的 after_footer.ejs 里加入 (该 Mathjax 代码根据 Math StackExchange 所用修改)</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">"text/x-mathjax-config"</span>&gt;</span><br><span class="line">    MathJax.Hub.Config(&#123;<span class="string">"HTML-CSS"</span>: &#123; <span class="attr">preferredFont</span>: <span class="string">"TeX"</span>, <span class="attr">availableFonts</span>: [<span class="string">"STIX"</span>,<span class="string">"TeX"</span>], <span class="attr">linebreaks</span>: &#123; <span class="attr">automatic</span>:<span class="literal">true</span> &#125;, <span class="attr">EqnChunk</span>: (MathJax.Hub.Browser.isMobile ? <span class="number">10</span> : <span class="number">50</span>) &#125;,</span><br><span class="line">        tex2jax: &#123; <span class="attr">inlineMath</span>: [ [<span class="string">"$"</span>, <span class="string">"$"</span>], [<span class="string">"\\("</span>,<span class="string">"\\)"</span>] ], <span class="attr">processEscapes</span>: <span class="literal">true</span>, <span class="attr">ignoreClass</span>: <span class="string">"tex2jax_ignore|dno"</span>,<span class="attr">skipTags</span>: [<span class="string">'script'</span>, <span class="string">'noscript'</span>, <span class="string">'style'</span>, <span class="string">'textarea'</span>, <span class="string">'pre'</span>, <span class="string">'code'</span>]&#125;,</span><br><span class="line">        TeX: &#123;  <span class="attr">noUndefined</span>: &#123; <span class="attr">attributes</span>: &#123; <span class="attr">mathcolor</span>: <span class="string">"red"</span>, <span class="attr">mathbackground</span>: <span class="string">"#FFEEEE"</span>, <span class="attr">mathsize</span>: <span class="string">"90%"</span> &#125; &#125;, <span class="attr">Macros</span>: &#123; <span class="attr">href</span>: <span class="string">"&#123;&#125;"</span> &#125; &#125;,</span><br><span class="line">        messageStyle: <span class="string">"none"</span></span><br><span class="line">    &#125;); </span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">&lt;script type="text/</span>x-mathjax-config<span class="string">"&gt;</span></span><br><span class="line"><span class="string">    MathJax.Hub.Queue(function() &#123;</span></span><br><span class="line"><span class="string">        var all = MathJax.Hub.getAllJax(), i;</span></span><br><span class="line"><span class="string">        for(i=0; i &lt; all.length; i += 1) &#123;</span></span><br><span class="line"><span class="string">            all[i].SourceElement().parentNode.className += ' has-jax';</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">    &#125;);</span></span><br><span class="line"><span class="string">&lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;script type="</span>text/javascript<span class="string">" src="</span>http:<span class="comment">//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"&gt;</span></span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
-          <div class="read-more">
-            <a href="/2016/12/25/mathjax-test/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -848,24 +869,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>
