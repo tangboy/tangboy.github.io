@@ -208,6 +208,65 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/">Chaining Custom PySpark DataFrame Transformations</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-01-19
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>和基于Scala Spark API一样，我们也期望在Pyspark中也能够将不同的transformation方法连接起来统一执行。</p>
+<p>这篇博客主要描述如何给Pyspark DataFrame添加<code>transform</code>方法，从而支持能够将自定义的DataFrame transformation连接起来。</p>
+<p>同时，我们也会介绍如何利用<a href="https://github.com/pytoolz/cytoolz" target="_blank" rel="noopener">cytoolz</a>来批量顺序执行自定义变换函数</p>
+<h2 id="Chaining-DataFrame-Transformations-with-Lambda"><a href="#Chaining-DataFrame-Transformations-with-Lambda" class="headerlink" title="Chaining DataFrame Transformations with Lambda"></a>Chaining DataFrame Transformations with Lambda</h2><p>首先，在原生的Pyspark DataFrame增加<code>transform</code>方法，从而我们能够串联执行DataFrame变换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pyspark.sql.dataframe <span class="keyword">import</span> DataFrame</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, f)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> f(self)</span><br><span class="line">    </span><br><span class="line">DataFrame.transform = transform</span><br></pre></td></tr></table></figure>
+<p>接下来，我们定义一些简单的DataFrame变换方法来测试<code>transform</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">with_greeting</span><span class="params">(df)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> df.withColumn(<span class="string">"greeting"</span>, lit(<span class="string">"hi"</span>))</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">with_something</span><span class="params">(df, something)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> df.withColumn(<span class="string">"something"</span>, lit(something))</span><br></pre></td></tr></table></figure>
+<p>创建一个DataFrame然后串联执行<code>with_greeting</code>和<code>with_something</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">data = [(<span class="string">"jsoe"</span>, <span class="number">1</span>), (<span class="string">"li"</span>, <span class="number">2</span>), (<span class="string">"liz"</span>, <span class="number">3</span>)]</span><br><span class="line">source_df = spark.createDataFrame(data, [<span class="string">"name"</span>, <span class="string">"age"</span>])</span><br><span class="line"></span><br><span class="line">actual_df = (source_df</span><br><span class="line">                .transform(<span class="keyword">lambda</span> df: with_greeting(df))</span><br><span class="line">                .transform(<span class="keyword">lambda</span> df: with_something(df, <span class="string">"crazy"</span>)))</span><br><span class="line">                </span><br><span class="line">print(actual_df.show())</span><br><span class="line"></span><br><span class="line">+----+---+--------+---------+</span><br><span class="line">|name|age|greeting|something|</span><br><span class="line">+----+---+--------+---------+</span><br><span class="line">|jose|  <span class="number">1</span>|      hi|    crazy|</span><br><span class="line">|  li|  <span class="number">2</span>|      hi|    crazy|</span><br><span class="line">| liz|  <span class="number">3</span>|      hi|    crazy|</span><br><span class="line">+----+---+--------+---------+</span><br></pre></td></tr></table></figure>
+<p>对于只有一个DataFrame参数的自定义变换中，<code>lambda</code>是可以省略的，从而我们可以简化调用方式如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">actual_df = (source_df</span><br><span class="line">             .transform(with_greeting)</span><br><span class="line">             .transform(<span class="keyword">lambda</span> df: with_something(df, <span class="string">"crazy"</span>)))</span><br></pre></td></tr></table></figure>
+<p>如果我们没有定义<code>DataFrame#transform</code>方法，我们就不需要像下面的代码一样，来调用不同的transformation</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">df1 = with_greeting(source_df)</span><br><span class="line">actual_df = with_something(df1, <span class="string">"moo"</span>)</span><br></pre></td></tr></table></figure>
+<p>比较上述代码，采用<code>transform</code>来调用不同的DataFrame的变化，能够避免定义中间DataFrame，从而使得代码更加清晰</p>
+<p>接下来，我们进一步探讨transformations的其他定义形式，让整个<code>transform</code>更加清晰明了</p>
+          <div class="read-more">
+            <a href="/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/01/19/Chaining-Custom-DataFrame-Transformations-in-Spark/">Chaining Custom DataFrame Transformations in Spark</a>
         
       </h1>
@@ -690,53 +749,6 @@
 <img src="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/non_skew_time.png">
           <div class="read-more">
             <a href="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/07/SQL之Join实现/">SQL之Join实现</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-07
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>Join作为SQL中一个重要语法特性，几乎所有稍微复杂一点的数据分析场景都离不开Join，如今Spark SQL(Dataset/DataFrame)已经成为Spark应用程序开发的主流，作为开发者，我们有必要了解Join在Spark中是如何组织运行的。</p>
-<h2 id="SparkSQL总体流程介绍"><a href="#SparkSQL总体流程介绍" class="headerlink" title="SparkSQL总体流程介绍"></a>SparkSQL总体流程介绍</h2><p>在阐述Join实现之前，我们首先简单介绍SparkSQL的总体流程，一般地，我们有两种方式使用SparkSQL，一种是直接写sql语句，这个需要有元数据库支持，例如Hive等，另一种是通过Dataset/DataFrame编写Spark应用程序。如下图所示，sql语句被语法解析(SQL AST)成查询计划，或者我们通过Dataset/DataFrame提供的APIs组织成查询计划，查询计划分为两大类：逻辑计划和物理计划，这个阶段通常叫做逻辑计划，经过语法分析(Analyzer)、一系列查询优化(Optimizer)后得到优化后的逻辑计划，最后被映射成物理计划，转换成RDD执行。</p>
-<img src="/2018/12/07/SQL之Join实现/1.png">
-          <div class="read-more">
-            <a href="/2018/12/07/SQL之Join实现/" class="read-more-link">阅读更多</a>
           </div>
         
       
