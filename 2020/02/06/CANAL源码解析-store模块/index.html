@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="CANAL源码解析-store模块">
+
+
+
+
+  <meta name="keywords" content="canal, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/02/06/CANAL源码解析-store模块/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> CANAL源码解析-store模块 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          CANAL源码解析-store模块
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#store模块简介"><span class="toc-text">store模块简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CanalEventStore接口"><span class="toc-text">CanalEventStore接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MemoryEventStoreWithBuffer"><span class="toc-text">MemoryEventStoreWithBuffer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MemoryEventStoreWithBuffer字段"><span class="toc-text">MemoryEventStoreWithBuffer字段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#启动和停止方法"><span class="toc-text">启动和停止方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Put操作"><span class="toc-text">Put操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get操作"><span class="toc-text">Get操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ack操作"><span class="toc-text">ack操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rollback操作"><span class="toc-text">rollback操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他方法"><span class="toc-text">其他方法</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="store模块简介"><a href="#store模块简介" class="headerlink" title="store模块简介"></a>store模块简介</h2><p>store模块用于binlog事件的存储 ，目前开源的版本中仅实现了Memory内存模式。官方文档中提到”后续计划增加本地file存储，mixed混合模式”，这句话大家不必当真，从笔者最开始接触canal到现在已经几年了，依然没有动静，好在Memory内存模式已经可以满足绝大部分场景。</p>
+<p>store模块目录结构如下，该模块的核心接口为CanalEventStore：</p>
+<img src="/2020/02/06/CANAL源码解析-store模块/1.png">
+<p>以下是相关类图：</p>
+<img src="/2020/02/06/CANAL源码解析-store模块/2.png">
+<p>其中MemoryEventStoreWithBuffer就是内存模式的实现，是我们分析的重点，其实现了CanalEventStore接口，并继承了AbstractCanalStoreScavenge抽象类。需要注意的是，AbstractCanalStoreScavenge这个类中定义的字段和方法在开源版本中并没有任何地方使用到，因此我们不会对其进行分析。</p>
+<a id="more"></a>
+<p>MemoryEventStoreWithBuffer的实现借鉴了Disruptor的RingBuffer。简而言之，你可以把其当做一个环形队列，如下： </p>
+<img src="/2020/02/06/CANAL源码解析-store模块/3.jpg">
+<p>针对这个环形队列，canal定义了3类操作：Put、Get、Ack，其中：</p>
+<ul>
+<li><strong>Put 操作：</strong> 添加数据。event parser模块拉取到binlog后，并经过event sink模块过滤，最终就通过Put操作存储到了队列中。</li>
+<li><strong>Get操作：</strong> 获取数据。canal client连接到canal server后，最终获取到的binlog都是从这个队列中取得。</li>
+<li><strong>Ack操作：</strong> 确认消费成功。canal client获取到binlog事件消费后，需要进行Ack。你可以认为Ack操作实际上就是将消费成功的事件从队列中删除，如果一直不Ack的话，队列满了之后，Put操作就无法添加新的数据了。 </li>
+</ul>
+<p>对应的，我们需要使用3个变量来记录Put、Get、Ack这三个操作的位置，其中：</p>
+<ul>
+<li><strong>putSequence:</strong>  每放入一个数据putSequence +1，可表示存储数据存储的总数量</li>
+<li><strong>getSequence:</strong>  每获取一个数据getSequence +1，可表示数据订阅获取的最后一次提取位置</li>
+<li><strong>ackSequence:</strong> 每确认一个数据ackSequence + 1，可表示数据最后一次消费成功位置 </li>
+</ul>
+<p>另外，putSequence、getSequence、ackSequence这3个变量初始值都是-1，且都是递增的，均用long型表示。由于数据只有被Put进来后，才能进行Get；Get之后才能进行Ack。 所以，这三个变量满足以下关系：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ackSequence &lt;= getSequence &lt;= putSequence</span><br></pre></td></tr></table></figure>
+<p>如果将RingBuffer拉直来看，将会变得更加直观：</p>
+<img src="/2020/02/06/CANAL源码解析-store模块/4.jpg">
+<p>通过对这3个位置进行运算，我们可以得到一些有用的信息，如：</p>
+<p><strong>计算当前可消费的event数量：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当前可消费的event数量 = putSequence - getSequence</span><br></pre></td></tr></table></figure>
+<p>计算当前队列的大小(即队列中还有多少事件等待消费)：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当前队列的大小 = putSequence - ackSequence</span><br></pre></td></tr></table></figure>
+<p>在进行Put/Get/Ack操作时，首先都要确定操作到环形队列的哪个位置。环形队列的bufferSize默认大小是16384，而这3个操作的位置变量putSequence、getSequence、ackSequence都是递增的，显然最终都会超过bufferSize。因此必须要对这3个值进行转换。最简单的操作就是使用%进行取余。</p>
+<p>举例来说，putSequence的当前值为16383，这已经是环形队列的最大下标了(从0开始计算)，下一个要插入的数据要在第16384个位置上，此时可以使用16384 % bufferSize = 0，因此下一个要插入的数据在0号位置上。可见，当达到队列的最大下标时，再从头开始循环，这也是为什么称之为环形队列的原因。当然在实际操作时，更加复杂，如0号位置上已经有数据了，就不能插入，需要等待这个位置被释放出来，否则出现数据覆盖。</p>
+<p>canal使用的是通过位操作进行取余，这种取余方式与%作用完全相同，只不过因为是位操作,因此更加高效。其计算方式如下： </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">操作位置 = sequence &amp; (bufferSize - 1)</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">需要注意的是，这种方式只对除数是2的N次方幂时才有效.</span><br><span class="line"></span><br><span class="line">在canal.properties文件中定义了几个MemoryEventStoreWithBuffer的配置参数，主要用于控制环形队列的大小和存储的数据可占用的最大内存，如下：</span><br><span class="line"></span><br><span class="line">```bash</span><br><span class="line">canal.instance.memory.buffer.size = 16384</span><br><span class="line">canal.instance.memory.buffer.memunit = 1024</span><br><span class="line">canal.instance.memory.batch.mode = MEMSIZE</span><br></pre></td></tr></table></figure>
+<p>其中：</p>
+<ul>
+<li><strong>canal.instance.memory.buffer.size：</strong>  表示RingBuffer队列的最大容量，也就是可缓存的binlog事件的最大记录数，其值需要为2的指数(原因如前所述，canal通过位运算进行取余)，默认值为2^14=16384。</li>
+<li><strong>canal.instance.memory.buffer.memunit：</strong> 表示RingBuffer使用的内存单元, 默认是1kb。和canal.instance.memory.buffer.size组合决定最终的内存使用大小。需要注意的是，这个配置项仅仅是用于计算占用总内存，并不是限制每个event最大为1kb。</li>
+<li><strong>canal.instance.memory.batch.mode：</strong> 表示canal内存store中数据缓存模式，支持两种方式：<ul>
+<li><strong>ITEMSIZE</strong> : 根据buffer.size进行限制，只限制记录的数量。这种方式有一些潜在的问题，举个极端例子，假设每个event有1M，那么16384个这种event占用内存要达到16G左右，基本上肯定会造成内存溢出(超大内存的物理机除外)。</li>
+<li><strong>MEMSIZE</strong> : 根据buffer.size  <em> buffer.memunit的大小，限制缓存记录占用的总内存大小。指定为这种模式时，意味着默认缓存的event占用的总内存不能超过16384</em>1024=16M。这个值偏小，但笔者认为也足够了。因为通常我们在一个服务器上会部署多个instance，每个instance的store模块都会占用16M，因此只要instance的数量合适，也就不会浪费内存了。部分读者可能会担心，这是否限制了一个event的最大大小为16M，实际上是没有这个限制的。因为canal在Put一个新的event时，只会判断队列中已有的event占用的内存是否超过16M，如果没有，新的event不论大小是多少，总是可以放入的(canal的内存计算实际上是不精确的)，之后的event再要放入时，如果这个超过16M的event没有被消费，则需要进行等待。 </li>
+</ul>
+</li>
+</ul>
+<p>在canal自带的instance.xml文件中，使用了这些配置项来创建MemoryEventStoreWithBuffer实例，如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=<span class="string">"eventStore"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"com.alibaba.otter.canal.store.memory.MemoryEventStoreWithBuffer"</span>&gt;</span><br><span class="line">   &lt;property name=<span class="string">"bufferSize"</span> value=<span class="string">"$&#123;canal.instance.memory.buffer.size:16384&#125;"</span> /&gt;</span><br><span class="line">   &lt;property name=<span class="string">"bufferMemUnit"</span> value=<span class="string">"$&#123;canal.instance.memory.buffer.memunit:1024&#125;"</span> /&gt;</span><br><span class="line">   &lt;property name=<span class="string">"batchMode"</span> value=<span class="string">"$&#123;canal.instance.memory.batch.mode:MEMSIZE&#125;"</span> /&gt;</span><br><span class="line">   &lt;property name=<span class="string">"ddlIsolation"</span> value=<span class="string">"$&#123;canal.instance.get.ddl.isolation:false&#125;"</span> /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<p>这里我们还看到了一个ddlIsolation属性，其对于Get操作生效，用于设置ddl语句是否单独一个batch返回(比如下游dml/ddl如果做batch内无序并发处理,会导致结构不一致)。其值通过canal.instance.get.ddl.isolation配置项来设置，默认值为false。 </p>
+<h2 id="CanalEventStore接口"><a href="#CanalEventStore接口" class="headerlink" title="CanalEventStore接口"></a>CanalEventStore接口</h2><p>通过前面的分析，我们知道了环形队列要支持三种操作：Put、Get、Ack，针对这三种操作，在CanalEventStore中都有相应的方法定义，如下所示：</p>
+<p>com.alibaba.otter.canal.store.CanalEventStore </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* canel数据存储接口</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CanalEventStore</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">CanalLifeCycle</span>, <span class="title">CanalStoreScavenge</span> </span>&#123;</span><br><span class="line">    <span class="comment">//==========================Put操作==============================</span></span><br><span class="line">    <span class="comment">/**添加一组数据对象，阻塞等待其操作完成 (比如一次性添加一个事务数据)*/</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">put</span><span class="params">(List&lt;T&gt; data)</span> <span class="keyword">throws</span> InterruptedException, CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/**添加一组数据对象，阻塞等待其操作完成或者时间超时 (比如一次性添加一个事务数据)*/</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">put</span><span class="params">(List&lt;T&gt; data, <span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException, </span></span><br><span class="line"><span class="function">    CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/**添加一组数据对象 (比如一次性添加一个事务数据)*/</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">tryPut</span><span class="params">(List&lt;T&gt; data)</span> <span class="keyword">throws</span> CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/**添加一个数据对象，阻塞等待其操作完成*/</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">put</span><span class="params">(T data)</span> <span class="keyword">throws</span> InterruptedException, CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/**添加一个数据对象，阻塞等待其操作完成或者时间超时*/</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">put</span><span class="params">(T data, <span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException, CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/** 添加一个数据对象*/</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">tryPut</span><span class="params">(T data)</span> <span class="keyword">throws</span> CanalStoreException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//==========================GET操作==============================</span></span><br><span class="line">    <span class="comment">/** 获取指定大小的数据，阻塞等待其操作完成*/</span></span><br><span class="line">    <span class="function">Events&lt;T&gt; <span class="title">get</span><span class="params">(Position start, <span class="keyword">int</span> batchSize)</span> <span class="keyword">throws</span> InterruptedException, CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/**获取指定大小的数据，阻塞等待其操作完成或者时间超时*/</span></span><br><span class="line">    <span class="function">Events&lt;T&gt; <span class="title">get</span><span class="params">(Position start, <span class="keyword">int</span> batchSize, <span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> </span></span><br><span class="line"><span class="function">    InterruptedException,CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/**根据指定位置，获取一个指定大小的数据*/</span></span><br><span class="line">    <span class="function">Events&lt;T&gt; <span class="title">tryGet</span><span class="params">(Position start, <span class="keyword">int</span> batchSize)</span> <span class="keyword">throws</span> CanalStoreException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//=========================Ack操作==============================</span></span><br><span class="line">    <span class="comment">/**删除&#123;<span class="doctag">@linkplain</span> Position&#125;之前的数据*/</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ack</span><span class="params">(Position position)</span> <span class="keyword">throws</span> CanalStoreException</span>;</span><br><span class="line">   <span class="comment">//==========================其他操作==============================</span></span><br><span class="line">    <span class="comment">/** 获取最后一条数据的position*/</span></span><br><span class="line">    <span class="function">Position <span class="title">getLatestPosition</span><span class="params">()</span> <span class="keyword">throws</span> CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/**获取第一条数据的position，如果没有数据返回为null*/</span></span><br><span class="line">    <span class="function">Position <span class="title">getFirstPosition</span><span class="params">()</span> <span class="keyword">throws</span> CanalStoreException</span>;</span><br><span class="line">    <span class="comment">/**出错时执行回滚操作(未提交ack的所有状态信息重新归位，减少出错时数据全部重来的成本)*/</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">()</span> <span class="keyword">throws</span> CanalStoreException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到Put/Get/Ack操作都有多种重载形式，各个方法的作用参考方法注释即可，后文在分析MemoryEventStoreWithBuffer时，将会进行详细的介绍。</p>
+<p>这里对 get方法返回的Events对象，进行一下说明：</p>
+<p>com.alibaba.otter.canal.store.model.Events </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Events</span>&lt;<span class="title">EVENT</span>&gt; <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">7337454954300706044L</span>;</span><br><span class="line">    <span class="keyword">private</span> PositionRange     positionRange    = <span class="keyword">new</span> PositionRange();</span><br><span class="line">    <span class="keyword">private</span> List&lt;EVENT&gt;       events           = <span class="keyword">new</span> ArrayList&lt;EVENT&gt;();</span><br><span class="line">    <span class="comment">//setters getters and toString</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，仅仅是通过一个List维护了一组数据，尽管这里定义的是泛型，但真实放入的数据实际上是Event类型。而PositionRange是protocol模块中的类，描述了这组Event的开始(start)和结束位置(end)，显然，start表示List集合中第一个Event的位置，end表示最后一个Event的位置。</p>
+<p>Event的定义如下所示 ：</p>
+<p>com.alibaba.otter.canal.store.model.Event </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Event</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1333330351758762739L</span>;</span><br><span class="line">    <span class="keyword">private</span> LogIdentity       logIdentity;                            <span class="comment">// 记录数据产生的来源</span></span><br><span class="line">    <span class="keyword">private</span> CanalEntry.Entry  entry;</span><br><span class="line">    <span class="comment">//constructor setters getters and toString</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>其中：CanalEntry.Entry和LogIdentity也都是protocol模块中的类：</p>
+<ul>
+<li>LogIdentity记录这个Event的来源信息mysql地址(sourceAddress)和slaveId。</li>
+<li>CanalEntry.Entry封装了binlog事件的数据 </li>
+</ul>
+<h2 id="MemoryEventStoreWithBuffer"><a href="#MemoryEventStoreWithBuffer" class="headerlink" title="MemoryEventStoreWithBuffer"></a>MemoryEventStoreWithBuffer</h2><p>MemoryEventStoreWithBuffer是目前开源版本中的CanalEventStore接口的唯一实现，基于内存模式。当然你也可以进行扩展，提供一个基于本地文件存储方式的CanalEventStore实现。这样就可以一份数据让多个业务费进行订阅，只要独立维护消费位置元数据即可。然而，我不得不提醒你的是，基于本地文件的存储方式，一定要考虑好数据清理工作，否则会有大坑。</p>
+<p>如果一个库只有一个业务方订阅，其实根本也不用实现本地存储，使用基于内存模式的队列进行缓存即可。如果client消费的快，那么队列中的数据放入后就被取走，队列基本上一直是空的，实现本地存储也没意义；如果client消费的慢，队列基本上一直是满的，只要client来获取，总是能拿到数据，因此也没有必要实现本地存储。</p>
+<p>言归正传，下面对MemoryEventStoreWithBuffer的源码进行分析。 </p>
+<h2 id="MemoryEventStoreWithBuffer字段"><a href="#MemoryEventStoreWithBuffer字段" class="headerlink" title="MemoryEventStoreWithBuffer字段"></a>MemoryEventStoreWithBuffer字段</h2><p>首先对MemoryEventStoreWithBuffer中定义的字段进行一下介绍，这是后面分析其他方法的基础，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MemoryEventStoreWithBuffer</span> <span class="keyword">extends</span> <span class="title">AbstractCanalStoreScavenge</span> <span class="keyword">implements</span> </span></span><br><span class="line"><span class="class"><span class="title">CanalEventStore</span>&lt;<span class="title">Event</span>&gt;, <span class="title">CanalStoreScavenge</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> INIT_SQEUENCE = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>               bufferSize    = <span class="number">16</span> * <span class="number">1024</span>;</span><br><span class="line">    <span class="comment">// memsize的单位，默认为1kb大小</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>               bufferMemUnit = <span class="number">1024</span>;     </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>               indexMask;</span><br><span class="line">    <span class="keyword">private</span> Event[]           entries;</span><br><span class="line">    <span class="comment">// 记录下put/get/ack操作的三个下标，初始值都是-1</span></span><br><span class="line">    <span class="comment">// 代表当前put操作最后一次写操作发生的位置</span></span><br><span class="line">    <span class="keyword">private</span> AtomicLong   putSequence   = <span class="keyword">new</span> AtomicLong(INIT_SQEUENCE);</span><br><span class="line">    <span class="comment">// 代表当前get操作读取的最后一条的位置 </span></span><br><span class="line">    <span class="keyword">private</span> AtomicLong   getSequence   = <span class="keyword">new</span> AtomicLong(INIT_SQEUENCE); </span><br><span class="line">    <span class="comment">// 代表当前ack操作的最后一条的位置</span></span><br><span class="line">    <span class="keyword">private</span> AtomicLong   ackSequence   = <span class="keyword">new</span> AtomicLong(INIT_SQEUENCE); </span><br><span class="line">    <span class="comment">// 记录下put/get/ack操作的三个memsize大小</span></span><br><span class="line">    <span class="keyword">private</span> AtomicLong   putMemSize    = <span class="keyword">new</span> AtomicLong(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">private</span> AtomicLong   getMemSize    = <span class="keyword">new</span> AtomicLong(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">private</span> AtomicLong   ackMemSize    = <span class="keyword">new</span> AtomicLong(<span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 阻塞put/get操作控制信号</span></span><br><span class="line">    <span class="keyword">private</span> ReentrantLock     lock          = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    <span class="keyword">private</span> Condition    notFull       = lock.newCondition();</span><br><span class="line">    <span class="keyword">private</span> Condition    notEmpty      = lock.newCondition();</span><br><span class="line">    <span class="comment">// 默认为内存大小模式</span></span><br><span class="line">    <span class="keyword">private</span> BatchMode    batchMode     = BatchMode.ITEMSIZE;           </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span>     ddlIsolation  = <span class="keyword">false</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>属性说明：</p>
+<p><strong>bufferSize、bufferMemUnit、batchMode、ddlIsolation、putSequence、getSequence、ackSequence：</strong></p>
+<p>这几个属性前面已经介绍过，这里不再赘述。</p>
+<p><strong>entries：</strong></p>
+<p>类型为Event[]数组，环形队列底层基于的Event[]数组，队列的大小就是bufferSize</p>
+<p><strong>indexMask</strong></p>
+<p>用于对putSequence、getSequence、ackSequence进行取余操作，前面已经介绍过canal通过位操作进行取余，其值为bufferSize-1 ，参见下文的start方法</p>
+<p><strong>putMemSize、getMemSize、ackMemSize：</strong></p>
+<p>分别用于记录put/get/ack操作的event占用内存的累加值，都是从0开始计算。例如每put一个event，putMemSize就要增加这个event占用的内存大小；get和ack操作也是类似。这三个变量，都是在batchMode指定为MEMSIZE的情况下，才会发生作用。</p>
+<p>因为都是累加值，所以我们需要进行一些运算，才能得有有用的信息，如：</p>
+<p>计算出当前环形队列当前占用的内存大小 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">环形队列当前占用的内存大小 = putMemSize - ackMemSize</span><br></pre></td></tr></table></figure>
+<p>前面我们提到，batchMode为MEMSIZE时，需要限制环形队列中event占用的总内存，事实上在执行put操作前，就是通过这种方式计算出来当前大小，然后我们限制的bufferSize * bufferMemUnit大小进行比较。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">尚未被获取的事件占用的内存大小 = putMemSize - getMemSize</span><br></pre></td></tr></table></figure>
+<p>batchMode除了对PUT操作有限制，对Get操作也有影响。Get操作可以指定一个batchSize，用于指定批量获取的大小。当batchMode为MEMSIZE时，其含义就在不再是记录数，而是要获取到总共占用 batchSize * bufferMemUnit 内存大小的事件数量。</p>
+<p><strong>lock、notFull、notEmpty：</strong></p>
+<p>阻塞put/get操作控制信号。notFull用于控制put操作，只有队列没满的情况下才能put。notEmpty控制get操作，只有队列不为空的情况下，才能get。put操作和get操作共用一把锁(lock)。 </p>
+<h3 id="启动和停止方法"><a href="#启动和停止方法" class="headerlink" title="启动和停止方法"></a>启动和停止方法</h3><p>MemoryEventStoreWithBuffer实现了CanalLifeCycle接口，因此实现了其定义的start、stop方法</p>
+<p><strong>start启动方法</strong></p>
+<p>start方法主要是初始化MemoryEventStoreWithBuffer内部的环形队列，其实就是初始化一下Event[]数组。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> CanalStoreException </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.start();</span><br><span class="line">    <span class="keyword">if</span> (Integer.bitCount(bufferSize) != <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"bufferSize must be a power of 2"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    indexMask = bufferSize - <span class="number">1</span>;<span class="comment">//初始化indexMask，前面已经介绍过，用于通过位操作进行取余</span></span><br><span class="line">    entries = <span class="keyword">new</span> Event[bufferSize];<span class="comment">//创建循环队列基于的底层数组，大小为bufferSize</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>stop停止方法</strong></p>
+<p>stop方法作用是停止，在停止时会清空所有缓存的数据，将维护的相关状态变量设置为初始值。</p>
+<p>MemoryEventStoreWithBuffer#stop </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> <span class="keyword">throws</span> CanalStoreException </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.stop();</span><br><span class="line">    <span class="comment">//清空所有缓存的数据，将维护的相关状态变量设置为初始值</span></span><br><span class="line">    cleanAll();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在停止时，通过调用cleanAll方法清空所有缓存的数据。</p>
+<p>cleanAll方法是在CanalStoreScavenge接口中定义的，在MemoryEventStoreWithBuffer中进行了实现， 此外这个接口还定义了另外一个方法cleanUtil，在执行ack操作时会被调用，我们将在介绍ack方法时进行讲解。</p>
+<p>MemoryEventStoreWithBuffer#cleanAll </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cleanAll</span><span class="params">()</span> <span class="keyword">throws</span> CanalStoreException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//将Put/Get/Ack三个操作的位置都重置为初始状态-1</span></span><br><span class="line">        putSequence.set(INIT_SQEUENCE);</span><br><span class="line">        getSequence.set(INIT_SQEUENCE);</span><br><span class="line">        ackSequence.set(INIT_SQEUENCE);</span><br><span class="line">        <span class="comment">//将Put/Get/Ack三个操作的memSize都重置为0</span></span><br><span class="line">        putMemSize.set(<span class="number">0</span>);</span><br><span class="line">        getMemSize.set(<span class="number">0</span>);</span><br><span class="line">        ackMemSize.set(<span class="number">0</span>);</span><br><span class="line">        <span class="comment">//将底层Event[]数组置为null，相当于清空所有数据</span></span><br><span class="line">        entries = <span class="keyword">null</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Put操作"><a href="#Put操作" class="headerlink" title="Put操作"></a>Put操作</h3><p>前面分析CanalEventStore接口中，我们看到总共有6个put方法，可以分为3类：</p>
+<ul>
+<li>不带timeout超时参数的put方法，会一直进行阻塞，直到有足够的空间可以放入</li>
+<li>带timeout参数超时参数的put方法，如果超过指定时间还未put成功，会抛出InterruptedException。</li>
+<li>tryPut方法每次只是尝试放入数据，立即返回true或者false，不会阻塞。</li>
+</ul>
+<p>事实上，这些方法只是超时机制不同，底层都是通过调用doPut方法来完成真正的数据放入。因此在后面的分析中，笔者只选择其中一种进行讲解。<br>所有的put操作，在放入数据之前，都需要进行一些前置检查工作，主要检查2点：</p>
+<ol>
+<li>检查是否足够的slot<br> 默认的bufferSize设置大小为16384，即有16384个slot，每个slot可以存储一个event，因此canal默认最多缓存16384个event。从来另一个角度出发，这意味着putSequence最多比ackSequence可以大16384，不能超过这个值。如果超过了，就意味着尚未没有被消费的数据被覆盖了，相当于丢失了数据。因此，如果Put操作满足以下条件时，是不能新加入数据的  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(putSequence + need_put_events_size)- ackSequence &gt; bufferSize</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>&quot;putSequence + need_put_events_size&quot;的结果为添加数据后的putSequence的最终位置值，要把这个作为预判断条件，其减去ackSequence，如果大于bufferSize，则不能插入数据。需要等待有足够的空间，或者抛出异常。
+</code></pre><ol>
+<li>检测是否超出了内存限制<br> 前面我们已经看到了，为了控制队列中event占用的总内存大小，可以指定batchMode为MEMSIZE。在这种情况下，buffer.size  * buffer.memunit(默认为16M)就表示环形队列存储的event总共可以占用的内存大小。因此当出现以下情况下， 不能加入新的event：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(putMemSize - ackMemSize) &gt; buffer.size  * buffer.memunit</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>关于putMemSize和ackMemSize前面已经介绍过，二者的差值，实际上就是”队列当前包含的event占用的总内存”。 </p>
+<p>下面我们选择可以指定timeout超时时间的put方法进行讲解，如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">put</span><span class="params">(List&lt;Event&gt; data, <span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException, </span></span><br><span class="line"><span class="function"> CanalStoreException </span>&#123;</span><br><span class="line">    <span class="comment">//1 如果需要插入的List为空，直接返回true</span></span><br><span class="line">    <span class="keyword">if</span> (data == <span class="keyword">null</span> || data.isEmpty()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//2 获得超时时间，并通过加锁进行put操作</span></span><br><span class="line">    <span class="keyword">long</span> nanos = unit.toNanos(timeout);</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;<span class="comment">//这是一个死循环，执行到下面任意一个return或者抛出异常是时才会停止</span></span><br><span class="line">            <span class="comment">//3 检查是否满足插入条件，如果满足，进入到3.1，否则进入到3.2</span></span><br><span class="line">            <span class="keyword">if</span> (checkFreeSlotAt(putSequence.get() + data.size())) &#123;</span><br><span class="line">                <span class="comment">//3.1 如果满足条件，调用doPut方法进行真正的插入</span></span><br><span class="line">                doPut(data);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//3.2 判断是否已经超时，如果超时，则不执行插入操作，直接返回false</span></span><br><span class="line">            <span class="keyword">if</span> (nanos &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//3.3 如果还没有超时，调用notFull.awaitNanos进行等待，需要其他线程调用notFull.signal()方法唤醒。</span></span><br><span class="line">            <span class="comment">//唤醒是在ack操作中进行的，ack操作会删除已经消费成功的event，此时队列有了空间，因此可以唤醒，详见ack方法分析</span></span><br><span class="line">            <span class="comment">//当被唤醒后，因为这是一个死循环，所以循环中的代码会重复执行。当插入条件满足时，调用doPut方法插入，然后返回</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                nanos = notFull.awaitNanos(nanos);</span><br><span class="line">                <span class="comment">//3.4 如果一直等待到超时，都没有可用空间可以插入，notFull.awaitNanos会抛出InterruptedException</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">                notFull.signal(); <span class="comment">//3.5 超时之后，唤醒一个其他执行put操作且未被中断的线程(不明白是为了干啥)</span></span><br><span class="line">                <span class="keyword">throw</span> ie;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述方法的第3步，通过调用checkFreeSlotAt方法来执行插入数据前的检查工作，所做的事情就是我们前面提到的2点：1、检查是否足够的slot 2、检测是否超出了内存限制，源码如下所示：</p>
+<p>MemoryEventStoreWithBuffer#checkFreeSlotAt </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**查询是否有空位*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">checkFreeSlotAt</span><span class="params">(<span class="keyword">final</span> <span class="keyword">long</span> sequence)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//1、检查是否足够的slot。注意方法参数传入的sequence值是：当前putSequence值 + 新插入的event的记录数。</span></span><br><span class="line">    <span class="comment">//按照前面的说明，其减去bufferSize不能大于ack位置，或者换一种说法，减去bufferSize不能大于ack位置。</span></span><br><span class="line">    <span class="comment">//1.1 首先用sequence值减去bufferSize</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> wrapPoint = sequence - bufferSize;</span><br><span class="line">    <span class="comment">//1.2 获取get位置ack位置的较小值，事实上，ack位置总是应该小于等于get位置，因此这里总是应该返回的是ack位置。</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> minPoint = getMinimumGetOrAck();</span><br><span class="line">    <span class="comment">//1.3 将1.1 与1.2步得到的值进行比较，如果前者大，说明二者差值已经超过了bufferSize，不能插入数据，返回false</span></span><br><span class="line">    <span class="keyword">if</span> (wrapPoint &gt; minPoint) &#123; <span class="comment">// 刚好追上一轮</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//2 如果batchMode是MEMSIZE，继续检查是否超出了内存限制。</span></span><br><span class="line">        <span class="keyword">if</span> (batchMode.isMemSize()) &#123;</span><br><span class="line">            <span class="comment">//2.1 使用putMemSize值减去ackMemSize值，得到当前保存的event事件占用的总内存</span></span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">long</span> memsize = putMemSize.get() - ackMemSize.get();</span><br><span class="line">            <span class="comment">//2.2 如果没有超出bufferSize * bufferMemUnit内存限制，返回true，否则返回false</span></span><br><span class="line">            <span class="keyword">if</span> (memsize &lt; bufferSize * bufferMemUnit) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//3 如果batchMode不是MEMSIZE，说明只限制记录数，则直接返回true</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>getMinimumGetOrAck方法用于返回getSequence和ackSequence二者的较小值，源码如下所示：</p>
+<p>MemoryEventStoreWithBuffer#getMinimumGetOrAck </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getMinimumGetOrAck</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> get = getSequence.get();</span><br><span class="line">    <span class="keyword">long</span> ack = ackSequence.get();</span><br><span class="line">    <span class="keyword">return</span> ack &lt;= get ? ack : get;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当checkFreeSlotAt方法检验通过后，最终调用的是doPut方法进行插入。doPut方法主要有4个步骤：</p>
+<ol>
+<li>将新插入的event数据赋值到Event[]数组的正确位置上，就算完成了插入</li>
+<li>当新插入的event记录数累加到putSequence上</li>
+<li>累加新插入的event的大小到putMemSize上</li>
+<li>调用notEmpty.signal()方法，通知队列中有数据了，如果之前有client获取数据处于阻塞状态，将会被唤醒</li>
+</ol>
+<p>MemoryEventStoreWithBuffer#doPut </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*** 执行具体的put操作*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doPut</span><span class="params">(List&lt;Event&gt; data)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//1 将新插入的event数据赋值到Event[]数组的正确位置上</span></span><br><span class="line">    <span class="comment">//1.1 获得putSequence的当前值current，和插入数据后的putSequence结束值end</span></span><br><span class="line">    <span class="keyword">long</span> current = putSequence.get();</span><br><span class="line">    <span class="keyword">long</span> end = current + data.size();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//1.2 循环需要插入的数据，从current位置开始，到end位置结束</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">long</span> next = current + <span class="number">1</span>; next &lt;= end; next++) &#123;</span><br><span class="line">        <span class="comment">//1.3 通过getIndex方法对next变量转换成正确的位置，设置到Event[]数组中</span></span><br><span class="line">        <span class="comment">//需要转换的原因在于，这里的Event[]数组是环形队列的底层实现，其大小为bufferSize值，默认为16384。</span></span><br><span class="line">        <span class="comment">//运行一段时间后，接收到的binlog数量肯定会超过16384，每接受到一个event，putSequence+1，因此最终必然超过这个值。</span></span><br><span class="line">        <span class="comment">//而next变量是比当前putSequence值要大的，因此必须进行转换，否则会数组越界，转换工作就是在getIndex方法中进行的。</span></span><br><span class="line">        entries[getIndex(next)] = data.get((<span class="keyword">int</span>) (next - current - <span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//2 直接设置putSequence为end值，相当于完成event记录数的累加</span></span><br><span class="line">    putSequence.set(end);</span><br><span class="line">    <span class="comment">//3 累加新插入的event的大小到putMemSize上</span></span><br><span class="line">    <span class="keyword">if</span> (batchMode.isMemSize()) &#123;</span><br><span class="line">        <span class="comment">//用于记录本次插入的event记录的大小</span></span><br><span class="line">       <span class="keyword">long</span> size = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//循环每一个event</span></span><br><span class="line">        <span class="keyword">for</span> (Event event : data) &#123;</span><br><span class="line">            <span class="comment">//通过calculateSize方法计算每个event的大小，并累加到size变量上</span></span><br><span class="line">            size += calculateSize(event);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//将size变量的值，添加到当前putMemSize</span></span><br><span class="line">        putMemSize.getAndAdd(size);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 4 调用notEmpty.signal()方法，通知队列中有数据了，如果之前有client获取数据处于阻塞状态，将会被唤醒</span></span><br><span class="line">    notEmpty.signal();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码中，通过getIndex方法方法来进行位置转换，其内部通过位运算来快速取余数，不再赘述</p>
+<p>MemoryEventStoreWithBuffer#getIndex </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getIndex</span><span class="params">(<span class="keyword">long</span> sequcnce)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>) sequcnce &amp; indexMask; <span class="comment">//bufferSize-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于batchMode是MEMSIZE的情况下， 还会通过calculateSize方法计算每个event占用的内存大小，累加到putMemSize上。</p>
+<p>MemoryEventStoreWithBuffer#calculateSize </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">calculateSize</span><span class="params">(Event event)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 直接返回binlog中的事件大小</span></span><br><span class="line">        <span class="keyword">return</span> event.getEntry().getHeader().getEventLength();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>其原理在于，mysql的binlog的event header中，都有一个event_length表示这个event占用的字节数。</p>
+<p>parser模块将二进制形式binlog event解析后，这个event_length字段的值也被解析出来了，转换成Event对象后，在存储到store模块时，就可以根据其值判断占用内存大小。</p>
+<p>需要注意的是，这个计算并不精确。原始的event_length表示的是event是二进制字节流时的字节数，在转换成java对象后，基本上都会变大。</p>
+<h3 id="Get操作"><a href="#Get操作" class="headerlink" title="Get操作"></a>Get操作</h3><p>Put操作是canal parser模块解析binlog事件，并经过sink模块过滤后，放入到store模块中，也就是说Put操作实际上是canal内部调用。 Get操作(以及ack、rollback)则不同，其是由client发起的网络请求，server端通过对请求参数进行解析，最终调用CanalEventStore模块中定义的对应方法。  </p>
+<p>Get操作用于获取指定batchSize大小的Events。提供了3个方法： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 尝试获取，如果获取不到立即返回</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Events&lt;Event&gt; <span class="title">tryGet</span><span class="params">(Position start, <span class="keyword">int</span> batchSize)</span> <span class="keyword">throws</span> CanalStoreException</span></span><br><span class="line"><span class="function"><span class="comment">// 获取指定大小的数据，阻塞等待其操作完成</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Events&lt;Event&gt; <span class="title">get</span><span class="params">(Position start, <span class="keyword">int</span> batchSize)</span> <span class="keyword">throws</span> InterruptedException, CanalStoreException</span></span><br><span class="line"><span class="function"><span class="comment">// 获取指定大小的数据，阻塞等待其操作完成或者超时，如果超时了，有多少，返回多少</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Events&lt;Event&gt; <span class="title">get</span><span class="params">(Position start, <span class="keyword">int</span> batchSize, <span class="keyword">long</span> timeout, TimeUnit unit)</span> </span></span><br><span class="line"><span class="function"><span class="keyword">throws</span> InterruptedException,CanalStoreException</span></span><br></pre></td></tr></table></figure>
+<p>其中：</p>
+<ul>
+<li>start参数：其类型为Posisiton，表示从哪个位置开始获取</li>
+<li>batchSize参数：表示批量获取的大小</li>
+<li>timeout和uint参数：超时参数配置</li>
+</ul>
+<p>与Put操作类似，MemoryEventStoreWithBuffer在实现这三个方法时，真正的获取操作都是在doGet方法中进行的。这里我们依然只选择其中一种进行完整的讲解： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Events&lt;Event&gt; <span class="title">get</span><span class="params">(Position start, <span class="keyword">int</span> batchSize, <span class="keyword">long</span> timeout, TimeUnit unit)</span> </span></span><br><span class="line"><span class="function"><span class="keyword">throws</span> InterruptedException,CanalStoreException </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> nanos = unit.toNanos(timeout);</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">if</span> (checkUnGetSlotAt((LogPosition) start, batchSize)) &#123;</span><br><span class="line">                <span class="keyword">return</span> doGet(start, batchSize);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (nanos &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// 如果时间到了，有多少取多少</span></span><br><span class="line">                <span class="keyword">return</span> doGet(start, batchSize);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                nanos = notEmpty.awaitNanos(nanos);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">                notEmpty.signal(); <span class="comment">// propagate to non-interrupted thread</span></span><br><span class="line">                <span class="keyword">throw</span> ie;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">可以看到，get方法的实现逻辑与put方法整体上是类似的，不再赘述。这里我们直接关注checkUnGetSlotAt和doGet方法。</span><br><span class="line"></span><br><span class="line">checkUnGetSlotAt方法，用于检查是否有足够的event可供获取，根据batchMode的不同，有着不同的判断逻辑</span><br><span class="line"></span><br><span class="line">- 如果batchMode为ITEMSIZE，则表示只要有有满足batchSize数量的记录数即可，即putSequence - getSequence &gt;= batchSize</span><br><span class="line">- 如果batchMode为MEMSIZE，此时batchSize不再表示记录数，而是bufferMemUnit的个数，也就是说，获取到的event列表占用的总内存要达到batchSize * bufferMemUnit，即putMemSize-getMemSize &gt;= batchSize * bufferMemUnit </span><br><span class="line"></span><br><span class="line">MemoryEventStoreWithBuffer#checkUnGetSlotAt</span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">checkUnGetSlotAt</span><span class="params">(LogPosition startPosition, <span class="keyword">int</span> batchSize)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//1 如果batchMode为ITEMSIZE</span></span><br><span class="line">    <span class="keyword">if</span> (batchMode.isItemSize()) &#123;</span><br><span class="line">        <span class="keyword">long</span> current = getSequence.get();</span><br><span class="line">        <span class="keyword">long</span> maxAbleSequence = putSequence.get();</span><br><span class="line">        <span class="keyword">long</span> next = current;</span><br><span class="line">        <span class="comment">//1.1 第一次订阅之后，需要包含一下start位置，防止丢失第一条记录。</span></span><br><span class="line">        <span class="keyword">if</span> (startPosition == <span class="keyword">null</span> || !startPosition.getPostion().isIncluded()) &#123; </span><br><span class="line">            next = next + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//1.2 理论上只需要满足条件：putSequence - getSequence &gt;= batchSize</span></span><br><span class="line">        <span class="comment">//1.2.1 先通过current &lt; maxAbleSequence进行一下简单判断，如果不满足，可以直接返回false了</span></span><br><span class="line">        <span class="comment">//1.2.2 如果1.2.1满足，再通过putSequence - getSequence &gt;= batchSize判断是否有足够的数据</span></span><br><span class="line">        <span class="keyword">if</span> (current &lt; maxAbleSequence &amp;&amp; next + batchSize - <span class="number">1</span> &lt;= maxAbleSequence) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">//2 如果batchMode为MEMSIZE</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">long</span> currentSize = getMemSize.get();</span><br><span class="line">        <span class="keyword">long</span> maxAbleSize = putMemSize.get();</span><br><span class="line">        <span class="comment">//2.1 需要满足条件 putMemSize-getMemSize &gt;= batchSize * bufferMemUnit</span></span><br><span class="line">        <span class="keyword">if</span> (maxAbleSize - currentSize &gt;= batchSize * bufferMemUnit) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关于1.1步的描述”第一次订阅之后，需要包含一下start位置，防止丢失第一条记录”，这里进行一下特殊说明。首先要明确checkUnGetSlotAt方法的startPosition参数到底是从哪里传递过来的。</p>
+<p>当一个client在获取数据时，CanalServerWithEmbedded的getWithoutAck/或get方法会被调用。其内部首先通过CanalMetaManager查找client的消费位置信息，由于是第一次，肯定没有记录，因此返回null，此时会调用CanalEventStore的getFirstPosition()方法，尝试把第一条数据作为消费的开始。而此时CanalEventStore中可能有数据，也可能没有数据。在没有数据的情况下，依然返回null；在有数据的情况下，把第一个Event的位置作为消费开始位置。那么显然，传入checkUnGetSlotAt方法的startPosition参数可能是null，也可能不是null。所以有了以下处理逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">if</span> (startPosition == <span class="keyword">null</span> || !startPosition.getPostion().isIncluded()) &#123;</span><br><span class="line">            next = next + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果不是null的情况下，尽管把第一个event当做开始位置，但是因为这个event毕竟还没有消费，所以在消费的时候我们必须也将其包含进去。之所以要+1，因为是第一次获取，getSequence的值肯定还是初始值-1，所以要+1变成0之后才是队列的第一个event位置。关于CanalEventStore的getFirstPosition()方法，我们将在最后分析。</p>
+<p>当通过checkUnGetSlotAt的检查条件后，通过doGet方法进行真正的数据获取操作，获取主要分为5个步骤</p>
+<ul>
+<li>确定从哪个位置开始获取数据</li>
+<li>根据batchMode是MEMSIZE还是ITEMSIZE，通过不同的方式来获取数据</li>
+<li>设置PositionRange，表示获取到的event列表开始和结束位置</li>
+<li>设置ack点</li>
+<li>累加getSequence，getMemSize值</li>
+</ul>
+<p>MemoryEventStoreWithBuffer#doGet </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Events&lt;Event&gt; <span class="title">doGet</span><span class="params">(Position start, <span class="keyword">int</span> batchSize)</span> <span class="keyword">throws</span> CanalStoreException </span>&#123;</span><br><span class="line">    LogPosition startPosition = (LogPosition) start;</span><br><span class="line">    <span class="comment">//1 确定从哪个位置开始获取数据 </span></span><br><span class="line">    <span class="comment">//获得当前的get位置</span></span><br><span class="line">    <span class="keyword">long</span> current = getSequence.get();</span><br><span class="line">    <span class="comment">//获得当前的put位置</span></span><br><span class="line">    <span class="keyword">long</span> maxAbleSequence = putSequence.get();</span><br><span class="line">    <span class="comment">//要获取的第一个Event的位置，一开始等于当前get位置</span></span><br><span class="line">    <span class="keyword">long</span> next = current; </span><br><span class="line">    <span class="comment">//要获取的最后一个event的位置，一开始也是当前get位置，每获取一个event，end值加1，最大为current+batchSize</span></span><br><span class="line">    <span class="comment">//因为可能进行ddl隔离，因此可能没有获取到batchSize个event就返回了，此时end值就会小于current+batchSize</span></span><br><span class="line">    <span class="keyword">long</span> end = current;  </span><br><span class="line">    <span class="comment">// 如果startPosition为null，说明是第一次订阅，默认+1处理，因为getSequence的值是从-1开始的</span></span><br><span class="line">    <span class="comment">// 如果tartPosition不为null，需要包含一下start位置，防止丢失第一条记录</span></span><br><span class="line">    <span class="keyword">if</span> (startPosition == <span class="keyword">null</span> || !startPosition.getPostion().isIncluded()) &#123; </span><br><span class="line">        next = next + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果没有数据，直接返回一个空列表</span></span><br><span class="line">    <span class="keyword">if</span> (current &gt;= maxAbleSequence) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Events&lt;Event&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//2 如果有数据，根据batchMode是ITEMSIZE或MEMSIZE选择不同的处理方式</span></span><br><span class="line">    Events&lt;Event&gt; result = <span class="keyword">new</span> Events&lt;Event&gt;();</span><br><span class="line">    <span class="comment">//维护要返回的Event列表</span></span><br><span class="line">    List&lt;Event&gt; entrys = result.getEvents();</span><br><span class="line">    <span class="keyword">long</span> memsize = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//2.1 如果batchMode是ITEMSIZE</span></span><br><span class="line">    <span class="keyword">if</span> (batchMode.isItemSize()) &#123;</span><br><span class="line">        end = (next + batchSize - <span class="number">1</span>) &lt; maxAbleSequence ? (next + batchSize - <span class="number">1</span>) : maxAbleSequence;</span><br><span class="line">        <span class="comment">//2.1.1 循环从开始位置(next)到结束位置(end)，每次循环next+1</span></span><br><span class="line">        <span class="keyword">for</span> (; next &lt;= end; next++) &#123;</span><br><span class="line">            <span class="comment">//2.1.2 获取指定位置上的事件</span></span><br><span class="line">            Event event = entries[getIndex(next)];</span><br><span class="line">            <span class="comment">//2.1.3 果是当前事件是DDL事件，且开启了ddl隔离，本次事件处理完后，即结束循环(if语句最后是一行是break) </span></span><br><span class="line">            <span class="keyword">if</span> (ddlIsolation &amp;&amp; isDdl(event.getEntry().getHeader().getEventType())) &#123;</span><br><span class="line">                <span class="comment">// 2.1.4 因为ddl事件需要单独返回，因此需要判断entrys中是否应添加了其他事件</span></span><br><span class="line">                <span class="keyword">if</span> (entrys.size() == <span class="number">0</span>) &#123;<span class="comment">//如果entrys中尚未添加任何其他event</span></span><br><span class="line">                    entrys.add(event);<span class="comment">//加入当前的DDL事件</span></span><br><span class="line">                    end = next; <span class="comment">// 更新end为当前值</span></span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//如果已经添加了其他事件 如果之前已经有DML事件，直接返回了，因为不包含当前next这记录，需要回退一个位置</span></span><br><span class="line">                    end = next - <span class="number">1</span>; <span class="comment">// next-1一定大于current，不需要判断</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;<span class="comment">//如果没有开启DDL隔离，直接将事件加入到entrys中</span></span><br><span class="line">                entrys.add(event);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">//2.2 如果batchMode是MEMSIZE</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//2.2.1 计算本次要获取的event占用最大字节数</span></span><br><span class="line">        <span class="keyword">long</span> maxMemSize = batchSize * bufferMemUnit;</span><br><span class="line">        <span class="comment">//2.2.2 memsize从0开始，当memsize小于maxMemSize且next未超过maxAbleSequence时，可以进行循环</span></span><br><span class="line">        <span class="keyword">for</span> (; memsize &lt;= maxMemSize &amp;&amp; next &lt;= maxAbleSequence; next++) &#123;</span><br><span class="line">            <span class="comment">//2.2.3 获取指定位置上的Event</span></span><br><span class="line">            Event event = entries[getIndex(next)];</span><br><span class="line">            <span class="comment">//2.2.4 果是当前事件是DDL事件，且开启了ddl隔离，本次事件处理完后，即结束循环(if语句最后是一行是break) </span></span><br><span class="line">            <span class="keyword">if</span> (ddlIsolation &amp;&amp; isDdl(event.getEntry().getHeader().getEventType())) &#123;</span><br><span class="line">                <span class="comment">// 如果是ddl隔离，直接返回</span></span><br><span class="line">                <span class="keyword">if</span> (entrys.size() == <span class="number">0</span>) &#123;</span><br><span class="line">                    entrys.add(event);<span class="comment">// 如果没有DML事件，加入当前的DDL事件</span></span><br><span class="line">                    end = next; <span class="comment">// 更新end为当前</span></span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// 如果之前已经有DML事件，直接返回了，因为不包含当前next这记录，需要回退一个位置</span></span><br><span class="line">                    end = next - <span class="number">1</span>; <span class="comment">// next-1一定大于current，不需要判断</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//如果没有开启DDL隔离，直接将事件加入到entrys中        </span></span><br><span class="line">                entrys.add(event);</span><br><span class="line">                <span class="comment">//并将当前添加的event占用字节数累加到memsize变量上</span></span><br><span class="line">                memsize += calculateSize(event);</span><br><span class="line">                end = next;<span class="comment">// 记录end位点</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//3 构造PositionRange，表示本次获取的Event的开始和结束位置</span></span><br><span class="line">    PositionRange&lt;LogPosition&gt; range = <span class="keyword">new</span> PositionRange&lt;LogPosition&gt;();</span><br><span class="line">    result.setPositionRange(range);</span><br><span class="line">    <span class="comment">//3.1 把entrys列表中的第一个event的位置，当做PositionRange的开始位置</span></span><br><span class="line">    range.setStart(CanalEventUtils.createPosition(entrys.get(<span class="number">0</span>)));</span><br><span class="line">    <span class="comment">//3.2 把entrys列表中的最后一个event的位置，当做PositionRange的结束位置</span></span><br><span class="line">    range.setEnd(CanalEventUtils.createPosition(entrys.get(result.getEvents().size() - <span class="number">1</span>)));</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//4 记录一下是否存在可以被ack的点，逆序迭代获取到的Event列表</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = entrys.size() - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        Event event = entrys.get(i);</span><br><span class="line">        <span class="comment">//4.1.1 如果是事务开始/事务结束/或者dll事件，</span></span><br><span class="line">        <span class="keyword">if</span> (CanalEntry.EntryType.TRANSACTIONBEGIN == event.getEntry().getEntryType()</span><br><span class="line">            || CanalEntry.EntryType.TRANSACTIONEND == event.getEntry().getEntryType()</span><br><span class="line">            || isDdl(event.getEntry().getHeader().getEventType())) &#123;</span><br><span class="line">            <span class="comment">// 4.1.2 将其设置为可被ack的点，并跳出循环</span></span><br><span class="line">            range.setAck(CanalEventUtils.createPosition(event));</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//4.1.3 如果没有这三种类型事件，意味着没有可被ack的点</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//5 累加getMemSize值，getMemSize值</span></span><br><span class="line">    <span class="comment">//5.1 通过AtomLong的compareAndSet尝试增加getSequence值</span></span><br><span class="line">    <span class="keyword">if</span> (getSequence.compareAndSet(current, end)) &#123;<span class="comment">//如果成功，累加getMemSize</span></span><br><span class="line">        getMemSize.addAndGet(memsize);</span><br><span class="line">       <span class="comment">//如果之前有put操作因为队列满了而被阻塞，这里发送信号，通知队列已经有空位置，下面还要进行说明</span></span><br><span class="line">        notFull.signal();</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;<span class="comment">//如果失败，直接返回空事件列表</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Events&lt;Event&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>补充说明：</p>
+<ol>
+<li>Get数据时，会通过isDdl方法判断event是否是ddl类型。</li>
+</ol>
+<p>MemoryEventStoreWithBuffer#isDdl </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isDdl</span><span class="params">(EventType type)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> type == EventType.ALTER || type == EventType.CREATE || type == EventType.ERASE</span><br><span class="line">           || type == EventType.RENAME || type == EventType.TRUNCATE || type == EventType.CINDEX</span><br><span class="line">           || type == EventType.DINDEX;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的EventType是在protocol模块中定义的，并非mysql binlog event结构中的event type。在原始的mysql binlog event类型中，有一个QueryEvent，里面记录的是执行的sql语句，canal通过对这个sql语句进行正则表达式匹配，判断出这个event是否是DDL语句(参见SimpleDdlParser#parse方法)。</p>
+<ol>
+<li>获取到event列表之后，会构造一个PostionRange对象。</li>
+</ol>
+<p>通过CanalEventUtils.createPosition方法计算出第一、最后一个event的位置，作为PostionRange的开始和结束。</p>
+<p>事实上，parser模块解析后，已经将位置信息：binlog文件，position封装到了Event中，createPosition方法只是将这些信息提取出来。</p>
+<p>CanalEventUtils#createPosition </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LogPosition <span class="title">createPosition</span><span class="params">(Event event)</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">//=============创建一个EntryPosition实例，提取event中的位置信息============</span></span><br><span class="line">    EntryPosition position = <span class="keyword">new</span> EntryPosition();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//event所在的binlog文件</span></span><br><span class="line">    position.setJournalName(event.getEntry().getHeader().getLogfileName());</span><br><span class="line">    <span class="comment">//event锁在binlog文件中的位置</span></span><br><span class="line">    position.setPosition(event.getEntry().getHeader().getLogfileOffset());</span><br><span class="line">    <span class="comment">//event的创建时间</span></span><br><span class="line">    position.setTimestamp(event.getEntry().getHeader().getExecuteTime());</span><br><span class="line">    <span class="comment">//event是mysql主从集群哪一个实例上生成的，一般都是主库，如果从库没有配置read-only，那么serverId也可能是从库</span></span><br><span class="line">    position.setServerId(event.getEntry().getHeader().getServerId());</span><br><span class="line">    <span class="comment">//===========将EntryPosition实例封装到一个LogPosition对象中===============</span></span><br><span class="line">    LogPosition logPosition = <span class="keyword">new</span> LogPosition();</span><br><span class="line">    logPosition.setPostion(position);</span><br><span class="line">    <span class="comment">//LogIdentity中包含了这个event来源的mysql实力的ip地址信息</span></span><br><span class="line">    logPosition.setIdentity(event.getLogIdentity());</span><br><span class="line">    <span class="keyword">return</span> logPosition;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>获取到Event列表后，会从中逆序寻找第一个类型为”事务开始/事务结束/DDL”的Event，将其位置作为PostionRange的可ack位置。</li>
+</ol>
+<p>mysql原生的binlog事件中，总是以一个内容”BEGIN”的QueryEvent作为事务开始，以XidEvent事件表示事务结束。即使我们没有显式的开启事务，对于单独的一个更新语句(如Insert、update、delete)，mysql也会默认开启事务。而canal将其转换成更容易理解的自定义EventType类型：TRANSACTIONBEGIN、TRANSACTIONEND。</p>
+<p>而将这些事件作为ack点，主要是为了保证事务的完整性。例如client一次拉取了10个binlog event，前5个构成一个事务，后5个还不足以构成一个完整事务。在ack后，如果这个client停止了，也就是说下一个事务还没有被完整处理完。尽管之前ack的是10条数据，但是client重新启动后，将从第6个event开始消费，而不是从第11个event开始消费，因为第6个event是下一个事务的开始。</p>
+<p>具体逻辑在于，canal server在接受到client ack后，CanalServerWithEmbedded#ack方法会执行。其内部首先根据ack的batchId找到对应的PositionRange，再找出其中的ack点，通过CanalMetaManager将这个位置记录下来。之后client重启后，再把这个位置信息取出来，从这个位置开始消费。</p>
+<p>也就是说，ack位置实际上提供给CanalMetaManager使用的。而对于MemoryEventStoreWithBuffer本身而言，也需要进行ack，用于将已经消费的数据从队列中清除，从而腾出更多的空间存放新的数据。</p>
+<h3 id="ack操作"><a href="#ack操作" class="headerlink" title="ack操作"></a>ack操作</h3><p>相对于get操作和put操作，ack操作没有重载，只有一个ack方法，用于清空指定position之前的数据，如下：</p>
+<p>MemoryEventStoreWithBuffer#ack</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ack</span><span class="params">(Position position)</span> <span class="keyword">throws</span> CanalStoreException </span>&#123;</span><br><span class="line">    cleanUntil(position);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>CanalStoreScavenge接口定义了2个方法：cleanAll和cleanUntil。前面我们已经看到了在stop时，cleanAll方法会被执行。而每次ack时，cleanUntil方法会被执行，这个方法实现如下所示：</p>
+<p>MemoryEventStoreWithBuffer#cleanUntil</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// postion表示要ack的配置</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cleanUntil</span><span class="params">(Position position)</span> <span class="keyword">throws</span> CanalStoreException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//获得当前ack值</span></span><br><span class="line">        <span class="keyword">long</span> sequence = ackSequence.get();</span><br><span class="line">        <span class="comment">//获得当前get值</span></span><br><span class="line">        <span class="keyword">long</span> maxSequence = getSequence.get();</span><br><span class="line">        <span class="keyword">boolean</span> hasMatch = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">long</span> memsize = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//迭代所有未被ack的event，从中找出与需要ack的position相同位置的event，清空这个event之前的所有数据。</span></span><br><span class="line">        <span class="comment">//一旦找到这个event，循环结束。 </span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">long</span> next = sequence + <span class="number">1</span>; next &lt;= maxSequence; next++) &#123;</span><br><span class="line">            Event event = entries[getIndex(next)];<span class="comment">//获得要ack的event</span></span><br><span class="line">            memsize += calculateSize(event);<span class="comment">//计算当前要ack的event占用字节数</span></span><br><span class="line">            <span class="keyword">boolean</span> match = CanalEventUtils.checkPosition(event, (LogPosition) position);</span><br><span class="line">            <span class="keyword">if</span> (match) &#123;<span class="comment">// 找到对应的position，更新ack seq</span></span><br><span class="line">                hasMatch = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">if</span> (batchMode.isMemSize()) &#123;<span class="comment">//如果batchMode是MEMSIZE  </span></span><br><span class="line">                    ackMemSize.addAndGet(memsize);<span class="comment">//累加ackMemSize</span></span><br><span class="line">                    <span class="comment">// 尝试清空buffer中的内存，将ack之前的内存全部释放掉</span></span><br><span class="line">                    <span class="keyword">for</span> (<span class="keyword">long</span> index = sequence + <span class="number">1</span>; index &lt; next; index++) &#123;</span><br><span class="line">                        entries[getIndex(index)] = <span class="keyword">null</span>;<span class="comment">// 设置为null</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//累加ack值</span></span><br><span class="line">                <span class="comment">//官方注释说，采用compareAndSet，是为了避免并发ack。我觉得根本不会并发ack，因为都加锁了</span></span><br><span class="line">                <span class="keyword">if</span> (ackSequence.compareAndSet(sequence, next)) &#123;</span><br><span class="line">                    notFull.signal();<span class="comment">//如果之前存在put操作因为队列满了而被阻塞，通知其队列有了新空间</span></span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!hasMatch) &#123;<span class="comment">// 找不到对应需要ack的position</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> CanalStoreException(<span class="string">"no match ack position"</span> + position.toString());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在匹配尚未ack的Event，是否有匹配的位置时，调用了CanalEventUtils#checkPosition方法。其内部：</p>
+<ul>
+<li>首先比较Event的生成时间</li>
+<li>接着，如果位置信息的binlog文件名或者信息不为空的话(通常不为空)，则会进行精确匹配</li>
+</ul>
+<p>CanalEventUtils#checkPosition </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 判断当前的entry和position是否相同</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">checkPosition</span><span class="params">(Event event, LogPosition logPosition)</span> </span>&#123;</span><br><span class="line">    EntryPosition position = logPosition.getPostion();</span><br><span class="line">    CanalEntry.Entry entry = event.getEntry();</span><br><span class="line">    <span class="comment">//匹配时间</span></span><br><span class="line">    <span class="keyword">boolean</span> result = position.getTimestamp().equals(entry.getHeader().getExecuteTime());</span><br><span class="line">    <span class="comment">//判断是否需要根据：binlog文件+position进行比较</span></span><br><span class="line">    <span class="keyword">boolean</span> exactely = (StringUtils.isBlank(position.getJournalName()) &amp;&amp; position.getPosition() == <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">if</span> (!exactely) &#123;<span class="comment">// 精确匹配</span></span><br><span class="line">        result &amp;= StringUtils.equals(entry.getHeader().getLogfileName(), position.getJournalName());</span><br><span class="line">        result &amp;= position.getPosition().equals(entry.getHeader().getLogfileOffset());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="rollback操作"><a href="#rollback操作" class="headerlink" title="rollback操作"></a>rollback操作</h3><p>相对于put/get/ack操作，rollback操作简单了很多。所谓rollback，就是client已经get到的数据，没能消费成功，因此需要进行回滚。回滚操作特别简单，只需要将getSequence的位置重置为ackSequence，将getMemSize设置为ackMemSize即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rollback</span><span class="params">()</span> <span class="keyword">throws</span> CanalStoreException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        getSequence.set(ackSequence.get());</span><br><span class="line">        getMemSize.set(ackMemSize.get());</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h3><p>除了上述提到的所有方法外，MemoryEventStoreWithBuffer还提供了getFirstPosition()和getLatestPosition()方法，分别用于获取当前队列中的第一个和最后一个Event的位置信息。前面已经提到，在CanalServerWithEmbedded中会使用getFirstPosition()方法来获取CanalEventStore中存储的第一个Event的位置，而getLatestPosition()只是在一些单元测试中使用到，因此在这里我们只分析getFirstPosition()方法。</p>
+<p>第一条数据通过ackSequence当前值对应的Event来确定，因为更早的Event在ack后都已经被删除了。相关源码如下：</p>
+<p>MemoryEventStoreWithBuffer#getFirstPosition </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取第一条数据的position，如果没有数据返回为null</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> LogPosition <span class="title">getFirstPosition</span><span class="params">()</span> <span class="keyword">throws</span> CanalStoreException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">long</span> firstSeqeuence = ackSequence.get();</span><br><span class="line">        <span class="comment">//1 没有ack过数据，且队列中有数据 </span></span><br><span class="line">        <span class="keyword">if</span> (firstSeqeuence == INIT_SQEUENCE &amp;&amp; firstSeqeuence &lt; putSequence.get()) &#123;</span><br><span class="line">            <span class="comment">//没有ack过数据，那么ack为初始值-1，又因为队列中有数据，因此ack+1,即返回队列中第一条数据的位置</span></span><br><span class="line">            Event event = entries[getIndex(firstSeqeuence + <span class="number">1</span>)]; </span><br><span class="line">            <span class="keyword">return</span> CanalEventUtils.createPosition(event, <span class="keyword">false</span>);</span><br><span class="line">        <span class="comment">//2 已经ack过数据，但是未追上put操作</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (firstSeqeuence &gt; INIT_SQEUENCE &amp;&amp; firstSeqeuence &lt; putSequence.get()) &#123;</span><br><span class="line">            <span class="comment">//返回最后一次ack的位置数据 + 1</span></span><br><span class="line">            Event event = entries[getIndex(firstSeqeuence + <span class="number">1</span>)]; </span><br><span class="line">            <span class="keyword">return</span> CanalEventUtils.createPosition(event, <span class="keyword">true</span>);</span><br><span class="line">        <span class="comment">//3 已经ack过数据，且已经追上put操作，说明队列中所有数据都被消费完了</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (firstSeqeuence &gt; INIT_SQEUENCE &amp;&amp; firstSeqeuence == putSequence.get()) &#123;</span><br><span class="line">            <span class="comment">// 最后一次ack的位置数据，和last为同一条</span></span><br><span class="line">            Event event = entries[getIndex(firstSeqeuence)]; </span><br><span class="line">            <span class="keyword">return</span> CanalEventUtils.createPosition(event, <span class="keyword">false</span>);</span><br><span class="line">        <span class="comment">//4 没有任何数据，返回null</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码逻辑很简单，唯一需要关注的是，通过CanalEventUtils#createPosition(Event, boolean)方法来计算第一个Event的位置，返回的是一个LogPosition对象。其中boolean参数用LogPosition内部维护的EntryPosition的included属性赋值。在前面get方法源码分析时，我们已经看到，当included值为false时，会把当前get位置+1，然后开始获取Event；当为true时，则直接从当前get位置开始获取数据。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/02/06/CANAL源码解析-store模块/">http://code-monkey.top/2020/02/06/CANAL源码解析-store模块/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/canal/">canal</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2020/02/06/CANAL源码解析-instance模块/">
+        <span class="next-text nav-default">CANAL源码解析-instance模块</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>

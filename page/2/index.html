@@ -208,6 +208,64 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/">深入理解JVM(3)——7种垃圾收集器(转载)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-10-23
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>如果说收集算法是内存回收的方法论，那么垃圾收集器就是内存回收的具体实现。Java虚拟机规范中对垃圾收集器应该如何实现并没有任何规定，因此不同的厂商、版本的虚拟机所提供的垃圾收集器都可能会有很大差别，并且一般都会提供参数供用户根据自己的应用特点和要求组合出各个年代所使用的收集器。接下来讨论的收集器基于JDK1.7 Update 14 之后的HotSpot虚拟机（在此版本中正式提供了商用的G1收集器，之前G1仍处于实验状态），该虚拟机包含的所有收集器如下图所示：</p>
+<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/1.jpg">
+<p>上图展示了7种作用于不同分代的收集器，如果两个收集器之间存在连线，就说明它们可以搭配使用。虚拟机所处的区域，则表示它是属于新生代收集器还是老年代收集器。Hotspot实现了如此多的收集器，正是因为目前并无完美的收集器出现，只是选择对具体应用最适合的收集器。</p>
+<h1 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h1><h2 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h2><ul>
+<li>并行（Parallel）：指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</li>
+<li>并发（Concurrent）：指用户线程与垃圾收集线程同时执行（但不一定是并行的，可能会交替执行），用户程序在继续运行。而垃圾收集程序运行在另一个CPU上。</li>
+</ul>
+<h2 id="吞吐量（Throughput）"><a href="#吞吐量（Throughput）" class="headerlink" title="吞吐量（Throughput）"></a>吞吐量（Throughput）</h2><p>吞吐量就是CPU用于运行用户代码的时间与CPU总消耗时间的比值，即</p>
+<p>吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）。</p>
+<p>假设虚拟机总共运行了100分钟，其中垃圾收集花掉1分钟，那吞吐量就是99%。</p>
+<h2 id="Minor-GC-和-Full-GC"><a href="#Minor-GC-和-Full-GC" class="headerlink" title="Minor GC 和 Full GC"></a>Minor GC 和 Full GC</h2><ul>
+<li>新生代GC（Minor GC）：指发生在新生代的垃圾收集动作，因为Java对象大多都具备朝生夕灭的特性，所以Minor GC非常频繁，一般回收速度也比较快。具体原理见上一篇文章。</li>
+<li>老年代GC（Major GC / Full GC）：指发生在老年代的GC，出现了Major GC，经常会伴随至少一次的Minor GC（但非绝对的，在Parallel Scavenge收集器的收集策略里就有直接进行Major GC的策略选择过程）。Major GC的速度一般会比Minor GC慢10倍以上。</li>
+</ul>
+          <div class="read-more">
+            <a href="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/">深入理解JVM(2)——GC算法与内存分配策略(转载)</a>
         
       </h1>
@@ -814,56 +872,6 @@
 <p>一开始我们只能通过大致的估算来确定上述资源的配置，例如一个Spark应用程序处理的数据大小为1T，如果读出来默认是500个partitions（可以通过测试运行，从web中查看的到），那么平均每个partition的大小为1T/500≈2G，默认情况下，考虑中间处理过程中的数据膨胀以及一些额外内存消耗，executor中可用于存放rdd的阈值设定为spar.storage.memoryFraction=0.6，所以存储partition需要的内存为executor-memory*0.6，稳妥一点设置executor-memory大于2G/0.6，如果一个executor不止是处理一个partition，假如num-executors设置为100，那么平均每个executor处理的partition为500/100=5，这时如果需要缓存rdd，那么executor-memory就要设置为大于5*2G/0.6；如果读出来的分区数很少（如100），一个partition很大（1T/100≈10G），使得executor-memory有可能OOM，那么就需要考虑加大分区数（调用repartition(numPartitions)等），增加task数量来减少一个task的数据量。一般来说一个executor处理的partition数最好不要超过5个，否则增加num-executors数，接上面的例子，500个分区，配置num-executors为100，每个executor需要处理5个partition。driver-memory的大小取决于最后的action操作，如果是调用collect，那么driver-memory的大小就取决于结果集rdd的大小，如果是调用count，那么driver-memory的大小只需要满足运行需求就够了，对于需要长时间迭代的Spark应用，driver端需要维护rdd的依赖关系，所以需要设置较大的内存。</p>
           <div class="read-more">
             <a href="/2019/04/28/Spark-应用程序调优/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/25/Spark-底层网络模块/">Spark 底层网络模块(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-25
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>对于分布式系统来说，网络是最基本的一环，其设计的好坏直接影响到整个分布式系统的稳定性及可用性。为此，Spark专门独立出基础网络模块spark-network，为上层RPC、Shuffle数据传输、RDD Block同步以及资源文件传输等提供可靠的网络服务。在spark-1.6以前，RPC是单独通过akka实现，数据以及文件传输是通过netty实现，然而akka实质上底层也是采用netty实现，对于一个优雅的工程师来说，不会在系统中同时使用具有重复功能的框架，否则会使得系统越来越重，所以自spark-1.6开始，通过netty封装了一套简洁的类似于akka actor模式的RPC接口，逐步抛弃akka这个大框架。从spark-2.0起，所有的网络功能都是通过netty来实现。</p>
-<h2 id="系统抽象"><a href="#系统抽象" class="headerlink" title="系统抽象"></a>系统抽象</h2><p>在介绍spark网络模块前，我们先温习下netty的基本工作流程。无论是服务器还是客户端都会关联一个channel(socket)，channel上会绑定一个pipeline，pipeline绑定若干个handler，用来专门用来处理和业务有关的东西，handler有DownHandler和UpHandler两种，DownHandler用来处理发包，UpHandler用来处理收包，大致过程如下图所示。</p>
-<img src="/2019/04/25/Spark-底层网络模块/spark-network-netty-overview.png">
-<p>Spark的底层网络实现也是遵循上图所示流程，其总体实现流程如下图所示。客户端发送请求消息，经过Encoder(一种DownHandler)编码，加上包头信息，再通过网络发给服务端，服务端收到消息后，首先经过TransportFrameDecoder(一种UpHandler)处理粘包拆包，得到消息类型和消息体，然后经过Decoder解析消息类型，得到一个个具体的请求消息，最后由TransportChannelHandler处理具体的请求消息，并根据具体的消息类型判断是否返回一个响应。类似地，响应消息传给客户端也是先经过Encoder编码，客户端先通过TransportFrameDecoder、Decoder解包消息，再通过TransportChannelHandler处理具体的响应消息。</p>
-<img src="/2019/04/25/Spark-底层网络模块/spark-network-basic.png">
-<p>整个网络模型非常清晰简单，最核心的当属消息抽象以及如何定义消息传输和处理，即上图中的Message的定义以及编解码传输等，下面详细介绍spark网络模块的消息抽象以及相关handler的定义。</p>
-          <div class="read-more">
-            <a href="/2019/04/25/Spark-底层网络模块/" class="read-more-link">阅读更多</a>
           </div>
         
       

@@ -208,6 +208,56 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/06/CANAL源码解析-store模块/">CANAL源码解析-store模块</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="store模块简介"><a href="#store模块简介" class="headerlink" title="store模块简介"></a>store模块简介</h2><p>store模块用于binlog事件的存储 ，目前开源的版本中仅实现了Memory内存模式。官方文档中提到”后续计划增加本地file存储，mixed混合模式”，这句话大家不必当真，从笔者最开始接触canal到现在已经几年了，依然没有动静，好在Memory内存模式已经可以满足绝大部分场景。</p>
+<p>store模块目录结构如下，该模块的核心接口为CanalEventStore：</p>
+<img src="/2020/02/06/CANAL源码解析-store模块/1.png">
+<p>以下是相关类图：</p>
+<img src="/2020/02/06/CANAL源码解析-store模块/2.png">
+<p>其中MemoryEventStoreWithBuffer就是内存模式的实现，是我们分析的重点，其实现了CanalEventStore接口，并继承了AbstractCanalStoreScavenge抽象类。需要注意的是，AbstractCanalStoreScavenge这个类中定义的字段和方法在开源版本中并没有任何地方使用到，因此我们不会对其进行分析。</p>
+          <div class="read-more">
+            <a href="/2020/02/06/CANAL源码解析-store模块/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/06/CANAL源码解析-instance模块/">CANAL源码解析-instance模块</a>
         
       </h1>
@@ -704,64 +754,6 @@
 <p>在上图中，加载、验证、准备、初始化和卸载这5个阶段的顺序是确定的，类的加载过程必须按照这种顺序按部就班地开始（开始而不是完成，这些阶段是互相交叉着进行的，在一个阶段执行过程中就会激活另一个阶段），而解析阶段则不一定：它在某些情况下可以在初始化阶段之后再开始，这是为了支持Java的运行时绑定（也称为动态绑定或晚期绑定）。</p>
           <div class="read-more">
             <a href="/2019/10/23/深入理解JVM-4-——虚拟机类加载机制-转载/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/">深入理解JVM(3)——7种垃圾收集器(转载)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-10-23
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>如果说收集算法是内存回收的方法论，那么垃圾收集器就是内存回收的具体实现。Java虚拟机规范中对垃圾收集器应该如何实现并没有任何规定，因此不同的厂商、版本的虚拟机所提供的垃圾收集器都可能会有很大差别，并且一般都会提供参数供用户根据自己的应用特点和要求组合出各个年代所使用的收集器。接下来讨论的收集器基于JDK1.7 Update 14 之后的HotSpot虚拟机（在此版本中正式提供了商用的G1收集器，之前G1仍处于实验状态），该虚拟机包含的所有收集器如下图所示：</p>
-<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/1.jpg">
-<p>上图展示了7种作用于不同分代的收集器，如果两个收集器之间存在连线，就说明它们可以搭配使用。虚拟机所处的区域，则表示它是属于新生代收集器还是老年代收集器。Hotspot实现了如此多的收集器，正是因为目前并无完美的收集器出现，只是选择对具体应用最适合的收集器。</p>
-<h1 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h1><h2 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h2><ul>
-<li>并行（Parallel）：指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</li>
-<li>并发（Concurrent）：指用户线程与垃圾收集线程同时执行（但不一定是并行的，可能会交替执行），用户程序在继续运行。而垃圾收集程序运行在另一个CPU上。</li>
-</ul>
-<h2 id="吞吐量（Throughput）"><a href="#吞吐量（Throughput）" class="headerlink" title="吞吐量（Throughput）"></a>吞吐量（Throughput）</h2><p>吞吐量就是CPU用于运行用户代码的时间与CPU总消耗时间的比值，即</p>
-<p>吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）。</p>
-<p>假设虚拟机总共运行了100分钟，其中垃圾收集花掉1分钟，那吞吐量就是99%。</p>
-<h2 id="Minor-GC-和-Full-GC"><a href="#Minor-GC-和-Full-GC" class="headerlink" title="Minor GC 和 Full GC"></a>Minor GC 和 Full GC</h2><ul>
-<li>新生代GC（Minor GC）：指发生在新生代的垃圾收集动作，因为Java对象大多都具备朝生夕灭的特性，所以Minor GC非常频繁，一般回收速度也比较快。具体原理见上一篇文章。</li>
-<li>老年代GC（Major GC / Full GC）：指发生在老年代的GC，出现了Major GC，经常会伴随至少一次的Minor GC（但非绝对的，在Parallel Scavenge收集器的收集策略里就有直接进行Major GC的策略选择过程）。Major GC的速度一般会比Minor GC慢10倍以上。</li>
-</ul>
-          <div class="read-more">
-            <a href="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/" class="read-more-link">阅读更多</a>
           </div>
         
       

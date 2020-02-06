@@ -208,6 +208,56 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/04/25/Spark-底层网络模块/">Spark 底层网络模块(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-04-25
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>对于分布式系统来说，网络是最基本的一环，其设计的好坏直接影响到整个分布式系统的稳定性及可用性。为此，Spark专门独立出基础网络模块spark-network，为上层RPC、Shuffle数据传输、RDD Block同步以及资源文件传输等提供可靠的网络服务。在spark-1.6以前，RPC是单独通过akka实现，数据以及文件传输是通过netty实现，然而akka实质上底层也是采用netty实现，对于一个优雅的工程师来说，不会在系统中同时使用具有重复功能的框架，否则会使得系统越来越重，所以自spark-1.6开始，通过netty封装了一套简洁的类似于akka actor模式的RPC接口，逐步抛弃akka这个大框架。从spark-2.0起，所有的网络功能都是通过netty来实现。</p>
+<h2 id="系统抽象"><a href="#系统抽象" class="headerlink" title="系统抽象"></a>系统抽象</h2><p>在介绍spark网络模块前，我们先温习下netty的基本工作流程。无论是服务器还是客户端都会关联一个channel(socket)，channel上会绑定一个pipeline，pipeline绑定若干个handler，用来专门用来处理和业务有关的东西，handler有DownHandler和UpHandler两种，DownHandler用来处理发包，UpHandler用来处理收包，大致过程如下图所示。</p>
+<img src="/2019/04/25/Spark-底层网络模块/spark-network-netty-overview.png">
+<p>Spark的底层网络实现也是遵循上图所示流程，其总体实现流程如下图所示。客户端发送请求消息，经过Encoder(一种DownHandler)编码，加上包头信息，再通过网络发给服务端，服务端收到消息后，首先经过TransportFrameDecoder(一种UpHandler)处理粘包拆包，得到消息类型和消息体，然后经过Decoder解析消息类型，得到一个个具体的请求消息，最后由TransportChannelHandler处理具体的请求消息，并根据具体的消息类型判断是否返回一个响应。类似地，响应消息传给客户端也是先经过Encoder编码，客户端先通过TransportFrameDecoder、Decoder解包消息，再通过TransportChannelHandler处理具体的响应消息。</p>
+<img src="/2019/04/25/Spark-底层网络模块/spark-network-basic.png">
+<p>整个网络模型非常清晰简单，最核心的当属消息抽象以及如何定义消息传输和处理，即上图中的Message的定义以及编解码传输等，下面详细介绍spark网络模块的消息抽象以及相关handler的定义。</p>
+          <div class="read-more">
+            <a href="/2019/04/25/Spark-底层网络模块/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/04/24/Spark-Streaming状态管理应用优化之路/">Spark-Streaming状态管理应用优化之路(转)</a>
         
       </h1>
@@ -690,58 +740,6 @@
 <p>接下来，我们进一步探讨transformations的其他定义形式，让整个<code>transform</code>更加清晰明了</p>
           <div class="read-more">
             <a href="/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/01/19/Chaining-Custom-DataFrame-Transformations-in-Spark/">Chaining Custom DataFrame Transformations in Spark</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-01-19
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>在Spark中，可以采用<code>implicit classes</code>或者<code>Dataset#transform</code>来连接DataFrame的变换，这篇博客着重描如何连接DataFrame变换操作，并且详细解释说明为啥<code>Dataset#transform</code>方式要比<code>implicit classes</code>更有优势。</p>
-<h2 id="Dataset-Transform方法"><a href="#Dataset-Transform方法" class="headerlink" title="Dataset Transform方法"></a>Dataset Transform方法</h2><p>Dataset transform方法提供了<a href="http://spark.apache.org/docs/latest/api/scala/#org.apache.spark.sql.Dataset" target="_blank" rel="noopener">concise syntax for chaining custom transformations</a></p>
-<p>假如我们有两个方法</p>
-<ol>
-<li><code>withGreeting()</code>方法，该方法在原有的DataFrame基础上增加<code>greeting</code>列</li>
-<li><code>withFarewell()</code>方法，该方法在原有的DataFrame基础上增加<code>farewell</code>列</li>
-</ol>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">withGreeting</span></span>(df: <span class="type">DataFrame</span>): <span class="type">DataFrame</span> = &#123;</span><br><span class="line">    df.withColumn(<span class="string">"greeting"</span>, lit(<span class="string">"hello world"</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">withFarewell</span></span>(df: <span class="type">DataFrame</span>): <span class="type">DataFrame</span> = &#123;</span><br><span class="line">    df.withColumn(<span class="string">"farewell"</span>, lit(<span class="string">"goodbye"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <div class="read-more">
-            <a href="/2019/01/19/Chaining-Custom-DataFrame-Transformations-in-Spark/" class="read-more-link">阅读更多</a>
           </div>
         
       
