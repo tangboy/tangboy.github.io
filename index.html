@@ -208,6 +208,64 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/06/CANAL源码解析-deployer模块/">CANAL源码解析-deployer模块</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>canal有两种使用方式：1、独立部署 2、内嵌到应用中。 deployer模块主要用于独立部署canal server。关于这两种方式的区别，请参见server模块源码分析。deployer模块源码目录结构如下所示：</p>
+<img src="/2020/02/06/CANAL源码解析-deployer模块/1.png">
+<p>在独立部署canal时，需要首先对canal的源码进行打包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip -Denv=release</span><br></pre></td></tr></table></figure>
+<p>打包后会在target目录生成一个以下两个文件：<br><img src="/2020/02/06/CANAL源码解析-deployer模块/2.png"></p>
+<p>其中canal.deployer-1.0.24.tar.gz就是canal的独立部署包。解压缩后，目录如下所示。其中bin目录和conf目录(包括子目录spring)中的所有文件，都来自于deployer模块。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">canal</span><br><span class="line">├── bin</span><br><span class="line">│   ├── startup.bat</span><br><span class="line">│   ├── startup.sh</span><br><span class="line">│   └── stop.sh</span><br><span class="line">├── conf</span><br><span class="line">│   ├── canal.properties</span><br><span class="line">│   ├── example</span><br><span class="line">│   │   └── instance.properties</span><br><span class="line">│   ├── logback.xml</span><br><span class="line">│   └── spring</span><br><span class="line">│       ├── default-instance.xml</span><br><span class="line">│       ├── file-instance.xml</span><br><span class="line">│       ├── group-instance.xml</span><br><span class="line">│       ├── <span class="built_in">local</span>-instance.xml</span><br><span class="line">│       └── memory-instance.xml</span><br><span class="line">├── lib</span><br><span class="line">│   └── ....依赖的各种jar</span><br><span class="line">└── logs</span><br></pre></td></tr></table></figure>
+<p>deployer模块主要完成以下功能：</p>
+<ol>
+<li>读取canal.properties配置文件</li>
+<li>启动canal server，监听canal client的请求</li>
+<li>启动canal instance，连接mysql数据库，伪装成slave，解析binlog</li>
+<li>在canal的运行过程中，监听配置文件的变化</li>
+</ol>
+          <div class="read-more">
+            <a href="/2020/02/06/CANAL源码解析-deployer模块/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/06/CANAL源码解析-启动流程/">CANAL源码解析-启动流程</a>
         
       </h1>
@@ -725,78 +783,6 @@
 </ul>
           <div class="read-more">
             <a href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/06/13/MapReduce之Shuffle过程详述/">MapReduce之Shuffle过程详述</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-06-13
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>MapReduce作为Hadoop的编程框架，对于大数据开发或者想要接触大数据开发的开发者来说，是必须要掌握的，它是一种经典大数据计算框架，现在有很多开源项目的内部实现都会直接或间接地借鉴了MR过程的实现。我在经过了一些hadoop项目的开发，然后前几天又系统地学习MapReduc内部实现过程，尤其是学习中间的Shuffle过程之后，准备对这一块做一下总结，希望这篇文章能给需要的人带来一些帮助（文中Shuffle的分析还是以Hadoop1.0为例，这个跟2.0的区别并不是很大）。</p>
-<h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><p>对于MapReduce作业，完整的作业运行流程：</p>
-<img src="/2019/06/13/MapReduce之Shuffle过程详述/hadoop.png">
-<p>完整过程应该是分为7部分，分别是：</p>
-<ol>
-<li>作业启动：开发者通过控制台启动作业；</li>
-<li>作业初始化：这里主要是切分数据、创建作业和提交作业，与第三步紧密相联；</li>
-<li>作业/任务调度：对于1.0版的Hadoop来说就是JobTracker来负责任务调度，对于2.0版的Hadoop来说就是Yarn中的Resource Manager负责整个系统的资源管理与分配，Yarn可以参考IBM的一篇博客(Hadoop新MapReduce框架Yarn详解)[<a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop-yarn/]；" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop-yarn/]；</a></li>
-<li>Map任务；</li>
-<li>Shuffle；</li>
-<li>Reduce任务；</li>
-<li>作业完成：通知开发者任务完成。</li>
-</ol>
-<p>而这其中最主要的MapReduce过程，主要是第4、5、6步三部分，这也是本篇博客重点讨论的地方，详细作用如下：</p>
-<ol>
-<li><strong>Map</strong>:数据输入,做初步的处理,输出形式的中间结果；</li>
-<li><strong>Shuffle</strong>:按照partition、key对中间结果进行排序合并,输出给reduce线程；</li>
-<li><strong>Reduce</strong>:对相同key的输入进行最终的处理,并将结果写入到文件中。</li>
-</ol>
-<p>这里先给出官网上关于这个过程的经典流程图：</p>
-<img src="/2019/06/13/MapReduce之Shuffle过程详述/mapreduce.png">
-<p>上图是把MapReduce过程分为两个部分，而实际上从两边的Map和Reduce到中间的那一大块都属于Shuffle过程，也就是说，Shuffle过程有一部分是在Map端，有一部分是在Reduce端，下文也将会分两部分来介绍Shuffle过程。</p>
-<p>对于Hadoop集群，当我们在运行作业时，大部分的情况下，map task与reduce task的执行是分布在不同的节点上的，因此，很多情况下，reduce执行时需要跨节点去拉取其他节点上的map task结果，这样造成了集群内部的网络资源消耗很严重，而且在节点的内部，相比于内存，磁盘IO对性能的影响是非常严重的。如果集群中运行的作业有很多，那么task的执行对于集群内部网络的资源消费非常大。因此，我们对于MapRedue作业Shuffle过程的期望是：</p>
-<ul>
-<li>完整地从map task端拉取数据到Reduce端；</li>
-<li>在跨节点拉取数据时，尽可能地减少对带宽的不必要消耗；</li>
-<li>减少磁盘IO对task执行的影响。</li>
-</ul>
-          <div class="read-more">
-            <a href="/2019/06/13/MapReduce之Shuffle过程详述/" class="read-more-link">阅读更多</a>
           </div>
         
       
