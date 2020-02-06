@@ -208,6 +208,98 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/06/CANAL源码解析-启动流程/">CANAL源码解析-启动流程</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="总体"><a href="#总体" class="headerlink" title="总体"></a>总体</h2><p>canal的入口函数是<code>CanalLauncher</code>的<code>main</code>方法，我们来跟踪代码的执行流程。</p>
+<ol>
+<li>加载<code>canal.properties</code>。如果指定了<code>canal.conf</code>则使用指定的配置，否则使用默认的<code>canal.properties</code>文件。</li>
+<li>新建<code>CanalStater</code>并启动<br> a. 判断<code>canal.serverMode</code>，如果为<code>kafka</code>则新建<code>CanalKafkaProducer</code>。设置<code>canal.withoutNetty</code>为<code>true</code>，以及用户定义的<code>canal.destinations</code><br> b. 新建<code>CanalController</code><pre><code> 1. 调用`initGlobalConfig`方法初始化全局参数设置
+     - 获取并设置`mode`，默认为`SPRING`
+     - 获取并设置`lazy`，默认为`false`
+     - 获取并设置`managerAddress`，默认为`null`
+     - 取并设置`springXml`，默认为`classpath:spring/file-instance.xml`
+     - 创建`instanceGenerator`，实例生成器。用于根据`destination`生成实例
+ 2. 调用`initInstanceConfig`初始化实例配置
+     - 获取`canal.destinations`配置
+     - 将`canal.destinations`以,分割
+     - 针对每个`destination`：
+         - 调用`parseInstanceConfig`方法解析`destination`的配置。与初始化全局参数设置类似，这里根据具体的`destination`配置`mode`、`lazy`、`managerAddress`、`springXml`
+         - 将解析得到的`destination`配置保存在`instanceConfigs`
+ 3. 如果配置了`canal.socketChannel`，设置`canal.socketChannel`属性
+ 4. 如果存在的话，分别设置`canal.instance.rds.accesskey`和`canal.instance.rds.secretkey`属性
+ 5. 获取`cid`、`ip`、`port`属性
+ 6. 获取`embededCanalServer`，并设置`instanceGenerator`。`embededCanalServer`的类型为`CanalServerWithEmbedded`
+ 7. 获取并设置`embededCanalServer`的`metricsPort`
+ 8. 如果`canal.withoutNetty`为`null`或者`false`，创建`canalServer`并配置`ip`和`port`。
+ 9. 如果`ip`属性为空，配置本机`ip`
+ 10. 获取`canal.zkServers`，`zookeeper`的地址
+     - 如果`canal.zkServers`不为空，在`zookeeper`中创建`/otter/canal/destinations`和`/otter/canal/cluster`目录
+ 11. 创建服务器运行信息`ServerRunningData`
+ 12. 将`ServerRunningData`设置在服务器运行监控`ServerRunningMonitors`中。在`ServerRunningMonitors`中设置每个`destination`的运行监控器`ServerRunningMonitor`
+ 13. 获取`canal.auto.scan`属性，默认为`true`
+     - 创建`InstanceAction`，实例执行器。其中定义了实例启动、停止、重启3个操作
+     - 创建`InstanceConfigMonitor`，实例配置监视器。
+</code></pre> c. 调用<code>start()</code>方法启动<code>CanalController</code><pre><code> 1. `zookeeper`中创建`canal`服务器的`path`，`path`为`/otter/canal/cluster/{ip}:{port}`
+ 2. 在`zookeeper`中创建状态变化的监听器
+ 3. 调用`start()`方法启动`embededCanalServer`
+     - 加载并初始化`CanalMetricsService`
+     - 创建`canalInstances`
+ 4. 遍历各个`instance`
+     - 调用`ServerRunningMonitor.start()`方法启动每个`destination`的`ServerRunningMonitor`
+         - 调用`processStart()`方法。在`zookeeper`中新建`/otter/canal/destinations/{name}/cluster/{ip}:{port}`目录，并监听`zookeeper`状态的修改
+         - 监听`zookeeper`中`/otter/canal/destinations/{name}/running`目录的变动
+         - 调用`initRunning()`方法
+             - 在`zookeeper`的`/otter/canal/destinations/{name}/running`目录中增加正在运行的`canal`服务器信息
+             - 调用`processActiveEnter`方法触发`destination`对应的`canal`实例`（CanalInstance）`开始执行
+         - 为每个destination注册`InstanceAction`
+ 5. 启动实例配置的监听器`InstanceConfigMonitor`
+ 6. 如果`canalServer`不为`null`，则调用`start()`方法启动`canalServer`。如果没有指定`mq`模式，则会启动`canalServer`。`canalServer`是使用`Netty`写的服务端，接收用户连接，发送数据。
+</code></pre> d. 设置设置退出时执行的钩子线程<code>shutdownThread</code><br> e. 如果<code>canalMQProducer</code>不为<code>null</code>，新建并启动<code>CanalMQStarter</code><pre><code> 1. 设置mq的属性
+ 2. 为每个destination新建一个`CanalMQRunnable`并启动
+</code></pre></li>
+</ol>
+          <div class="read-more">
+            <a href="/2020/02/06/CANAL源码解析-启动流程/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/06/CANAL源码解析-简介/">CANAL源码解析-简介</a>
         
       </h1>
@@ -717,65 +809,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-interpreter调试/">Zeppelin源码分析-interpreter调试</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-06-12
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <p>前面提到了interpreter是以单独的process启动的，想要debug interpreter，需要设置启动interpreter进程的jvm以debug方式启动，然后让IDE进行remote debug，具体步骤如下：</p>
-<ol>
-<li>在bin/interpreter.sh脚本中JAVA_INTP_OPTS变量中加入如下参数：</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JAVA_INTP_OPTS+=<span class="string">" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=**`expr <span class="variable">$&#123;PORT&#125;</span> + 1`**  -Dzeppelin.log.file=<span class="variable">$&#123;ZEPPELIN_LOGFILE&#125;</span>"</span></span><br></pre></td></tr></table></figure>
-<p>加粗部分保证启动interpreter的jvm以debug方式启动，监听的端口号比RemoteInterpreterServer process监听的端口号+1（采用<code>expr${PORT} + 1</code>）这里不能写成固定的端口，因为每种interpreter都会启动一个独立的process，该process监听的socket端口是zeppelin在运行时随机获取一个可用的端口（没有被占用的端口）。如果写成固定的端口，那么每种interpreter process在进行remote debug的时候，端口就会冲突。</p>
-<ol>
-<li>启动ZeppelinServer的调试，可以直接run，不用以debug方式启动。</li>
-<li>打开浏览器，访问<a href="http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter" target="_blank" rel="noopener">http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter</a> binding了spark。insert一个paragraph，首行写入%spark (表明采用SparkInterpreter来解释此paragrapph中的代码)，换行，写入scala代码println(“hello,world”)，由于这里主要演示debug interpreter，以最简单的hello world说明问题。然后点击运行该paragraph。此时zeppelin server会调用bin/interpreter.sh脚本，传入“端口、interpreter加载的目录(这里是${ZEPPELIN_HOME}/interpreter/spark)、interpreter各自的log file位置”这些参数以启动该interpreter jvm。由于之前在JAVA_INTP_OPTS设置了jvm支持远程调试的参数，该jvm可以通过IDE remote debug。</li>
-<li>通过ps –ef|grep interpreter来查找RemoteInterpreterServer process启动的参数，可以看到-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=58679类似的输出，表明该jvm在58679端口上支持remote debug。</li>
-</ol>
-<p>在SparkInterpreter.java中的重点位置设置断点，如在方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open()和interpret(String line, InterpreterContext context)</span><br></pre></td></tr></table></figure></p>
-<p>首行设置断点。</p>
-<ol>
-<li>在IDE，以Idea为例：创建Remote Run/Debug Configuration，填入端口号58679</li>
-</ol>
-<img src="/2019/06/12/Zeppelin源码分析-interpreter调试/1.png">
-<p>即可启动remote debug。</p>
-<p>需要注意的是，由于hello world代码简短，可能在你在IDE中启动Remote debug时该Interpreter已经执行完了。再次点击执行该paragraph即可命中SparkInterpreter中的断点。</p>
-
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -916,24 +949,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>

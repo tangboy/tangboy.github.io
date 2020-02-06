@@ -208,6 +208,65 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-interpreter调试/">Zeppelin源码分析-interpreter调试</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-06-12
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+
+        
+          <p>前面提到了interpreter是以单独的process启动的，想要debug interpreter，需要设置启动interpreter进程的jvm以debug方式启动，然后让IDE进行remote debug，具体步骤如下：</p>
+<ol>
+<li>在bin/interpreter.sh脚本中JAVA_INTP_OPTS变量中加入如下参数：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JAVA_INTP_OPTS+=<span class="string">" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=**`expr <span class="variable">$&#123;PORT&#125;</span> + 1`**  -Dzeppelin.log.file=<span class="variable">$&#123;ZEPPELIN_LOGFILE&#125;</span>"</span></span><br></pre></td></tr></table></figure>
+<p>加粗部分保证启动interpreter的jvm以debug方式启动，监听的端口号比RemoteInterpreterServer process监听的端口号+1（采用<code>expr${PORT} + 1</code>）这里不能写成固定的端口，因为每种interpreter都会启动一个独立的process，该process监听的socket端口是zeppelin在运行时随机获取一个可用的端口（没有被占用的端口）。如果写成固定的端口，那么每种interpreter process在进行remote debug的时候，端口就会冲突。</p>
+<ol>
+<li>启动ZeppelinServer的调试，可以直接run，不用以debug方式启动。</li>
+<li>打开浏览器，访问<a href="http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter" target="_blank" rel="noopener">http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter</a> binding了spark。insert一个paragraph，首行写入%spark (表明采用SparkInterpreter来解释此paragrapph中的代码)，换行，写入scala代码println(“hello,world”)，由于这里主要演示debug interpreter，以最简单的hello world说明问题。然后点击运行该paragraph。此时zeppelin server会调用bin/interpreter.sh脚本，传入“端口、interpreter加载的目录(这里是${ZEPPELIN_HOME}/interpreter/spark)、interpreter各自的log file位置”这些参数以启动该interpreter jvm。由于之前在JAVA_INTP_OPTS设置了jvm支持远程调试的参数，该jvm可以通过IDE remote debug。</li>
+<li>通过ps –ef|grep interpreter来查找RemoteInterpreterServer process启动的参数，可以看到-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=58679类似的输出，表明该jvm在58679端口上支持remote debug。</li>
+</ol>
+<p>在SparkInterpreter.java中的重点位置设置断点，如在方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open()和interpret(String line, InterpreterContext context)</span><br></pre></td></tr></table></figure></p>
+<p>首行设置断点。</p>
+<ol>
+<li>在IDE，以Idea为例：创建Remote Run/Debug Configuration，填入端口号58679</li>
+</ol>
+<img src="/2019/06/12/Zeppelin源码分析-interpreter调试/1.png">
+<p>即可启动remote debug。</p>
+<p>需要注意的是，由于hello world代码简短，可能在你在IDE中启动Remote debug时该Interpreter已经执行完了。再次点击执行该paragraph即可命中SparkInterpreter中的断点。</p>
+
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/06/12/Zeppelin源码分析-note的执行过程/">Zeppelin源码分析-note的执行过程</a>
         
       </h1>
@@ -775,54 +834,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/18/PySpark-的背后原理/">PySpark 的背后原理(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-18
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>Spark主要是由Scala语言开发，为了方便和其他系统集成而不引入scala相关依赖，部分实现使用Java语言开发，例如External Shuffle Service等。总体来说，Spark是由JVM语言实现，会运行在JVM中。然而，Spark除了提供Scala/Java开发接口外，还提供了Python、R等语言的开发接口，为了保证Spark核心实现的独立性，Spark仅在外围做包装，实现对不同语言的开发支持，本文主要介绍Python Spark的实现原理，剖析pyspark应用程序是如何运行起来的。</p>
-<h2 id="Spark运行时架构"><a href="#Spark运行时架构" class="headerlink" title="Spark运行时架构"></a>Spark运行时架构</h2><p>首先我们先回顾下Spark的基本运行时架构，如下图所示，其中橙色部分表示为JVM，Spark应用程序运行时主要分为Driver和Executor，Driver负载总体调度及UI展示，Executor负责Task运行，Spark可以部署在多种资源管理系统中，例如Yarn、Mesos等，同时Spark自身也实现了一种简单的Standalone(独立部署)资源管理系统，可以不用借助其他资源管理系统即可运行。更多细节请参考<a href="https://code-monkey.top/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/">Spark Scheduler内部原理剖析</a>。</p>
-<img src="/2019/04/18/PySpark-的背后原理/spark-structure.png">
-<p>用户的Spark应用程序运行在Driver上(某种程度上说，用户的程序就是Spark Driver程序)，经过Spark调度封装成一个个Task，再将这些Task信息发给Executor执行，Task信息包括代码逻辑以及数据信息，Executor不直接运行用户的代码。</p>
-          <div class="read-more">
-            <a href="/2019/04/18/PySpark-的背后原理/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -968,7 +979,24 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
   </body>
 </html>

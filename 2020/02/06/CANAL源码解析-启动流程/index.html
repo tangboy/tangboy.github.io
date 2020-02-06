@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="CANAL源码解析-启动流程">
+
+
+
+
+  <meta name="keywords" content="canal, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/02/06/CANAL源码解析-启动流程/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> CANAL源码解析-启动流程 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          CANAL源码解析-启动流程
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#总体"><span class="toc-text">总体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动流程总结"><span class="toc-text">启动流程总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CanalInstance"><span class="toc-text">CanalInstance</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CanalEventParser"><span class="toc-text">CanalEventParser</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#binlog解析线程的执行"><span class="toc-text">binlog解析线程的执行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CanalMQProducer"><span class="toc-text">CanalMQProducer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="总体"><a href="#总体" class="headerlink" title="总体"></a>总体</h2><p>canal的入口函数是<code>CanalLauncher</code>的<code>main</code>方法，我们来跟踪代码的执行流程。</p>
+<ol>
+<li>加载<code>canal.properties</code>。如果指定了<code>canal.conf</code>则使用指定的配置，否则使用默认的<code>canal.properties</code>文件。</li>
+<li>新建<code>CanalStater</code>并启动<br> a. 判断<code>canal.serverMode</code>，如果为<code>kafka</code>则新建<code>CanalKafkaProducer</code>。设置<code>canal.withoutNetty</code>为<code>true</code>，以及用户定义的<code>canal.destinations</code><br> b. 新建<code>CanalController</code><pre><code> 1. 调用`initGlobalConfig`方法初始化全局参数设置
+     - 获取并设置`mode`，默认为`SPRING`
+     - 获取并设置`lazy`，默认为`false`
+     - 获取并设置`managerAddress`，默认为`null`
+     - 取并设置`springXml`，默认为`classpath:spring/file-instance.xml`
+     - 创建`instanceGenerator`，实例生成器。用于根据`destination`生成实例
+ 2. 调用`initInstanceConfig`初始化实例配置
+     - 获取`canal.destinations`配置
+     - 将`canal.destinations`以,分割
+     - 针对每个`destination`：
+         - 调用`parseInstanceConfig`方法解析`destination`的配置。与初始化全局参数设置类似，这里根据具体的`destination`配置`mode`、`lazy`、`managerAddress`、`springXml`
+         - 将解析得到的`destination`配置保存在`instanceConfigs`
+ 3. 如果配置了`canal.socketChannel`，设置`canal.socketChannel`属性
+ 4. 如果存在的话，分别设置`canal.instance.rds.accesskey`和`canal.instance.rds.secretkey`属性
+ 5. 获取`cid`、`ip`、`port`属性
+ 6. 获取`embededCanalServer`，并设置`instanceGenerator`。`embededCanalServer`的类型为`CanalServerWithEmbedded`
+ 7. 获取并设置`embededCanalServer`的`metricsPort`
+ 8. 如果`canal.withoutNetty`为`null`或者`false`，创建`canalServer`并配置`ip`和`port`。
+ 9. 如果`ip`属性为空，配置本机`ip`
+ 10. 获取`canal.zkServers`，`zookeeper`的地址
+     - 如果`canal.zkServers`不为空，在`zookeeper`中创建`/otter/canal/destinations`和`/otter/canal/cluster`目录
+ 11. 创建服务器运行信息`ServerRunningData`
+ 12. 将`ServerRunningData`设置在服务器运行监控`ServerRunningMonitors`中。在`ServerRunningMonitors`中设置每个`destination`的运行监控器`ServerRunningMonitor`
+ 13. 获取`canal.auto.scan`属性，默认为`true`
+     - 创建`InstanceAction`，实例执行器。其中定义了实例启动、停止、重启3个操作
+     - 创建`InstanceConfigMonitor`，实例配置监视器。
+</code></pre> c. 调用<code>start()</code>方法启动<code>CanalController</code><pre><code> 1. `zookeeper`中创建`canal`服务器的`path`，`path`为`/otter/canal/cluster/{ip}:{port}`
+ 2. 在`zookeeper`中创建状态变化的监听器
+ 3. 调用`start()`方法启动`embededCanalServer`
+     - 加载并初始化`CanalMetricsService`
+     - 创建`canalInstances`
+ 4. 遍历各个`instance`
+     - 调用`ServerRunningMonitor.start()`方法启动每个`destination`的`ServerRunningMonitor`
+         - 调用`processStart()`方法。在`zookeeper`中新建`/otter/canal/destinations/{name}/cluster/{ip}:{port}`目录，并监听`zookeeper`状态的修改
+         - 监听`zookeeper`中`/otter/canal/destinations/{name}/running`目录的变动
+         - 调用`initRunning()`方法
+             - 在`zookeeper`的`/otter/canal/destinations/{name}/running`目录中增加正在运行的`canal`服务器信息
+             - 调用`processActiveEnter`方法触发`destination`对应的`canal`实例`（CanalInstance）`开始执行
+         - 为每个destination注册`InstanceAction`
+ 5. 启动实例配置的监听器`InstanceConfigMonitor`
+ 6. 如果`canalServer`不为`null`，则调用`start()`方法启动`canalServer`。如果没有指定`mq`模式，则会启动`canalServer`。`canalServer`是使用`Netty`写的服务端，接收用户连接，发送数据。
+</code></pre> d. 设置设置退出时执行的钩子线程<code>shutdownThread</code><br> e. 如果<code>canalMQProducer</code>不为<code>null</code>，新建并启动<code>CanalMQStarter</code><pre><code> 1. 设置mq的属性
+ 2. 为每个destination新建一个`CanalMQRunnable`并启动
+</code></pre></li>
+</ol>
+<a id="more"></a>
+<h2 id="启动流程总结"><a href="#启动流程总结" class="headerlink" title="启动流程总结"></a>启动流程总结</h2><p>canal的简易时序图如下所示</p>
+<img src="/2020/02/06/CANAL源码解析-启动流程/canal.png">
+<p>从时序图可以看出<code>CanalController</code>是canal启动过程中处于中心调用位置的类，负责初始化各种配置并启动<code>CanalServerWithEmbedded</code>。</p>
+<p><code>CanalServerWithEmbedded</code>可以看成是一个canal实例的管理容器，其中有一个<code>Map&lt;String, CanalInstance&gt; canalInstances</code>变量保存所有的canal实例，负责各个canal实例<code>(CanalInstance)</code>的启动。</p>
+<p><code>CanalInstance</code>是真正执行mysql日志解析的类。用户配置了多少个destinations，就会启动多少个<code>CanalInstance</code>。每个<code>CanalInstance</code>会连接mysql，dump binlog，然后将数据交给parser解析，sink过滤，store存储。接下来，我们来分析<code>CanalInstance</code>的执行。</p>
+<h2 id="CanalInstance"><a href="#CanalInstance" class="headerlink" title="CanalInstance"></a>CanalInstance</h2><p>通过前面的启动流程知道，<code>CanalInstance</code>的启动流程如下：</p>
+<ol>
+<li>CanalLauncher.main()</li>
+<li>CanalStater.start()</li>
+<li>CanalController.start()</li>
+<li>ServerRunningMonitor.start()</li>
+<li>ServerRunningMonitor.initRunning()</li>
+<li>ServerRunningMonitor.processActiveEnter()</li>
+<li>CanalServerWithEmbedded.start(final String destination)</li>
+</ol>
+<p><code>CanalServerWithEmbedded.start(final String destination)</code>方法负责具体destination的启动：</p>
+<ol>
+<li>从<code>canalInstances</code>中获取destination对应的<code>CanalInstance</code><br> <code>canalInstances</code>是一个Map，如果其中不存在对应destination的<code>CanalInstance</code>，调用<code>CanalInstanceGenerator.generate(String destination)</code>生成<code>CanalInstance</code><br> a. 从<code>instanceConfigs</code>中获取相应destination的配置<br> b. 默认通过<code>Spring</code>生成<code>Instance</code>。<pre><code> - 创建`SpringCanalInstanceGenerator`
+ - 调用`getBeanFactory(String springXml)`根据spring配置文件生成`Spring Context`。`Spring Context`中生成了几个重要的`Bean：instance`（Canal实例）、`eventParser`（解析）、`eventSink`（过滤）、`eventStore`（存储）、`metaManager`（元数据管理）、`alarmHandler`（报警）
+ - 调用`generate(String destination)`方法从`Spring Context`中获取destination对应的`CanalInstance`。`CanalInstance`的实际类为`CanalInstanceWithSpring`。
+</code></pre></li>
+<li>调用<code>CanalInstance.start()</code>方法启动Instance<br> a. 按先后顺序分别启动<code>metaManager（FileMixedMetaManager）</code>、<code>alarmHandler（LogAlarmHandler）</code>、<code>eventStore（MemoryEventStoreWithBuffer）</code>、<code>eventSink（EntryEventSink）</code>、<code>eventParser（RdsBinlogEventParserProxy）</code>。</li>
+</ol>
+<h2 id="CanalEventParser"><a href="#CanalEventParser" class="headerlink" title="CanalEventParser"></a>CanalEventParser</h2><p><code>CanalEventParser</code>在<code>CanalInstance</code>启动时被启动。<code>CanalEventParser</code>的实际类是<code>RdsBinlogEventParserProxy</code>，其真正的start()方法处于父类<code>AbstractEventParser</code>中。启动过程完成以下三件事：</p>
+<ol>
+<li>配置<code>EventTransactionBuffer</code></li>
+<li>构建<code>BinlogParser</code></li>
+<li>新建<code>ParseThread</code>（binlog解析线程）并启动</li>
+</ol>
+<h3 id="binlog解析线程的执行"><a href="#binlog解析线程的执行" class="headerlink" title="binlog解析线程的执行"></a>binlog解析线程的执行</h3><ol>
+<li>创建Mysql连接</li>
+<li>为Mysql连接启动一个心跳</li>
+<li>调用<code>preDump</code>方法执行dump前的准备工作<ul>
+<li>调用<code>connect()</code>方法连接mysql</li>
+<li>验证Mysql中配置的binlog-format是否能被支持</li>
+<li>验证Mysql中配置的binlog-image是否能被支持</li>
+</ul>
+</li>
+<li>调用<code>connect()</code>方法连接mysql</li>
+<li>获取<code>serverId</code></li>
+<li>调用<code>findStartPosition</code>方法获取binlog的开始位置</li>
+<li>调用<code>processTableMeta</code>方法回滚到指定位点</li>
+<li>调用<code>reconnect()</code>方法重新链接，因为在找position过程中可能有状态，需要断开后重建</li>
+<li><p>调用<code>MysqlConnection.dump</code>方法dump数据</p>
+<ul>
+<li>向mysql发送更新设置的请求</li>
+<li>获取binlog的checksum信息</li>
+<li>向mysql注册slave信息</li>
+<li>向mysql发送dump binlog的请求</li>
+<li><p>接下去循环读取binlog，存储在<code>LogBuffer</code>中</p>
+<p>调用<code>MultiStageCoprocessor.publish</code>投递数据<code>MultiStageCoprocessor</code>的实际类为<code>MysqlMultiStageCoprocessor</code>。<code>MysqlMultiStageCoprocessor</code>中维护着一个<code>disruptorMsgBuffer</code>。<code>disruptorMsgBuffer</code>的类是<code>RingBuffer</code>，这是一个无锁队列。存储在<code>LogBuffer</code>中的binlog数据被投递到<code>disruptorMsgBuffer</code>中。<code>MysqlMultiStageCoprocessor</code>针对解析器提供一个多阶段协同的处理。<code>LogBuffer</code>被投递到<code>disruptorMsgBuffer</code>之后分为3个阶段被处<br>理：</p>
+</li>
+<li>事件基本解析 (单线程，事件类型、DDL解析构造TableMeta、维护位点信息)，调用<code>SimpleParserStage.onEvent</code>处理</li>
+<li>事件深度解析 (多线程, DML事件数据的完整解析)，调用<code>DmlParserStage.onEvent</code>处理</li>
+<li>投递到store (单线程)，调用<code>SinkStoreStage.onEvent</code>处理<br><code>SinkStoreStage.onEvent</code>中如果event的Entry不为null，则将其添加到<code>EventTransactionBuffer</code>中。<code>EventTransactionBuffer</code>缓冲event队列，提供按事务刷新数据的机制。<code>EventTransactionBuffer</code>根据event调用<code>EntryEventSink</code>的sink方法，sink处理之后保存在<code>MemoryEventStoreWithBuffer</code>之中。</li>
+</ul>
+</li>
+</ol>
+<h2 id="CanalMQProducer"><a href="#CanalMQProducer" class="headerlink" title="CanalMQProducer"></a>CanalMQProducer</h2><p>经过前面的分析，我们知道了binlog经过解析、过滤等步骤之后最终被保存在<code>MemoryEventStoreWithBuffer</code>之中。下面我们来分析<code>CanalMQProducer</code>的执行。</p>
+<p>在<code>CanalStater</code>的启动过程的最后，判断<code>canalMQProducer</code>是否为null。</p>
+<p>如果我们设置了<code>serverMode</code>为<code>kafka</code>或者<code>rocketmq</code>，<code>canalMQProducer</code>的对象分别为<code>CanalKafkaProducer</code>和<code>CanalRocketMQProducer</code>，此时canalMQProducer不为null。于是新建<code>CanalMQStarter</code>，将canalMQProducer作为参数传入，然后启动<code>CanalMQStarter</code>。</p>
+<p><code>CanalMQStarter</code>的启动过程会为每个destination都新建一个<code>CanalMQRunnable</code>，每个destination都在单独的线程中执行。</p>
+<p><code>CanalMQRunnable</code>执行流程如下：</p>
+<ol>
+<li>根据destination创建<code>ClientIdentity</code></li>
+<li>调用<code>canalServer.subscribe(clientIdentity)</code>订阅client信息</li>
+<li>循环调用<code>canalServer.getWithoutAck</code>从canal中获取消息<ul>
+<li>获取最后获取到的数据的位置</li>
+<li>调用<code>getEvents</code>方法获取数据。调用<code>MemoryEventStoreWithBuffer.get</code>，最终调用<code>MemoryEventStoreWithBuffer.doGet</code>方法获取保存的数据</li>
+</ul>
+</li>
+<li>调用<code>canalMQProducer.send</code>向mq发送消息</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>经过上面的分析，对canal的工作流程有了一个初步的印象。canal的代码模块、流程等比较清晰，可以比较方便地在其上进行定制开发。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/02/06/CANAL源码解析-启动流程/">http://code-monkey.top/2020/02/06/CANAL源码解析-启动流程/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/canal/">canal</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2020/02/06/CANAL源码解析-简介/">
+        <span class="next-text nav-default">CANAL源码解析-简介</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>

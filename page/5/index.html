@@ -208,6 +208,111 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/12/24/两阶段提交及JTA/">两阶段提交及JTA(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-12-24
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h3 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h3><h4 id="分布式事务简介"><a href="#分布式事务简介" class="headerlink" title="分布式事务简介"></a>分布式事务简介</h4><p>分布式事务是指会涉及到操作多个数据库（或者提供事务语义的系统，如JMS）的事务。其实就是将对同一数据库事务的概念扩大到了对多个数据库的事务。目的是为了保证分布式系统中事务操作的原子性。分布式事务处理的关键是必须有一种方法可以知道事务在任何地方所做的所有动作，提交或回滚事务的决定必须产生统一的结果（全部提交或全部回滚）。</p>
+<h4 id="分布式事务实现机制"><a href="#分布式事务实现机制" class="headerlink" title="分布式事务实现机制"></a>分布式事务实现机制</h4><p>如同作者在<a href="https://tangboy.github.io/2018/12/02/PostgreSQL%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1%E5%92%8C%E5%A4%9A%E7%89%88%E6%9C%AC%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E7%9A%84%E7%B2%BE%E5%8D%8E/" target="_blank" rel="noopener">《MVCC PostgreSQL实现事务和多版本并发控制的精华》</a>一文中所讲，事务包含原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）和持久性（Durability）。</p>
+<p>PostgreSQL针对ACID的实现技术如下表所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>ACID</th>
+<th>实现技术</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原子性（Atomicity</td>
+<td>MVCC</td>
+</tr>
+<tr>
+<td>一致性（Consistency）</td>
+<td>约束（主键、外键等）</td>
+</tr>
+<tr>
+<td>隔离性</td>
+<td>MVCC</td>
+</tr>
+<tr>
+<td>持久性</td>
+<td>WAL</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>分布式事务的实现技术如下表所示。（以PostgreSQL作为事务参与方为例）</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>分布式ACID</th>
+<th>实现技术</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原子性（Atomicity</td>
+<td>MVCC + 两阶段提交</td>
+</tr>
+<tr>
+<td>一致性（Consistency）</td>
+<td>约束（主键、外键等）</td>
+</tr>
+<tr>
+<td>隔离性</td>
+<td>MVCC</td>
+</tr>
+<tr>
+<td>持久性</td>
+<td>WAL</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>从上表可以看到，一致性、隔离性和持久性靠的是各分布式事务参与方自己原有的机制，而两阶段提交主要保证了分布式事务的原子性。</p>
+          <div class="read-more">
+            <a href="/2017/12/24/两阶段提交及JTA/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/12/24/快速计算Distinct-Count/">快速计算Distinct Count(转)</a>
         
       </h1>
@@ -725,62 +830,6 @@ WOE_i = \ln(\frac{py_i}{pn_i}) = \ln(\frac{\#y_i / \#y_T}{\#n_i / \#n_T})</scrip
         
       
     </p></div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/">一篇文章搞懂Python中的面向对象编程</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-09-07
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>面向对象的设计思想是从自然界中来的，因为在自然界中，类（Class）和实例（Instance）的概念是很自然的。Class是一种抽象概念，比如我们定义的Class——Student，是指学生这个概念，而实例（Instance）则是一个个具体的Student，比如，Bart Simpson和Lisa Simpson是两个具体的Student。</p>
-<p>面向对象的抽象程度又比函数要高，因为一个Class既包含数据，又包含操作数据的方法。</p>
-<p>数据封装、继承和多态是面向对象的三大特点，我们后面会详细讲解。</p>
-<h2 id="类和实例"><a href="#类和实例" class="headerlink" title="类和实例"></a>类和实例</h2><p>类(Class)和实例(Instance)是面向对象最重要的概念。</p>
-<p>类是指抽象出的模板。实例则是根据类创建出来的具体的“对象”，每个对象都拥有从类中继承的相同的方法，但各自的数据可能不同。</p>
-<p>在python中定义一个类:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
-<p>关键字class后面跟着类名，类名通常是大写字母开头的单词，紧接着是(object)，表示该类是从哪个类继承下来的。通常，如果没有合适的继承类，就使用object类，这是所有类最终都会继承下来的类。</p>
-<p>定义好了 类，就可以根据Student类创建实例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(object)</span>:</span></span><br><span class="line"><span class="meta">... </span>    <span class="keyword">pass</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart = Student() <span class="comment"># bart是Student()的实例</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart</span><br><span class="line">&lt;__main__.Student object at <span class="number">0x101be77f0</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>Student <span class="comment"># Student 本身是一个类</span></span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">__main__</span>.<span class="title">Student</span>'&gt;</span></span><br></pre></td></tr></table></figure>
-<p>可以自由地给一个实例变量绑定属性，比如，给实例bart绑定一个name属性：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart.name = <span class="string">"diggzhang"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart.name</span><br><span class="line"><span class="string">'diggzhang'</span></span><br></pre></td></tr></table></figure>
-          <div class="read-more">
-            <a href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
 
     
 
