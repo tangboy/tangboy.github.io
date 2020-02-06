@@ -208,6 +208,66 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/">Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-13
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="Spark-CBO-背景"><a href="#Spark-CBO-背景" class="headerlink" title="Spark CBO 背景"></a>Spark CBO 背景</h2><p>上文<a href="https://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">Spark SQL 内部原理中介绍的 Optimizer</a> 属于 RBO，实现简单有效。它属于 LogicalPlan 的优化，所有优化均基于 LogicalPlan 本身的特点，未考虑数据本身的特点，也未考虑算子本身的代价。</p>
+<p>本文将介绍 CBO，它充分考虑了数据本身的特点（如大小、分布）以及操作算子的特点（中间结果集的分布及大小）及代价，从而更好的选择执行代价最小的物理执行计划，即 SparkPlan。</p>
+<h2 id="Spark-CBO-原理"><a href="#Spark-CBO-原理" class="headerlink" title="Spark CBO 原理"></a>Spark CBO 原理</h2><p>CBO 原理是计算所有可能的物理计划的代价，并挑选出代价最小的物理执行计划。其核心在于评估一个给定的物理执行计划的代价。</p>
+<p>物理执行计划是一个树状结构，其代价等于每个执行节点的代价总合，如下图所示。</p>
+<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_sql_cost_model.png">
+<p>而每个执行节点的代价，分为两个部分</p>
+<ul>
+<li>该执行节点对数据集的影响，或者说该节点输出数据集的大小与分布</li>
+<li>该执行节点操作算子的代价</li>
+</ul>
+<p>每个操作算子的代价相对固定，可用规则来描述。而执行节点输出数据集的大小与分布，分为两个部分：1) 初始数据集，也即原始表，其数据集的大小与分布可直接通过统计得到；2)中间节点输出数据集的大小与分布可由其输入数据集的信息与操作本身的特点推算。</p>
+<p>所以，最终主要需要解决两个问题</p>
+<ul>
+<li>如何获取原始数据集的统计信息</li>
+<li>如何根据输入数据集估算特定算子的输出数据集</li>
+</ul>
+          <div class="read-more">
+            <a href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">Spark SQL / Catalyst 内部原理 与 RBO(转)</a>
         
       </h1>
@@ -718,53 +778,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/24/快速计算Distinct-Count/">快速计算Distinct Count(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-12-24
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="UV-vs-PV"><a href="#UV-vs-PV" class="headerlink" title="UV vs. PV"></a>UV vs. PV</h2><p>在互联网中，经常需要计算UV和PV。所谓PV即Page View，网页被打开多少次（YouTube等视频网站非常重视视频的点击率，即被播放多少次，也即PV）。而UV即Unique Visitor（微信朋友圈或者微信公众号中的文章则统计有多少人看过该文章，也即UV。虽然微信上显示是指明该值是PV，但经笔者测试，实为UV）。这两个概念非常重要，比如淘宝卖家在做活动时，他往往需要统计宝贝被看了多少次，有多少个不同的人看过该活动介绍。至于如何在互联网上唯一标识一个自然人，也是一个难点，目前还没有一个非常准确的方法，常用的方法是用户名加cookie，这里不作深究。</p>
-<h2 id="count-distinct-vs-count-group-by"><a href="#count-distinct-vs-count-group-by" class="headerlink" title="count distinct vs. count group by"></a>count distinct vs. count group by</h2><p>很多情景下，尤其对于文本类型的字段，直接使用count distinct的查询效率是非常低的，而先做group by更count往往能提升查询效率。但实验表明，对于不同的字段，count distinct与count group by的性能并不一样，而且其效率也与目标数据集的数据重复度相关。</p>
-<p>本节通过几组实验说明了不同场景下不同query的不同效率，同时分析性能差异的原因。 （本文所有实验皆基于PostgreSQL 9.3.5平台）<br>分别使用count distinct 和 count group by对 bigint, macaddr, text三种类型的字段做查询。<br>首先创建如下结构的表</p>
-          <div class="read-more">
-            <a href="/2017/12/24/快速计算Distinct-Count/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -858,7 +871,7 @@
      
       2015 - 
     
-    2019
+    2020
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>

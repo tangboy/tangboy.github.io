@@ -208,6 +208,53 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/09/07/一篇文章踩遍Python中的坑/">一篇文章踩遍Python中的坑</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-09-07
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="类与列表生成器"><a href="#类与列表生成器" class="headerlink" title="类与列表生成器"></a>类与列表生成器</h2><p>下面的代码会报错，为什么？<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">   ...:     x = <span class="number">1</span></span><br><span class="line">   ...:     gen = (x <span class="keyword">for</span> _ <span class="keyword">in</span> xrange(<span class="number">10</span>))</span><br><span class="line">   ...:</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: <span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">   ...:     print(list(A.gen))</span><br><span class="line">   ...:</span><br><span class="line">---------------------------------------------------------------------------</span><br><span class="line">NameError                                 Traceback (most recent call last)</span><br><span class="line">&lt;ipython-input<span class="number">-2</span>-bb15a85da3e4&gt; <span class="keyword">in</span> &lt;module&gt;()</span><br><span class="line">      <span class="number">1</span> <span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">----&gt; 2     print(list(A.gen))</span><br><span class="line">      <span class="number">3</span></span><br><span class="line"></span><br><span class="line">&lt;ipython-input<span class="number">-1</span><span class="number">-45646</span>dbd84a7&gt; <span class="keyword">in</span> &lt;genexpr&gt;((_,))</span><br><span class="line">      <span class="number">1</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">      <span class="number">2</span>     x = <span class="number">1</span></span><br><span class="line">----&gt; 3     gen = (x for _ in xrange(10))</span><br><span class="line">      <span class="number">4</span></span><br><span class="line"></span><br><span class="line">NameError: <span class="keyword">global</span> name <span class="string">'x'</span> <span class="keyword">is</span> <span class="keyword">not</span> defined</span><br></pre></td></tr></table></figure></p>
+<p>这个问题是变量作用域问题，在gen=(x for _ in xrange(10))中gen是一个generator,在generator中变量有自己的一套作用域，与其余作用域空间相互隔离。因此，将会出现这样的 NameError: name ‘x’ is not defined的问题，那么解决方案是什么呢？答案是：用lambda 。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">7</span>]: <span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">   ...:     x = <span class="number">1</span></span><br><span class="line">   ...:     gen = (<span class="keyword">lambda</span> x: (x <span class="keyword">for</span> _ <span class="keyword">in</span> xrange(<span class="number">10</span>)))(x)</span><br><span class="line">   ...:</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: <span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(list(A.gen))</span><br><span class="line">   ...:</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2017/09/07/一篇文章踩遍Python中的坑/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/09/05/一篇文章搞懂Python中的函数式编程/">一篇文章搞懂Python中的函数式编程</a>
         
       </h1>
@@ -675,53 +722,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/01/02/spring-boot-in-action/">spring_boot_in_action</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-01-02
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="Spring-Boot简介"><a href="#Spring-Boot简介" class="headerlink" title="Spring Boot简介"></a>Spring Boot简介</h2><p>Spring Boot是为了简化Spring开发而生，从Spring 3.x开始，Spring社区的发展方向就是弱化xml配置文件而加大注解的戏份。最近召开的SpringOne2GX2015大会上显示：Spring Boot已经是Spring社区中增长最迅速的框架，前三名是：Spring Framework，Spring Boot和Spring Security，这个应该是未来的趋势。<br>我学习Spring Boot，是因为通过cli工具，spring boot开始往flask（python）、express(nodejs)等web框架发展和靠近，并且Spring Boot几乎不需要写xml配置文件。感兴趣的同学可以根据spring boot quick start这篇文章中的例子尝试下。</p>
-<p>学习新的技术最佳途径是看官方文档，现在Spring boot的release版本是1.3.0-RELEASE，相应的参考文档是Spring Boot Reference Guide(1.3.0-REALEASE)，如果有绝对英文比较吃力的同学，可以参考中文版Spring Boot参考指南。在前段时间阅读一篇技术文章，介绍如何阅读ios技术文档，我从中也有所收获，那就是我们应该重视spring.io上的guides部分——Getting Started Guides，这部分都是一些针对特定问题的demo，值得学习。</p>
-<p>除了官网上提供的一些教程和例子，赫赫有名的实战系列是快速入门的必备。</p>
-          <div class="read-more">
-            <a href="/2017/01/02/spring-boot-in-action/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -815,7 +815,7 @@
      
       2015 - 
     
-    2019
+    2020
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>

@@ -208,6 +208,53 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/12/24/快速计算Distinct-Count/">快速计算Distinct Count(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-12-24
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="UV-vs-PV"><a href="#UV-vs-PV" class="headerlink" title="UV vs. PV"></a>UV vs. PV</h2><p>在互联网中，经常需要计算UV和PV。所谓PV即Page View，网页被打开多少次（YouTube等视频网站非常重视视频的点击率，即被播放多少次，也即PV）。而UV即Unique Visitor（微信朋友圈或者微信公众号中的文章则统计有多少人看过该文章，也即UV。虽然微信上显示是指明该值是PV，但经笔者测试，实为UV）。这两个概念非常重要，比如淘宝卖家在做活动时，他往往需要统计宝贝被看了多少次，有多少个不同的人看过该活动介绍。至于如何在互联网上唯一标识一个自然人，也是一个难点，目前还没有一个非常准确的方法，常用的方法是用户名加cookie，这里不作深究。</p>
+<h2 id="count-distinct-vs-count-group-by"><a href="#count-distinct-vs-count-group-by" class="headerlink" title="count distinct vs. count group by"></a>count distinct vs. count group by</h2><p>很多情景下，尤其对于文本类型的字段，直接使用count distinct的查询效率是非常低的，而先做group by更count往往能提升查询效率。但实验表明，对于不同的字段，count distinct与count group by的性能并不一样，而且其效率也与目标数据集的数据重复度相关。</p>
+<p>本节通过几组实验说明了不同场景下不同query的不同效率，同时分析性能差异的原因。 （本文所有实验皆基于PostgreSQL 9.3.5平台）<br>分别使用count distinct 和 count group by对 bigint, macaddr, text三种类型的字段做查询。<br>首先创建如下结构的表</p>
+          <div class="read-more">
+            <a href="/2017/12/24/快速计算Distinct-Count/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/">Merge Join vs. Hash Join vs. Nested Loop(转)</a>
         
       </h1>
@@ -742,53 +789,6 @@ WOE_i = \ln(\frac{py_i}{pn_i}) = \ln(\frac{\#y_i / \#y_T}{\#n_i / \#n_T})</scrip
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/09/07/一篇文章踩遍Python中的坑/">一篇文章踩遍Python中的坑</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-09-07
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="类与列表生成器"><a href="#类与列表生成器" class="headerlink" title="类与列表生成器"></a>类与列表生成器</h2><p>下面的代码会报错，为什么？<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">   ...:     x = <span class="number">1</span></span><br><span class="line">   ...:     gen = (x <span class="keyword">for</span> _ <span class="keyword">in</span> xrange(<span class="number">10</span>))</span><br><span class="line">   ...:</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: <span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">   ...:     print(list(A.gen))</span><br><span class="line">   ...:</span><br><span class="line">---------------------------------------------------------------------------</span><br><span class="line">NameError                                 Traceback (most recent call last)</span><br><span class="line">&lt;ipython-input<span class="number">-2</span>-bb15a85da3e4&gt; <span class="keyword">in</span> &lt;module&gt;()</span><br><span class="line">      <span class="number">1</span> <span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">----&gt; 2     print(list(A.gen))</span><br><span class="line">      <span class="number">3</span></span><br><span class="line"></span><br><span class="line">&lt;ipython-input<span class="number">-1</span><span class="number">-45646</span>dbd84a7&gt; <span class="keyword">in</span> &lt;genexpr&gt;((_,))</span><br><span class="line">      <span class="number">1</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">      <span class="number">2</span>     x = <span class="number">1</span></span><br><span class="line">----&gt; 3     gen = (x for _ in xrange(10))</span><br><span class="line">      <span class="number">4</span></span><br><span class="line"></span><br><span class="line">NameError: <span class="keyword">global</span> name <span class="string">'x'</span> <span class="keyword">is</span> <span class="keyword">not</span> defined</span><br></pre></td></tr></table></figure></p>
-<p>这个问题是变量作用域问题，在gen=(x for _ in xrange(10))中gen是一个generator,在generator中变量有自己的一套作用域，与其余作用域空间相互隔离。因此，将会出现这样的 NameError: name ‘x’ is not defined的问题，那么解决方案是什么呢？答案是：用lambda 。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">7</span>]: <span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">   ...:     x = <span class="number">1</span></span><br><span class="line">   ...:     gen = (<span class="keyword">lambda</span> x: (x <span class="keyword">for</span> _ <span class="keyword">in</span> xrange(<span class="number">10</span>)))(x)</span><br><span class="line">   ...:</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: <span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(list(A.gen))</span><br><span class="line">   ...:</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
-          <div class="read-more">
-            <a href="/2017/09/07/一篇文章踩遍Python中的坑/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -882,7 +882,7 @@ WOE_i = \ln(\frac{py_i}{pn_i}) = \ln(\frac{\#y_i / \#y_T}{\#n_i / \#n_T})</scrip
      
       2015 - 
     
-    2019
+    2020
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>

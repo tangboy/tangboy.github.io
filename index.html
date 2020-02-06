@@ -208,6 +208,53 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/06/CANAL源码解析-简介/">CANAL源码解析-简介</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>canal是阿里巴巴开源的mysql数据库binlog的增量订阅&amp;消费组件。项目github地址为：<a href="https://github.com/alibaba/canal。" target="_blank" rel="noopener">https://github.com/alibaba/canal。</a></p>
+<h1 id="源码模块划分"><a href="#源码模块划分" class="headerlink" title="源码模块划分"></a>源码模块划分</h1><p>canal是基于maven构建的，总共分成了14个模块，如下所示：</p>
+<img src="/2020/02/06/CANAL源码解析-简介/1.png">
+          <div class="read-more">
+            <a href="/2020/02/06/CANAL源码解析-简介/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/11/19/Spark-SQL在100TB上的自适应执行实践（转载）/">Spark SQL在100TB上的自适应执行实践（转载）</a>
         
       </h1>
@@ -729,55 +776,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-note的执行过程/">Zeppelin源码分析-note的执行过程</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-06-12
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <img src="/2019/06/12/Zeppelin源码分析-note的执行过程/1.png">
-<p>上图是zeppelin的前后台交互模型，zeppelin采用单独的jvm来启动interpreter进程，该Interpreter进程与zeppelinServer进程之间采用Thrift协议通信，其中RemoteInterpreterProcess是Thrift-Client端，而相应的RemoteInterpreterServer是Thrift-Server端。</p>
-<p>Paragraph的执行分成“从前端UI提交ParagraphJob到其相关的Interpreter的Scheduler”和“Sheduler执行”2个部分，这2个部分是异步执行的。</p>
-<img src="/2019/06/12/Zeppelin源码分析-note的执行过程/2.png">
-<p>以上是从前台请求执行指定的Note的指定的Paragraph开始，到该Paragraph提交到Scheduler之间的时序图。这个执行逻辑是与语言无关的。任何语言写的脚本（存储在Paragraph之中）都是上述提交执行的过程。</p>
-          <div class="read-more">
-            <a href="/2019/06/12/Zeppelin源码分析-note的执行过程/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -866,7 +864,7 @@
      
       2015 - 
     
-    2019
+    2020
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>
