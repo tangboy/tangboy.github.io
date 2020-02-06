@@ -208,6 +208,48 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/02/大数据日知录-算法与架构/">大数据日知录-算法与架构</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-02
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+
+        
+          <p>从这周开始，打算以下图中的组织结构串起大数据相关知识点，争取形成系列。</p>
+<img src="/2018/12/02/大数据日知录-算法与架构/big_data.png">
+
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/02/马尔可夫链蒙特卡洛方法/">一份数学小白也能读懂的「马尔可夫链蒙特卡洛方法」入门指南(转)</a>
         
       </h1>
@@ -736,73 +778,6 @@ WOE_i = \ln(\frac{py_i}{pn_i}) = \ln(\frac{\#y_i / \#y_T}{\#n_i / \#n_T})</scrip
         
       
     </p></div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/10/14/聚类算法/">聚类算法</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-10-14
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="K-Means"><a href="#K-Means" class="headerlink" title="K-Means"></a>K-Means</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>K-means算法是最为经典的基于划分的聚类方法，是十大经典数据挖掘算法之一。K-means算法的基本思想是：以空间中k个点为中心进行聚类，对最靠近他们的对象归类。通过迭代的方法，逐次更新各聚类中心的值，直至得到最好的聚类结果。</p>
-<h3 id="算法大致流程"><a href="#算法大致流程" class="headerlink" title="算法大致流程"></a>算法大致流程</h3><ol>
-<li>随机选取k个点作为种子点(这k个点不一定属于数据集)</li>
-<li>分别计算每个数据点到k个种子点的距离，离哪个种子点最近，就属于哪类</li>
-<li>重新计算k个种子点的坐标(简单常用的方法是求坐标值的平均值作为新的坐标值)</li>
-<li>重复2、3步，直到种子点坐标不变或者循环次数完成</li>
-</ol>
-<h3 id="完整计算过程"><a href="#完整计算过程" class="headerlink" title="完整计算过程"></a>完整计算过程</h3><ol>
-<li><p>设置实验数据<br>运行之后，效果如下图所示：</p>
-<img src="/2017/10/14/聚类算法/kmeans_1.png">
-<p>在图中，ABCDE五个点是待分类点，k1、k2是两个种子点。</p>
-</li>
-<li><p>计算ABCDE五个点到k1、k2的距离，离哪个点近，就属于哪个点，进行初步分类。<br>  结果如图：</p>
-  <img src="/2017/10/14/聚类算法/kmeans_2.png">
-<p>   A、B属于k1，C、D、E属于k2</p>
-</li>
-<li><p>重新计算k1、k2的坐标。这里使用简单的坐标的平均值，使用其他算法也可以(例如以下三个公式)<br> a) Minkowski Distance公式——λ可以随意取值，可以是负数，也可以是正数，或是无穷大。<br> b) Euclidean Distance公式——也就是第一个公式λ=2的情况<br> c) CityBlock Distance公式——也就是第一个公式λ=1的情况</p>
-<p> 采用坐标平均值算法的结果如图：</p>
-  <img src="/2017/10/14/聚类算法/kmeans_3.png">
-</li>
-<li><p>重复2、3步，直到最终分类完毕。下面是完整的示例代码：</p>
-</li>
-</ol>
-          <div class="read-more">
-            <a href="/2017/10/14/聚类算法/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
 
     
 
