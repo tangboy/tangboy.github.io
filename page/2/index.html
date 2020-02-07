@@ -208,6 +208,57 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/10/24/深入理解JVM-5-——类加载器-转载/">深入理解JVM(5)——类加载器(转载)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-10-24
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>虚拟机设计团队把类加载阶段中的“通过一个类的全限定名来获取描述此类的二进制字节流(即字节码)”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类。实现这个动作的代码模块称为“类加载器”。</p>
+<p>一般来说，Java 虚拟机使用 Java 类的方式如下：</p>
+<ul>
+<li>Java 源程序（.java 文件）在经过 Java 编译器编译之后就被转换成字节码（.class 文件）。</li>
+<li>类加载器负责读取 Java 字节代码，并转换成 java.lang.Class类的一个实例。每个这样的实例用来表示一个 Java 类。通过此实例的 newInstance()方法就可以创建出该类的一个对象。</li>
+</ul>
+<p>实际的情况可能更加复杂，比如 Java 字节代码可能是通过工具动态生成的，也可能是通过网络下载的。更详细的内容可以参考上一篇文章中讲类加载过程中的加载阶段时介绍的几个例子（JAR包、Applet、动态代理、JSP等）。</p>
+          <div class="read-more">
+            <a href="/2019/10/24/深入理解JVM-5-——类加载器-转载/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/10/23/深入理解JVM-4-——虚拟机类加载机制-转载/">深入理解JVM(4)——虚拟机类加载机制(转载)</a>
         
       </h1>
@@ -826,56 +877,6 @@
 <p>以上类图中省略了字段和方法，以避免过早引入太多细节，重点关注类与类之间的关系组成。由于篇幅的限制，再加上zeppelin提供的核心价值是与Interpreter相关的多语言repl解释器，笔者就选择从右上角黄色的区域开始，分多篇分析。</p>
           <div class="read-more">
             <a href="/2019/05/29/Zeppelin源码分析——主要的class分析/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/">Zeppelin源码分析---目录结构与modules分析</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-05-27
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p><a href="https://zeppelin.apache.org" target="_blank" rel="noopener">Zeppelin</a>，于2016-5-18日从Apache孵化器项目毕业成为Apache顶级项目，采用Java（主要）+Scala+R+PythonR+Bash+JS混合开发，采用maven作为build工具。涉及的主要技术stack如下：</p>
-<ol>
-<li><strong>前台</strong> : AngularJS、Node.JS、WebSocket、Grunt、Bower、Highlight.js、BootStrap3js</li>
-<li><strong>后台</strong> : Jetty（embedding）、Thrift、Shiro（权限）、Apache common-exec、Jersey REST API</li>
-</ol>
-<p>zeppelin本质上是一个web应用程序，它以独立的jvm进程的方式来启动Interpreter（解释器），交互式（repl）执行各种语言的代码片段，并将结果以html代码片段的形式返回给前端UI。</p>
-          <div class="read-more">
-            <a href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/" class="read-more-link">阅读更多</a>
           </div>
         
       

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="CANAL源码解析-driver模块">
+
+
+
+
+  <meta name="keywords" content="canal, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/02/07/CANAL源码解析-driver模块/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> CANAL源码解析-driver模块 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          CANAL源码解析-driver模块
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-07
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#driver模块的基本使用"><span class="toc-text">driver模块的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MysqlConnector"><span class="toc-text">MysqlConnector</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MysqlQueryExecutor"><span class="toc-text">MysqlQueryExecutor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MysqlUpdateExecutor"><span class="toc-text">MysqlUpdateExecutor</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#parser模块-是如何使用driver模块的？"><span class="toc-text">parser模块 是如何使用driver模块的？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#parser模块执行的更新sql"><span class="toc-text">parser模块执行的更新sql</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#parser模块执行的查询sql"><span class="toc-text">parser模块执行的查询sql</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Driver模块实现原理"><span class="toc-text">Driver模块实现原理</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>driver，顾名思义为驱动。熟悉jdbc编程的同学都知道，当项目中需要操作数据库(oracle、sqlserver、mysql等)时，都需要在项目中引入对应的数据库的驱动。以mysql为例，我们需要引入的是mysql-connector-java这个jar包,通过这个驱动包来与数据库进行通信。</p>
+<p>那么为什么canal不使用mysql官方提供的驱动包，而要自己编写一个driver模块？原因在于mysql-connector-java驱动包只是实现了JDBC规范，方便我们在程序中对数据库中的数据进行增删改查。</p>
+<p>对于获取并解析binlog日志这样的场景，mysql-connector-java并没有提供这样的功能。因此，canal编写了自己的driver模块，提供了基本的增删改查功能，并提供了直接获取原始binlog字节流的功能，其他模块在这个模块的基础上对binlog字节进行解析，parser模块底层实际上就是通过driver模块来与数据库建立连接的。</p>
+<p>driver模块目录结构如下所示：</p>
+<img src="/2020/02/07/CANAL源码解析-driver模块/1.png">
+<p>最核心的3个类分别是：</p>
+<ul>
+<li><code>MysqlConnector</code>：表示一个数据库连接，作用类似于java.sql.Connection</li>
+<li><code>MysqlQueryExecutor</code>：查询执行器，作用类似于PrepareStatement.executeQuery()</li>
+<li><code>MysqlUpdateExecutor</code>：更新执行器，作用类似于PrepareStatement.executeUpdate() </li>
+</ul>
+<p>在本小节中，我们将首先介绍driver模块的基本使用；接着介绍parser模块是如何使用driver模块的；最后讲解driver模块的实现原理。</p>
+<a id="more"></a>
+<h2 id="driver模块的基本使用"><a href="#driver模块的基本使用" class="headerlink" title="driver模块的基本使用"></a>driver模块的基本使用</h2><p>本小节将会介绍MysqlConnector和MysqlQueryExecutor、MysqlUpdateExecutor如何使用<br>假设test库下有一张mysql表：user </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`user`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">18</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`password`</span> <span class="built_in">varchar</span>(<span class="number">15</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8mb4;</span><br></pre></td></tr></table></figure>
+<p>该表中有2条记录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from t_user;</span><br><span class="line">+----+---------------+----------+</span><br><span class="line">| id | name          | password |</span><br><span class="line">+----+---------------+----------+</span><br><span class="line">|  1 | tianshozhi    | xx       |</span><br><span class="line">|  2 | wangxiaoxiiao | yy       |</span><br><span class="line">+----+---------------+----------+</span><br></pre></td></tr></table></figure>
+<h3 id="MysqlConnector"><a href="#MysqlConnector" class="headerlink" title="MysqlConnector"></a>MysqlConnector</h3><p>MysqlConnector相当于一个数据链接，其使用方式如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMysqlConnection</span><span class="params">()</span></span>&#123;</span><br><span class="line">   MysqlConnector connector = <span class="keyword">new</span> MysqlConnector();</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">//1 创建数据库连接</span></span><br><span class="line">      connector = <span class="keyword">new</span> MysqlConnector();</span><br><span class="line">      <span class="comment">// 设置数据库ip、port</span></span><br><span class="line">      connector.setAddress(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>, <span class="number">3306</span>));</span><br><span class="line">      <span class="comment">// 设置用户名</span></span><br><span class="line">      connector.setUsername(<span class="string">"root"</span>);</span><br><span class="line">      <span class="comment">// 设置密码</span></span><br><span class="line">      connector.setPassword(“your password<span class="string">");</span></span><br><span class="line"><span class="string">      // 设置默认连接到的数据库</span></span><br><span class="line"><span class="string">      connector.setDefaultSchema("</span>test<span class="string">");</span></span><br><span class="line"><span class="string">      // 设置链接字符串,33表示UTF-8</span></span><br><span class="line"><span class="string">      connector.setCharsetNumber((byte) 33);</span></span><br><span class="line"><span class="string">      // ======设置网络相关参数===========</span></span><br><span class="line"><span class="string">      // 设置socket超时时间，默认30s，也就是发送一个请求给mysql时，如果30s没响应，则会抛出SocketTimeoutException</span></span><br><span class="line"><span class="string">      connector.setSoTimeout(30 * 1000);</span></span><br><span class="line"><span class="string">      // 设置发送缓冲区发小，默认16K</span></span><br><span class="line"><span class="string">      connector.setSendBufferSize(16 * 1024);// 16K</span></span><br><span class="line"><span class="string">      // 设置接受缓冲区大小，默认16K</span></span><br><span class="line"><span class="string">      connector.setReceiveBufferSize(16 * 1024);// 16k</span></span><br><span class="line"><span class="string">      //调用connect方法建立连接</span></span><br><span class="line"><span class="string">      connector.connect();</span></span><br><span class="line"><span class="string">      //2 ... do something....</span></span><br><span class="line"><span class="string">   &#125;catch (IOException e)&#123;</span></span><br><span class="line"><span class="string">      e.printStackTrace();</span></span><br><span class="line"><span class="string">   &#125;finally &#123;</span></span><br><span class="line"><span class="string">      try &#123;</span></span><br><span class="line"><span class="string">         //关闭链接</span></span><br><span class="line"><span class="string">         connector.disconnect();</span></span><br><span class="line"><span class="string">      &#125; catch (IOException e) &#123;</span></span><br><span class="line"><span class="string">         e.printStackTrace();</span></span><br><span class="line"><span class="string">      &#125;</span></span><br><span class="line"><span class="string">   &#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>一个MysqlConnector实例底层只能维护一个数据库链接。除了上面提到的方法，MysqlConnector还提供了reconnect()方法和fork()方法。</p>
+<p><strong>reconnect()方法：</strong></p>
+<p>reconnect()内部先调用disconnect方法关闭原有连接，然后使用connect方法创建一个新的连接</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlConnector.reconnect();</span><br></pre></td></tr></table></figure>
+<p><strong>fork()方法：</strong></p>
+<p>如果希望创建多个连接，可以fork出一个新的MysqlConnector实例，再调用这个新MysqlConnector实例的connect方法建立连接。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MysqlConnector fork = mysqlConnector.fork();</span><br><span class="line">fork.connect();</span><br></pre></td></tr></table></figure>
+<h3 id="MysqlQueryExecutor"><a href="#MysqlQueryExecutor" class="headerlink" title="MysqlQueryExecutor"></a>MysqlQueryExecutor</h3><p>这里我们使用MysqlQueryExecutor查询数据库中的user表中的两条记录，注意canal的driver模块并没有实现jdbcref规范，因此使用起来，与我们熟悉的JDBC编程有一些区别。</p>
+<p>案例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testQuery</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   MysqlConnector connector = <span class="keyword">new</span> MysqlConnector(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>, <span class="number">3306</span>),<span class="string">"root”,”your password"</span>);</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">//1 创建数据库连接</span></span><br><span class="line">      connector.connect();</span><br><span class="line">      <span class="comment">//2 构建查询执行器，并执行查询</span></span><br><span class="line">      MysqlQueryExecutor executor = <span class="keyword">new</span> MysqlQueryExecutor(connector);</span><br><span class="line">      <span class="comment">//ResultSetPacket作用类似于ResultSet</span></span><br><span class="line">      ResultSetPacket result = executor.query(<span class="string">"select * from test.user"</span>);</span><br><span class="line">      <span class="comment">//3 对查询结果进行解析</span></span><br><span class="line">      <span class="comment">//FieldPacket中封装的字段的一些源信息，如字段的名称，类型等</span></span><br><span class="line">      List&lt;FieldPacket&gt; fieldDescriptors = result.getFieldDescriptors();</span><br><span class="line">      <span class="comment">//字段的值使用String表示，jdbc编程中使用的getInt，getBoolean，getDate等方法，实际上都是都是字符串转换得到的</span></span><br><span class="line">      List&lt;String&gt; fieldValues = result.getFieldValues();</span><br><span class="line">      <span class="comment">//打印字段名称</span></span><br><span class="line">      <span class="keyword">for</span> (FieldPacket fieldDescriptor : fieldDescriptors) &#123;</span><br><span class="line">         String fieldName = fieldDescriptor.getName();</span><br><span class="line">         System.out.print(fieldName + <span class="string">"  "</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//打印字段的值</span></span><br><span class="line">      System.out.println(<span class="string">"\n"</span> + fieldValues);</span><br><span class="line">   &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      connector.disconnect();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>控制台输出如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id  name  password  </span><br><span class="line">[1, tianshozhi, xx, 2, wangxiaoxiiao, yy]</span><br></pre></td></tr></table></figure>
+<p>可以看出来：</p>
+<p>对user表中的字段信息，canal中使用FieldPacket来表示，放于一个List表示。</p>
+<p>对于user表中的一行记录，使用另一个List表示，这个List的大小是字段的List大小的整数倍，前者size除以后者就是查询出来的行数。</p>
+<h3 id="MysqlUpdateExecutor"><a href="#MysqlUpdateExecutor" class="headerlink" title="MysqlUpdateExecutor"></a>MysqlUpdateExecutor</h3><p>使用案例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testUpdate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   MysqlConnector connector = <span class="keyword">new</span> MysqlConnector(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>, <span class="number">3306</span>), <span class="string">"root"</span>, <span class="string">"xx"</span>);</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">      connector.connect();</span><br><span class="line">      MysqlUpdateExecutor executor = <span class="keyword">new</span> MysqlUpdateExecutor(connector);</span><br><span class="line">      OKPacket okPacket = executor.update(<span class="string">"insert into test.user(name,password) values('tianbowen','zzz')"</span>);</span><br><span class="line">      System.out.println(JSON.toJSONString(okPacket,<span class="keyword">true</span>));</span><br><span class="line">   &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">   &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         connector.disconnect();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">         e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果执行更新操作成功，返回的是一个OkPacket，上面把OkPacket转成JSON，控制台输出如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"affectedRows"</span>:<span class="string">"AQ=="</span>,</span><br><span class="line">    <span class="attr">"fieldCount"</span>:<span class="number">0</span>,</span><br><span class="line">    <span class="attr">"insertId"</span>:<span class="string">"AQ=="</span>,</span><br><span class="line">    <span class="attr">"message"</span>:<span class="string">""</span>,</span><br><span class="line">    <span class="attr">"serverStatus"</span>:<span class="number">2</span>,</span><br><span class="line">    <span class="attr">"warningCount"</span>:<span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这里OkPacke包含的信息比较多。其中比较重要的是：sql操作影响的记录行数affectedRows，以及insert操作返回自动生成的主键insertId。</p>
+<p>这里返回的insertId和affectedRows都是字节数组，我们需要将其转换为数字，以insertId为例，其转换方式如下； </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bytes[] insertId=okPacket.getInsertId();</span><br><span class="line"><span class="keyword">long</span> autoGeneratedKey = ByteHelper.readLengthCodedBinary(insertId, <span class="number">0</span>);</span><br><span class="line">System.out.println(autoGeneratedKey);</span><br></pre></td></tr></table></figure>
+<h2 id="parser模块-是如何使用driver模块的？"><a href="#parser模块-是如何使用driver模块的？" class="headerlink" title="parser模块 是如何使用driver模块的？"></a>parser模块 是如何使用driver模块的？</h2><p>分析canal是如何使用driver模块的，主要就是看其他模块使用driver模块执行了哪些查询和更新sql。由于canal的作用主要是解析binlog，因此执行的大多都是binlog解析过程中所需要使用的sql语句。</p>
+<p>显然parser模块需要依靠driver模块来获取原始的binlog二进制字节流，因此相关sql都在driver模块中。</p>
+<h3 id="parser模块执行的更新sql"><a href="#parser模块执行的更新sql" class="headerlink" title="parser模块执行的更新sql"></a>parser模块执行的更新sql</h3><p>parser模块提供了一个MysqlConnection对driver模块的MysqlConnector进行了封装，在开始dump binlog前，会对当前链接进行一些参数设置，如下图：</p>
+<img src="/2020/02/07/CANAL源码解析-driver模块/2.png">
+<p>com.alibaba.otter.canal.parse.inbound.mysql.MysqlConnection#updateSettings </p>
+<p>其中：</p>
+<ul>
+<li>set wait_timeout=9999999</li>
+<li>set net_write_timeout=1800</li>
+<li>set net_read_timeout=1800 </li>
+<li>set names ‘binary’</li>
+</ul>
+<p>设置服务端返回结果时不做编码转化，直接按照数据库的二进制编码进行发送，由客户端自己根据需求进行编码转化</p>
+<p>set @master_binlog_checksum= @@global.binlog_checksum</p>
+<p>mysql5.6针对checksum支持需要设置session变量如果不设置会出现错误：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Slave can not handle replication events with the checksum that master is configured to <span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<p>但也不能乱设置，需要和mysql server的checksum配置一致，不然RotateLogEvent会出现乱码。’@@global.binlog_checksum’需要去掉单引号,在mysql 5.6.29下导致master退出</p>
+<ul>
+<li>set @slave_uuid=uuid(): mysql5.6需要设置slave_uuid避免被server kill链</li>
+<li>SET @mariadb_slave_capability=’” + LogEvent.MARIA_SLAVE_CAPABILITY_MINE + “‘: mariadb针对特殊的类型，需要设置session变量 </li>
+</ul>
+<h3 id="parser模块执行的查询sql"><a href="#parser模块执行的查询sql" class="headerlink" title="parser模块执行的查询sql"></a>parser模块执行的查询sql</h3><img src="/2020/02/07/CANAL源码解析-driver模块/3.png">
+<ul>
+<li>show variables like ‘binlog_format’</li>
+</ul>
+<p>用于查看binlog格式，值为STATEMENT,MIXED,ROW的一种，如： </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'binlog_format'</span>;</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| binlog_format | ROW   |</span><br><span class="line">+---------------+-------+</span><br></pre></td></tr></table></figure>
+<ul>
+<li>show variables like ‘binlog_row_image’</li>
+</ul>
+<p>ROW模式下，即使我们只更新了一条记录的其中某个字段，也会记录每个字段变更前后的值，binlog日志就会变大，带来磁盘IO上的开销，以及网络开销。mysql提供了参数binlog_row_image，来控制是否需要记录每一行的变更，其有3个值：</p>
+<pre><code>- FULL : 记录列的所有修改
+- MINIMAL ：只记录修改的列。
+- NOBLOB :如果是text类型或clob字段，不记录 这些日志
+</code></pre><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'binlog_row_image'</span>;</span><br><span class="line">+------------------+-------+</span><br><span class="line">| Variable_name    | Value |</span><br><span class="line">+------------------+-------+</span><br><span class="line">| binlog_row_image | FULL  |</span><br><span class="line">+------------------+-------+</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>select @master_binlog_checksum</p>
+<p>mysql 主从复制(replication) 同步可能会出现数据不一致，mysql  5.6 版本中加入了 replication event checksum(主从复制事件校验)功能。默认开启。如果开启，每个binlog后面会多出4个字节，为CRC32校验值。目前cancal支持解析CRC32的值，但不会进行校验。如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> mysql&gt; show variables like <span class="string">'binlog_checksum'</span>;</span><br><span class="line">+-----------------+-------+</span><br><span class="line">| Variable_name   | Value |</span><br><span class="line">+-----------------+-------+</span><br><span class="line">| binlog_checksum | CRC32 |</span><br><span class="line"> </span><br><span class="line">mysql&gt; select @master_binlog_checksum;</span><br><span class="line">+-------------------------+</span><br><span class="line">| @master_binlog_checksum |</span><br><span class="line">+-------------------------+</span><br><span class="line">| NULL                    |</span><br><span class="line">+-------------------------+</span><br><span class="line">1 row <span class="keyword">in</span> <span class="built_in">set</span> (0.01 sec)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>show variables like ‘server_id’</li>
+</ul>
+<p>mysql主从同步时，每个机器都要设置一个唯一的server_id，canal连接到某个mysql实例之后，会查询这个serverId。</p>
+<ul>
+<li>show master status</li>
+</ul>
+<p>mysql binlog是多文件存储，唯一确定一个binlog位置需要通过：binlog file + binlog position。show master status可以获得当前的binlog位置，如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master status;</span><br><span class="line">+--------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| File         | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+--------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| mysql.000012 |    23479 |              |                  |                   |</span><br><span class="line">+--------------+----------+--------------+------------------+-------------------+</span><br></pre></td></tr></table></figure>
+<ul>
+<li>show binlog events limit 1</li>
+</ul>
+<p>查询最早的binlog位置。 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show binlog events <span class="built_in">limit</span> 1;</span><br><span class="line">+--------------+-----+-------------+-----------+-------------+---------------------------------------+</span><br><span class="line">| Log_name     | Pos | Event_type  | Server_id | End_log_pos | Info                                  |</span><br><span class="line">+--------------+-----+-------------+-----------+-------------+---------------------------------------+</span><br><span class="line">| mysql.000001 |   4 | Format_desc |         1 |         123 | Server ver: 5.7.18-log, Binlog ver: 4 |</span><br><span class="line">+--------------+-----+-------------+-----------+-------------+---------------------------------------+</span><br></pre></td></tr></table></figure>
+<p>mysql binlog文件默认从mysql.000001开始，前四个字节是魔法字节，是固定的。因此真正的binlog事件总是从第4个字节之后才开始的。</p>
+<p>binlog文件可能会清空，官方的mysql版支持设置参数expire_logs_days来控制binlog保存时间，一些分支如percona，支持指定报文binlog文件个数。主要是避免binlog过多导致磁盘空间不足。</p>
+<ul>
+<li>show slave status</li>
+</ul>
+<p>主要用于判断MySQL复制同步状态，这个命令的内容比较多，这里不演示。主要是关注两个线程的状态：</p>
+<pre><code>- Slave_IO_Running线程：负责把主库的bin日志(Master_Log)内容，投递到从库的中继日志上(Relay_Log)
+- Slave_SQL_Running线程：负责把中继日志上的语句在从库上执行一遍
+</code></pre><p>以及Seconds_Behind_Master的值，其表示从库落后主库的时间，如果为0则表示没有延迟。</p>
+<ul>
+<li>“desc “ + fullname</li>
+</ul>
+<p>查看库表的字段定义，如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc test.user;</span><br><span class="line">+----------+-------------+------+-----+---------+----------------+</span><br><span class="line">| Field    | Type        | Null | Key | Default | Extra          |</span><br><span class="line">+----------+-------------+------+-----+---------+----------------+</span><br><span class="line">| id       | int(11)     | NO   | PRI | NULL    | auto_increment |</span><br><span class="line">| name     | varchar(18) | NO   |     | NULL    |                |</span><br><span class="line">| password | varchar(15) | NO   |     | NULL    |                |</span><br><span class="line">+----------+-------------+------+-----+---------+----------------+</span><br></pre></td></tr></table></figure>
+<p>原始的binlog二进制流中，并不包含字段的名称，而canal提供个client订阅的event中包含了字段名称，实际上就是通过这个命令来获得的。parser模块的TableMetaCache类就是用于缓存表字段信息。当表结构变更后，也会跟着自动跟新。</p>
+<h2 id="Driver模块实现原理"><a href="#Driver模块实现原理" class="headerlink" title="Driver模块实现原理"></a>Driver模块实现原理</h2><p>canal的driver模块实际上就是一个手功编写的一个mysql客户端。要编写这样的一个客户端并不容易，需要参考Mysql client/server通信协议</p>
+<p>事实上canal的driver客户端也没有实现完整的通信协议，只是满足了简单的查询和更新功能。不过从binlog解析的角度，这已经足够了。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/02/07/CANAL源码解析-driver模块/">http://code-monkey.top/2020/02/07/CANAL源码解析-driver模块/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/canal/">canal</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2020/02/07/CANAL源码解析-filter模块/">
+        <span class="next-text nav-default">CANAL源码解析-filter模块</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>

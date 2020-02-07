@@ -208,6 +208,62 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/07/CANAL源码解析-driver模块/">CANAL源码解析-driver模块</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-07
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>driver，顾名思义为驱动。熟悉jdbc编程的同学都知道，当项目中需要操作数据库(oracle、sqlserver、mysql等)时，都需要在项目中引入对应的数据库的驱动。以mysql为例，我们需要引入的是mysql-connector-java这个jar包,通过这个驱动包来与数据库进行通信。</p>
+<p>那么为什么canal不使用mysql官方提供的驱动包，而要自己编写一个driver模块？原因在于mysql-connector-java驱动包只是实现了JDBC规范，方便我们在程序中对数据库中的数据进行增删改查。</p>
+<p>对于获取并解析binlog日志这样的场景，mysql-connector-java并没有提供这样的功能。因此，canal编写了自己的driver模块，提供了基本的增删改查功能，并提供了直接获取原始binlog字节流的功能，其他模块在这个模块的基础上对binlog字节进行解析，parser模块底层实际上就是通过driver模块来与数据库建立连接的。</p>
+<p>driver模块目录结构如下所示：</p>
+<img src="/2020/02/07/CANAL源码解析-driver模块/1.png">
+<p>最核心的3个类分别是：</p>
+<ul>
+<li><code>MysqlConnector</code>：表示一个数据库连接，作用类似于java.sql.Connection</li>
+<li><code>MysqlQueryExecutor</code>：查询执行器，作用类似于PrepareStatement.executeQuery()</li>
+<li><code>MysqlUpdateExecutor</code>：更新执行器，作用类似于PrepareStatement.executeUpdate() </li>
+</ul>
+<p>在本小节中，我们将首先介绍driver模块的基本使用；接着介绍parser模块是如何使用driver模块的；最后讲解driver模块的实现原理。</p>
+          <div class="read-more">
+            <a href="/2020/02/07/CANAL源码解析-driver模块/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/07/CANAL源码解析-filter模块/">CANAL源码解析-filter模块</a>
         
       </h1>
@@ -700,57 +756,6 @@
 <p>注意：G1 有和应用程序一起运行的并发阶段，也有 stop-the-world 的并行阶段。但是，Full GC 的时候还是单线程运行的，所以我们应该尽量避免发生 Full GC，后面我们也会介绍什么时候会触发 Full GC。</p>
           <div class="read-more">
             <a href="/2019/10/24/深入理解JVM-6-G1-转载/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/10/24/深入理解JVM-5-——类加载器-转载/">深入理解JVM(5)——类加载器(转载)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-10-24
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>虚拟机设计团队把类加载阶段中的“通过一个类的全限定名来获取描述此类的二进制字节流(即字节码)”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类。实现这个动作的代码模块称为“类加载器”。</p>
-<p>一般来说，Java 虚拟机使用 Java 类的方式如下：</p>
-<ul>
-<li>Java 源程序（.java 文件）在经过 Java 编译器编译之后就被转换成字节码（.class 文件）。</li>
-<li>类加载器负责读取 Java 字节代码，并转换成 java.lang.Class类的一个实例。每个这样的实例用来表示一个 Java 类。通过此实例的 newInstance()方法就可以创建出该类的一个对象。</li>
-</ul>
-<p>实际的情况可能更加复杂，比如 Java 字节代码可能是通过工具动态生成的，也可能是通过网络下载的。更详细的内容可以参考上一篇文章中讲类加载过程中的加载阶段时介绍的几个例子（JAR包、Applet、动态代理、JSP等）。</p>
-          <div class="read-more">
-            <a href="/2019/10/24/深入理解JVM-5-——类加载器-转载/" class="read-more-link">阅读更多</a>
           </div>
         
       
