@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="CANAL源码解析-monitor机制">
+
+
+
+
+  <meta name="keywords" content="canal, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/02/07/CANAL源码解析-monitor机制/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> CANAL源码解析-monitor机制 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          CANAL源码解析-monitor机制
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-07
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#InstanceConfigMonitor"><span class="toc-text">InstanceConfigMonitor</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#InstanceConfigMonitor的创建"><span class="toc-text">InstanceConfigMonitor的创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InstanceConfigMonitor的启动"><span class="toc-text">InstanceConfigMonitor的启动</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ServerRunningMonitor"><span class="toc-text">ServerRunningMonitor</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#控制canal的实例的启停"><span class="toc-text">控制canal的实例的启停</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#监听zookeeper，如果zookeeper中的数据发生改变采取措施"><span class="toc-text">监听zookeeper，如果zookeeper中的数据发生改变采取措施</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>canal的流程描述中提及了两个monitor：<code>InstanceConfigMonitor</code>、<code>ServerRunningMonitor</code>。本文重点对这两个monitor进行分析。</p>
+<h2 id="InstanceConfigMonitor"><a href="#InstanceConfigMonitor" class="headerlink" title="InstanceConfigMonitor"></a>InstanceConfigMonitor</h2><p>从字面意思就可以得出，<code>InstanceConfigMonitor</code>是对canal实例配置的监控。实际上也确实如此，它的功能就是监控canal实例的配置文件——instance.properties，如果其中有增加、修改、删除，执行实例的启动、重启、停止操作。下面我们来分析<code>InstanceConfigMonitor</code>的代码。</p>
+<h3 id="InstanceConfigMonitor的创建"><a href="#InstanceConfigMonitor的创建" class="headerlink" title="InstanceConfigMonitor的创建"></a>InstanceConfigMonitor的创建</h3><p><code>InstanceConfigMonitor</code>在<code>CanalController</code>构造函数中被创建：</p>
+<p>首先获取canal.auto.scan配置，该配置控制是否监听canal实例配置的变化。如果该配置为false，则不需要创建<code>InstanceConfigMonitor</code>。默认该配置为true，此时需要创建<code>InstanceConfigMonitor</code>。</p>
+<p>在创建InstanceConfigMonitor之前先创建一个defaultAction（实际类为<code>InstanceAction</code>），<code>InstanceAction</code>是一个接口，其中定义了三个函数，分别对应启动实例、定制实例、重启实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">InstanceAction</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 启动destination</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">(String destination)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 停止destination</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">(String destination)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 重载destination，可能需要stop,start操作，或者只是更新下内存配置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">reload</span><span class="params">(String destination)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>InstanceAction</code>的具体操作我们在后面再分析。</p>
+<a id="more"></a>
+<p>接着创建一个<code>instanceConfigMonitors</code>，它是一个Map<instancemode, instanceconfigmonitor="">，当获取<code>InstanceConfigMonitor</code>是发现Map中不存在时（从调用流程上看，<code>InstanceConfigMonitor</code>其实是在其将要启动时获取的），调用apply方法创建一个<code>InstanceConfigMonitor</code>：</instancemode,></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scanInterval = Integer</span><br><span class="line">    .valueOf(getProperty(properties, CanalConstants.CANAL_AUTO_SCAN_INTERVAL));</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (mode.isSpring()) &#123;</span><br><span class="line">    SpringInstanceConfigMonitor monitor = <span class="keyword">new</span> SpringInstanceConfigMonitor();</span><br><span class="line">    monitor.setScanIntervalInSecond(scanInterval);</span><br><span class="line">    monitor.setDefaultAction(defaultAction);</span><br><span class="line">    <span class="comment">// 设置conf目录，默认是user.dir + conf目录组成</span></span><br><span class="line">    String rootDir = getProperty(properties, CanalConstants.CANAL_CONF_DIR);</span><br><span class="line">    <span class="keyword">if</span> (StringUtils.isEmpty(rootDir)) &#123;</span><br><span class="line">        rootDir = <span class="string">"../conf"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (StringUtils.equals(<span class="string">"otter-canal"</span>, System.getProperty(<span class="string">"appName"</span>))) &#123;</span><br><span class="line">        monitor.setRootConf(rootDir);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// eclipse debug模式</span></span><br><span class="line">        monitor.setRootConf(<span class="string">"src/main/resources/"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> monitor;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (mode.isManager()) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ManagerInstanceConfigMonitor();</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"unknow mode :"</span> + mode + <span class="string">" for monitor"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建流程如下：</p>
+<ol>
+<li>获取配置<code>canal.auto.scan.interval</code>，它指定了配置监听扫描的间隔时间，默认为5秒。</li>
+<li>判断mode是否为<code>SPRING</code>。mode在配置<code>canal.instance.global.mode</code>中指定，可以正对各个destination配置不同的mode。全局mode默认为spring</li>
+<li>新建<code>SpringInstanceConfigMonitor</code></li>
+<li>设置scanInterval</li>
+<li>设置defaultAction。defaultAction为刚刚创建的<code>InstanceAction</code>。</li>
+<li>获取并设置配置canal.conf.dir，这是监控进行的根目录。</li>
+</ol>
+<h3 id="InstanceConfigMonitor的启动"><a href="#InstanceConfigMonitor的启动" class="headerlink" title="InstanceConfigMonitor的启动"></a>InstanceConfigMonitor的启动</h3><p><code>InstanceConfigMonitor</code>的启动位于<code>CanalController</code>的start()方法中。</p>
+<p>在启动之前，还有一步遍历destination并注册InstanceAction。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (autoScan) &#123;</span><br><span class="line">    instanceConfigMonitors.get(config.getMode()).register(destination, defaultAction);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册InstanceAction就是将action保存在SpringInstanceConfigMonitor的actions字段中</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">register</span><span class="params">(String destination, InstanceAction action)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (action != <span class="keyword">null</span>) &#123;</span><br><span class="line">        actions.put(destination, action);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        actions.put(destination, defaultAction);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中执行instanceConfigMonitors.get(config.getMode())时发现instanceConfigMonitors不存在对应的InstanceConfigMonitor，先创建InstanceConfigMonitor。</p>
+<p>接着调用start()方法启动。对于SpringInstanceConfigMonitor来说，start()方法中启动了一个定时任务，每隔scanIntervalInSecond时间（默认5秒），执行其中的scan()方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scan</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 判断instance配置的根目录是否存在</span></span><br><span class="line">    File rootdir = <span class="keyword">new</span> File(rootConf);</span><br><span class="line">    <span class="keyword">if</span> (!rootdir.exists()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取所有instance的配置目录</span></span><br><span class="line">    File[] instanceDirs = rootdir.listFiles(<span class="keyword">new</span> FileFilter() &#123;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">accept</span><span class="params">(File pathname)</span> </span>&#123;</span><br><span class="line">            String filename = pathname.getName();</span><br><span class="line">            <span class="keyword">return</span> pathname.isDirectory() &amp;&amp; !<span class="string">"spring"</span>.equalsIgnoreCase(filename);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// currentInstanceNames用于判断是否有目录被删除</span></span><br><span class="line">    Set&lt;String&gt; currentInstanceNames = <span class="keyword">new</span> HashSet&lt;String&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断目录内文件的变化</span></span><br><span class="line">    <span class="keyword">for</span> (File instanceDir : instanceDirs) &#123;</span><br><span class="line">        <span class="comment">// 将现在配置的destination添加到currentInstanceNames</span></span><br><span class="line">        String destination = instanceDir.getName();</span><br><span class="line">        currentInstanceNames.add(destination);</span><br><span class="line">        <span class="comment">// 获取配置目录中的配置文件instance.properties</span></span><br><span class="line">        File[] instanceConfigs = instanceDir.listFiles(<span class="keyword">new</span> FilenameFilter() &#123;</span><br><span class="line"></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">accept</span><span class="params">(File dir, String name)</span> </span>&#123;</span><br><span class="line">                <span class="comment">// return !StringUtils.endsWithIgnoreCase(name, ".dat");</span></span><br><span class="line">                <span class="comment">// 限制一下，只针对instance.properties文件,避免因为.svn或者其他生成的临时文件导致出现reload</span></span><br><span class="line">                <span class="keyword">return</span> StringUtils.equalsIgnoreCase(name, <span class="string">"instance.properties"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!actions.containsKey(destination) &amp;&amp; instanceConfigs.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 存在合法的instance.properties，并且第一次添加时，进行启动操作</span></span><br><span class="line">            notifyStart(instanceDir, destination, instanceConfigs);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (actions.containsKey(destination)) &#123;</span><br><span class="line">            <span class="comment">// 历史已经启动过</span></span><br><span class="line">            <span class="keyword">if</span> (instanceConfigs.length == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// 如果不存在合法的instance.properties（可能是这个文件被删除了），则停止instance</span></span><br><span class="line">                notifyStop(destination);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 判断instance.properties是否被修改过</span></span><br><span class="line">                InstanceConfigFiles lastFile = lastFiles.get(destination);</span><br><span class="line">                <span class="comment">// 历史启动过 所以配置文件信息必然存在</span></span><br><span class="line">                <span class="keyword">if</span> (!isFirst &amp;&amp; CollectionUtils.isEmpty(lastFile.getInstanceFiles())) &#123;</span><br><span class="line">                    logger.error(<span class="string">"[&#123;&#125;] is started, but not found instance file info."</span>, destination);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 通过文件的最近修改时间，判断配置文件是否被修改过</span></span><br><span class="line">                <span class="keyword">boolean</span> hasChanged = judgeFileChanged(instanceConfigs, lastFile.getInstanceFiles());</span><br><span class="line">                <span class="comment">// 通知变化</span></span><br><span class="line">                <span class="keyword">if</span> (hasChanged) &#123;</span><br><span class="line">                    notifyReload(destination);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 如果配置文件的文件信息没有保存（可能是刚启动，或者配置文件刚添加），则首先保存文件信息</span></span><br><span class="line">                <span class="keyword">if</span> (hasChanged || CollectionUtils.isEmpty(lastFile.getInstanceFiles())) &#123;</span><br><span class="line">                    <span class="comment">// 更新内容</span></span><br><span class="line">                    List&lt;FileInfo&gt; newFileInfo = <span class="keyword">new</span> ArrayList&lt;FileInfo&gt;();</span><br><span class="line">                    <span class="keyword">for</span> (File instanceConfig : instanceConfigs) &#123;</span><br><span class="line">                        newFileInfo.add(<span class="keyword">new</span> FileInfo(instanceConfig.getName(), instanceConfig.lastModified()));</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    lastFile.setInstanceFiles(newFileInfo);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断目录是否删除</span></span><br><span class="line">    Set&lt;String&gt; deleteInstanceNames = <span class="keyword">new</span> HashSet&lt;String&gt;();</span><br><span class="line">    <span class="keyword">for</span> (String destination : actions.keySet()) &#123;</span><br><span class="line">        <span class="comment">// destination的配置不存在了，说明它被删除了</span></span><br><span class="line">        <span class="keyword">if</span> (!currentInstanceNames.contains(destination)) &#123;</span><br><span class="line">            deleteInstanceNames.add(destination);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (String deleteInstanceName : deleteInstanceNames) &#123;</span><br><span class="line">        notifyStop(deleteInstanceName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>scan()方法的作用就扫描instance的配置文件，如果有增加、修改、删除，则分别调用notifyStart、notifyReload、notifyStop操作。三个操作的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">notifyStart</span><span class="params">(File instanceDir, String destination, File[] instanceConfigs)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//调用defaultAction中定义的instance的启动操作</span></span><br><span class="line">        defaultAction.start(destination);</span><br><span class="line">        actions.put(destination, defaultAction);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 启动成功后记录配置文件信息</span></span><br><span class="line">        InstanceConfigFiles lastFile = lastFiles.get(destination);</span><br><span class="line">        List&lt;FileInfo&gt; newFileInfo = <span class="keyword">new</span> ArrayList&lt;FileInfo&gt;();</span><br><span class="line">        <span class="keyword">for</span> (File instanceConfig : instanceConfigs) &#123;</span><br><span class="line">            newFileInfo.add(<span class="keyword">new</span> FileInfo(instanceConfig.getName(), instanceConfig.lastModified()));</span><br><span class="line">        &#125;</span><br><span class="line">        lastFile.setInstanceFiles(newFileInfo);</span><br><span class="line"></span><br><span class="line">        logger.info(<span class="string">"auto notify start &#123;&#125; successful."</span>, destination);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">        logger.error(String.format(<span class="string">"scan add found[%s] but start failed"</span>, destination), e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">notifyReload</span><span class="params">(String destination)</span> </span>&#123;</span><br><span class="line">    InstanceAction action = actions.get(destination);</span><br><span class="line">    <span class="keyword">if</span> (action != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//调用defaultAction中定义的instance的重启操作</span></span><br><span class="line">            action.reload(destination);</span><br><span class="line">            logger.info(<span class="string">"auto notify reload &#123;&#125; successful."</span>, destination);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">            logger.error(String.format(<span class="string">"scan reload found[%s] but reload failed"</span>, destination), e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">notifyStop</span><span class="params">(String destination)</span> </span>&#123;</span><br><span class="line">    InstanceAction action = actions.remove(destination);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//调用defaultAction中定义的instance的停止操作</span></span><br><span class="line">        action.stop(destination);</span><br><span class="line">        lastFiles.remove(destination);</span><br><span class="line">        logger.info(<span class="string">"auto notify stop &#123;&#125; successful."</span>, destination);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">        logger.error(String.format(<span class="string">"scan delete found[%s] but stop failed"</span>, destination), e);</span><br><span class="line">        actions.put(destination, action);<span class="comment">// 再重新加回去，下一次scan时再执行删除</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到notifyStart、notifyReload、notifyStop三个操作主要就是调用defaultAction中定义的Instance操作对Instance执行启动、重启、停止操作。</p>
+<p>下面来看defaultAction中定义的操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">defaultAction = <span class="keyword">new</span> InstanceAction() &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">(String destination)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 获取instance的配置</span></span><br><span class="line">        InstanceConfig config = instanceConfigs.get(destination);</span><br><span class="line">        <span class="keyword">if</span> (config == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 如果配置为null（可能是instance停止后配置被删除了），重新读取一下instance config</span></span><br><span class="line">            config = parseInstanceConfig(properties, destination);</span><br><span class="line">            instanceConfigs.put(destination, config);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!embededCanalServer.isStart(destination)) &#123;</span><br><span class="line">            <span class="comment">// HA机制启动</span></span><br><span class="line">            ServerRunningMonitor runningMonitor = ServerRunningMonitors.getRunningMonitor(destination);</span><br><span class="line">            <span class="keyword">if</span> (!config.getLazy() &amp;&amp; !runningMonitor.isStart()) &#123;</span><br><span class="line">                <span class="comment">// 调用ServerRunningMonitor的start()方法启动instance</span></span><br><span class="line">                runningMonitor.start();</span><br><span class="line">                <span class="keyword">if</span> (canalMQStarter != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    canalMQStarter.startDestination(destination);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">(String destination)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 此处的stop，代表强制退出，非HA机制，所以需要退出HA的monitor和配置信息</span></span><br><span class="line">        InstanceConfig config = instanceConfigs.remove(destination);</span><br><span class="line">        <span class="keyword">if</span> (config != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (canalMQStarter != <span class="keyword">null</span>) &#123;</span><br><span class="line">                canalMQStarter.stopDestination(destination);</span><br><span class="line">            &#125;</span><br><span class="line">            embededCanalServer.stop(destination);</span><br><span class="line">            ServerRunningMonitor runningMonitor = ServerRunningMonitors.getRunningMonitor(destination);</span><br><span class="line">            <span class="keyword">if</span> (runningMonitor.isStart()) &#123;</span><br><span class="line">                <span class="comment">// 调用ServerRunningMonitor的stop()方法停止instance</span></span><br><span class="line">                runningMonitor.stop();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reload</span><span class="params">(String destination)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 目前任何配置变化，直接重启，简单处理</span></span><br><span class="line">        stop(destination);</span><br><span class="line">        start(destination);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>可以看到，defaultAction中定义了三个操作，其中reload操作就是简单地停止并启动instance，stop操作删除instance的配置然后调用ServerRunningMonitor的stop()方法停止instance，start操作读取instance配置并调用调用ServerRunningMonitor的start()方法启动instance。</p>
+<h2 id="ServerRunningMonitor"><a href="#ServerRunningMonitor" class="headerlink" title="ServerRunningMonitor"></a>ServerRunningMonitor</h2><p>ServerRunningMonitor是对canal实例进行控制并监控的类。</p>
+<p>ServerRunningMonitor在ServerRunningMonitors中维护，ServerRunningMonitors中的runningMonitors变量保存各个destination对应的ServerRunningMonitor。</p>
+<h3 id="控制canal的实例的启停"><a href="#控制canal的实例的启停" class="headerlink" title="控制canal的实例的启停"></a>控制canal的实例的启停</h3><p>ServerRunningMonitor第一个功能就是控制canal的实例的启停，由start()、stop()两个方法负责：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.start();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        processStart();</span><br><span class="line">        <span class="keyword">if</span> (zkClient != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 如果需要尽可能释放instance资源，不需要监听running节点，不然即使stop了这台机器，另一台机器立马会start</span></span><br><span class="line">            String path = ZookeeperPathUtils.getDestinationServerRunning(destination);</span><br><span class="line">            zkClient.subscribeDataChanges(path, dataListener);</span><br><span class="line"></span><br><span class="line">            initRunning();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            processActiveEnter();<span class="comment">// 没有zk，直接启动</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        logger.error(<span class="string">"start failed"</span>, e);</span><br><span class="line">        <span class="comment">// 没有正常启动，重置一下状态，避免干扰下一次start</span></span><br><span class="line">        stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.stop();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (zkClient != <span class="keyword">null</span>) &#123;</span><br><span class="line">        String path = ZookeeperPathUtils.getDestinationServerRunning(destination);</span><br><span class="line">        zkClient.unsubscribeDataChanges(path, dataListener);</span><br><span class="line"></span><br><span class="line">        releaseRunning(); <span class="comment">// 尝试一下release</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        processActiveExit(); <span class="comment">// 没有zk，直接启动</span></span><br><span class="line">    &#125;</span><br><span class="line">    processStop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先介绍其中涉及到四个process**回调方法：processStart、processStop、processActiveEnter、processActiveExit。这个四个方法执行的功能非常简单，就是调用ServerRunningListener中相应的方法。ServerRunningListener是一个接口，其中定义了四个instance状态发生改变时回调的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ServerRunningListener</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 启动时回调做点事情</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processStart</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭时回调做点事情</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processStop</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 触发现在轮到自己做为active，需要载入上一个active的上下文数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processActiveEnter</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 触发一下当前active模式失败</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processActiveExit</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>canal在ServerRunningMonitor的新建过程中新建并设置了ServerRunningListener的实现，下面分别介绍这个四个方法的实现：</p>
+<ul>
+<li>processStart：如果使用了zookeeper，在zookeeper中新建cluster的目录（目录名：/otter/canal/destinations/{destination}/cluster/{ip}:{port}），监控zookeeper状态改变</li>
+<li>processStop：如果使用了zookeeper，删除zookeeper中的cluster目录</li>
+<li>processActiveEnter：调用CanalServerWithEmbedded的start方法启动destination对应的实例</li>
+<li>processActiveExit：调用CanalServerWithEmbedded的stop方法停止destination对应的实例</li>
+</ul>
+<p>现在回到ServerRunningMonitor的start和stop方法：</p>
+<ul>
+<li>start()：<ul>
+<li>调用processStart方法，作用如上文所示</li>
+<li>如果使用了zookeeper，监听zookeeper中的/otter/canal/destinations/{destination}/running节点。调用initRunning方法，运行canal实例</li>
+<li>如果没有使用zookeeper，直接调用processActiveEnter方法启动实例    </li>
+</ul>
+</li>
+<li>stop()：<ul>
+<li>如果使用了zookeeper，取消监听zookeeper中的/otter/canal/destinations/{destination}/running节点。调用releaseRunning方法停止canal实例</li>
+<li>如果没有使用zookeeper，直接调用processActiveExit方法停止实例</li>
+</ul>
+</li>
+</ul>
+<p>initRunning方法如下所示：</p>
+<p>它的作用是在zookeeper的/otter/canal/destinations/{destination}/running节点中写入当前运行的canal服务器信息，并调用processActiveEnter方法启动实例。</p>
+<p>如果该节点已经存在，则重新获取数据并将该数据作为正在运行的canal信息保存在activeData中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initRunning</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!isStart()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    String path = ZookeeperPathUtils.getDestinationServerRunning(destination);</span><br><span class="line">    <span class="comment">// 序列化</span></span><br><span class="line">    <span class="keyword">byte</span>[] bytes = JsonUtils.marshalToByte(serverData);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        mutex.set(<span class="keyword">false</span>);</span><br><span class="line">        zkClient.create(path, bytes, CreateMode.EPHEMERAL);</span><br><span class="line">        activeData = serverData;</span><br><span class="line">        processActiveEnter();<span class="comment">// 触发一下事件</span></span><br><span class="line">        mutex.set(<span class="keyword">true</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ZkNodeExistsException e) &#123;</span><br><span class="line">        bytes = zkClient.readData(path, <span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">if</span> (bytes == <span class="keyword">null</span>) &#123;<span class="comment">// 如果不存在节点，立即尝试一次</span></span><br><span class="line">            initRunning();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            activeData = JsonUtils.unmarshalFromByte(bytes, ServerRunningData.class);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ZkNoNodeException e) &#123;</span><br><span class="line">        zkClient.createPersistent(ZookeeperPathUtils.getDestinationPath(destination), <span class="keyword">true</span>); <span class="comment">// 尝试创建父节点</span></span><br><span class="line">        initRunning();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>releaseRunning方法如下所示。它的作用是删除zookeeper的/otter/canal/destinations/{destination}/running节点，并调用processActiveExit方法停止实例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">releaseRunning</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (check()) &#123;</span><br><span class="line">        String path = ZookeeperPathUtils.getDestinationServerRunning(destination);</span><br><span class="line">        zkClient.delete(path);</span><br><span class="line">        mutex.set(<span class="keyword">false</span>);</span><br><span class="line">        processActiveExit();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="监听zookeeper，如果zookeeper中的数据发生改变采取措施"><a href="#监听zookeeper，如果zookeeper中的数据发生改变采取措施" class="headerlink" title="监听zookeeper，如果zookeeper中的数据发生改变采取措施"></a>监听zookeeper，如果zookeeper中的数据发生改变采取措施</h3><p>ServerRunningMonitor第二个功能就是监听zookeeper，如果zookeeper中的数据发生改变采取措施。</p>
+<p>前面我们看到ServerRunningMonitor在执行start()方法时会监听zookeeper中的/otter/canal/destinations/{destination}/running节点，其响应方法在dataListener中定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">dataListener = <span class="keyword">new</span> IZkDataListener() &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDataChange</span><span class="params">(String dataPath, Object data)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        MDC.put(<span class="string">"destination"</span>, destination);</span><br><span class="line">        ServerRunningData runningData = JsonUtils.unmarshalFromByte((<span class="keyword">byte</span>[]) data, ServerRunningData.class);</span><br><span class="line">        <span class="keyword">if</span> (!isMine(runningData.getAddress())) &#123;</span><br><span class="line">            mutex.set(<span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!runningData.isActive() &amp;&amp; isMine(runningData.getAddress())) &#123; <span class="comment">// 说明出现了主动释放的操作，并且本机之前是active</span></span><br><span class="line">            release = <span class="keyword">true</span>;</span><br><span class="line">            releaseRunning();<span class="comment">// 彻底释放mainstem</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        activeData = (ServerRunningData) runningData;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDataDeleted</span><span class="params">(String dataPath)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        MDC.put(<span class="string">"destination"</span>, destination);</span><br><span class="line">        mutex.set(<span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">if</span> (!release &amp;&amp; activeData != <span class="keyword">null</span> &amp;&amp; isMine(activeData.getAddress())) &#123;</span><br><span class="line">            <span class="comment">// 如果上一次active的状态就是本机，则即时触发一下active抢占</span></span><br><span class="line">            initRunning();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 否则就是等待delayTime，避免因网络瞬端或者zk异常，导致出现频繁的切换操作</span></span><br><span class="line">            delayExector.schedule(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line"></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    initRunning();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;, delayTime, TimeUnit.SECONDS);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>当/otter/canal/destinations/{destination}/running节点的数据发生修改会调用handleDataChange方法：</p>
+<ol>
+<li>获取该目录修改之后的数据</li>
+<li>如果数据显示正在运行的canal的地址和本机不同，说明已经有其他机器上的canal正在运行</li>
+<li>如果数据显示正在运行的canal就是本机，并且状态不是active，说明本机出现了主动释放的操作，此时调用releaseRunning()方法删除zookeeper的/otter/canal/destinations/{destination}/running节点，并调用processActiveExit方法停止实例</li>
+<li>将正在运行的canal信息保存在activeData中</li>
+</ol>
+<p>当/otter/canal/destinations/{destination}/running节点的数据被删除会调用handleDataDeleted方法：</p>
+<ol>
+<li>如果上次运行canal的就是本机，则执行initRunning重新运行本机的canal</li>
+<li>否则等待delayTime（5秒）时间后再执行initRunning重新运行本机的canal</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文分析了canal的两个monitor机制：InstanceConfigMonitor、ServerRunningMonitor。通过这两个监控机制，canal实现了实例配置的修改与生效，以及实例在不同机器上的高可用。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/02/07/CANAL源码解析-monitor机制/">http://code-monkey.top/2020/02/07/CANAL源码解析-monitor机制/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/canal/">canal</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2020/02/07/CANAL源码解析-binlog消费位点的控制/">
+        <span class="next-text nav-default">CANAL源码解析-binlog消费位点的控制</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>

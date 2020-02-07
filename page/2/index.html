@@ -208,6 +208,56 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/11/19/Spark-SQL在100TB上的自适应执行实践（转载）/">Spark SQL在100TB上的自适应执行实践（转载）</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-11-19
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>Spark SQL是Apache Spark最广泛使用的一个组件，它提供了非常友好的接口来分布式处理结构化数据，在很多应用领域都有成功的生产实践，但是在超大规模集群和数据集上，Spark SQL仍然遇到不少易用性和可扩展性的挑战。为了应对这些挑战，英特尔大数据技术团队和百度大数据基础架构部工程师在Spark 社区版本的基础上，改进并实现了自适应执行引擎。本文首先讨论Spark SQL在大规模数据集上遇到的挑战，然后介绍自适应执行的背景和基本架构，以及自适应执行如何应对Spark SQL这些问题，最后我们将比较自适应执行和现有的社区版本Spark SQL在100 TB 规模TPC-DS基准测试碰到的挑战和性能差异，以及自适应执行在Baidu Big SQL平台的使用情况。</p>
+<h1 id="挑战"><a href="#挑战" class="headerlink" title="挑战"></a>挑战</h1><h2 id="挑战1：关于shuffle-partition数"><a href="#挑战1：关于shuffle-partition数" class="headerlink" title="挑战1：关于shuffle partition数"></a>挑战1：关于shuffle partition数</h2><p>在Spark SQL中， shufflepartition数可以通过参数spark.sql.shuffle.partition来设置，默认值是200。这个参数决定了SQL作业每个reduce阶段任务数量，对整个查询性能有很大影响。假设一个查询运行前申请了E个Executor，每个Executor包含C个core（并发执行线程数），那么该作业在运行时可以并行执行的任务数就等于E x C个，或者说该作业的并发数是E x C。假设shuffle partition个数为P，除了map stage的任务数和原始数据的文件数量以及大小相关，后续的每个reduce stage的任务数都是P。由于Spark作业调度是抢占式的，E x C个并发任务执行单元会抢占执行P个任务，“能者多劳”，直至所有任务完成，则进入到下一个Stage。但这个过程中，如果有任务因为处理数据量过大（例如：数据倾斜导致大量数据被划分到同一个reducer partition）或者其它原因造成该任务执行时间过长，一方面会导致整个stage执行时间变长，另一方面E x C个并发执行单元大部分可能都处于空闲等待状态，集群资源整体利用率急剧下降。</p>
+<p>那么spark.sql.shuffle.partition参数究竟是多少比较合适？如果设置过小，分配给每一个reduce任务处理的数据量就越多，在内存大小有限的情况下，不得不溢写（spill）到计算节点本地磁盘上。Spill会导致额外的磁盘读写，影响整个SQL查询的性能，更差的情况还可能导致严重的GC问题甚至是OOM。相反，如果shuffle partition设置过大。第一，每一个reduce任务处理的数据量很小并且很快结束，进而导致Spark任务调度负担变大。第二，每一个mapper任务必须把自己的shuffle输出数据分成P个hash bucket，即确定数据属于哪一个reduce partition，当shuffle partition数量太多时，hash bucket里数据量会很小，在作业并发数很大时，reduce任务shuffle拉取数据会造成一定程度的随机小数据读操作，当使用机械硬盘作为shuffle数据临时存取的时候性能下降会更加明显。最后，当最后一个stage保存数据时会写出P个文件，也可能会造成HDFS文件系统中大量的小文件。</p>
+<p>从上，shuffle partition的设置既不能太小也不能太大。为了达到最佳的性能，往往需要经多次试验才能确定某个SQL查询最佳的shuffle partition值。然而在生产环境中，往往SQL以定时作业的方式处理不同时间段的数据，数据量大小可能变化很大，我们也无法为每一个SQL查询去做耗时的人工调优，这也意味这些SQL作业很难以最佳的性能方式运行。</p>
+<p>Shuffle partition的另外一个问题是，同一个shuffle partition数设置将应用到所有的stage。Spark在执行一个SQL作业时，会划分成多个stage。通常情况下，每个stage的数据分布和大小可能都不太一样，全局的shuffle partition设置最多只能对某个或者某些stage最优，没有办法做到全局所有的stage设置最优。</p>
+<p>这一系列关于shufflepartition的性能和易用性挑战，促使我们思考新的方法：我们能否根据运行时获取的shuffle数据量信息，例如数据块大小，记录行数等等，自动为每一个stage设置合适的shuffle partition值？</p>
+          <div class="read-more">
+            <a href="/2019/11/19/Spark-SQL在100TB上的自适应执行实践（转载）/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/10/24/深入理解JVM-6-G1-转载/">深入理解JVM(6)--G1(转载)</a>
         
       </h1>
@@ -716,174 +766,6 @@
 <p>以上是从前台请求执行指定的Note的指定的Paragraph开始，到该Paragraph提交到Scheduler之间的时序图。这个执行逻辑是与语言无关的。任何语言写的脚本（存储在Paragraph之中）都是上述提交执行的过程。</p>
           <div class="read-more">
             <a href="/2019/06/12/Zeppelin源码分析-note的执行过程/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-notebook持久化/">Zeppelin源码分析-notebook持久化</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-06-12
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>Notebook的持久化系统主要的类图如下：<br><img src="/2019/06/12/Zeppelin源码分析-notebook持久化/1.png"></p>
-<p>各类主要的职责如下：</p>
-<ol>
-<li>NotebookRepo是顶层接口，规定了持久化层基本的CRUD接口。</li>
-<li>NotebookVersioned定义了Note的版本管理接口，目前其实现类只有GitNotebookRepo（该功能目前实现的不完善，既没有实现按照rev log进行过滤检索，界面上目前也没有检索或者是回退到具体某个版本的入口），采用JGit实现。</li>
-<li>VFSNotebookRepo是zeppelin的默认实现类，使用apache common-vfs来实现多文件系统支持。（受配置参数zeppelin.notebook.storage控制，参见：ZeppelinConfiguration。</li>
-</ol>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZEPPELIN_NOTEBOOK_STORAGE("zeppelin.notebook.storage", VFSNotebookRepo.class.getName()),</span><br></pre></td></tr></table></figure>
-<p>目前common-vfs支持的文件系统虽然很多，但是由于Notebook持久化时需要RW、Create/Delete权限，实际上可用的只有如下：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center">File System</th>
-<th style="text-align:center">Directory Contents</th>
-<th style="text-align:center">Authentication</th>
-<th style="text-align:center">Read</th>
-<th style="text-align:center">Write</th>
-<th style="text-align:center">Create/Delete</th>
-<th style="text-align:center">Random</th>
-<th style="text-align:center">Version</th>
-<th style="text-align:center">Rename</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">File</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Read/Write</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center">FTP</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Read</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center">FTPS</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">-</td>
-<td style="text-align:center">-</td>
-<td style="text-align:center">-</td>
-</tr>
-<tr>
-<td style="text-align:center">RAM</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Read/Write</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center">RES</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Read/Write</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center">SFTP</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Read</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center">Temp</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Read/Write</td>
-<td style="text-align:center">No</td>
-<td style="text-align:center">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center">WebDAV</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Read/Write</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>需要注意的是：不支持HDFS，由于vfs对hdfs://不支持Write、Create/Delete</p>
-<ol>
-<li><p>NotebookRepoSync的初衷是为了让2个NotebookRepo之间进行自动同步修改，实现：在本地repo保存修改的同时，让zeppelin自动将修改同步到远程的repo上。<br>要启用2个repo之间的同步，需要：<br> a. 在zeppelin-site.xml中修改配置参数zeppelin.notebook.storage，以逗号分隔2个实现类的完整类名<br> b. 注意顺序，一般是将VFSNotebookRepo作为一个，而S3NotebookRepo或者是AzureNotebookRepo等作为第二个。zeppelin目前只支持最大2个Repo（maxRepoNum=2作为编译时常量），不能通过配置修改。</p>
-</li>
-<li><p>S3NotebookRepo和AzureNotebookRepo，实现向2大云存储系统的持久化Notebook。</p>
-</li>
-<li>ZeppelinHubRepo是为了向zeppelinhub持久化Notebook而设计的，zeppelinhub是一个类似于Github的分享网站，区别在于Github是分享git仓库的，zeppelinhub是分享notebook的。</li>
-</ol>
-          <div class="read-more">
-            <a href="/2019/06/12/Zeppelin源码分析-notebook持久化/" class="read-more-link">阅读更多</a>
           </div>
         
       
