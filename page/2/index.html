@@ -208,6 +208,63 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/10/23/深入理解JVM-4-——虚拟机类加载机制-转载/">深入理解JVM(4)——虚拟机类加载机制(转载)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-10-23
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="类加载过程概览"><a href="#类加载过程概览" class="headerlink" title="类加载过程概览"></a>类加载过程概览</h1><p>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括以下7个阶段：</p>
+<ul>
+<li><strong>加载（Loading）</strong></li>
+<li><strong>验证（Verification）</strong></li>
+<li><strong>准备（Preparation）</strong></li>
+<li><strong>解析（Resolution）</strong></li>
+<li><strong>初始化（Initialization）</strong></li>
+<li>使用（Using）</li>
+<li>卸载（Unloading）</li>
+</ul>
+<p>其中前五个阶段即为类加载的全过程。在后面会进行详细的介绍。而验证、准备、解析3个部分统称为连接（Linking）。这7个阶段的发生顺序如下图：</p>
+<img src="/2019/10/23/深入理解JVM-4-——虚拟机类加载机制-转载/1.jpeg">
+<p>在上图中，加载、验证、准备、初始化和卸载这5个阶段的顺序是确定的，类的加载过程必须按照这种顺序按部就班地开始（开始而不是完成，这些阶段是互相交叉着进行的，在一个阶段执行过程中就会激活另一个阶段），而解析阶段则不一定：它在某些情况下可以在初始化阶段之后再开始，这是为了支持Java的运行时绑定（也称为动态绑定或晚期绑定）。</p>
+          <div class="read-more">
+            <a href="/2019/10/23/深入理解JVM-4-——虚拟机类加载机制-转载/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/">深入理解JVM(3)——7种垃圾收集器(转载)</a>
         
       </h1>
@@ -819,59 +876,6 @@
 <p>zeppelin本质上是一个web应用程序，它以独立的jvm进程的方式来启动Interpreter（解释器），交互式（repl）执行各种语言的代码片段，并将结果以html代码片段的形式返回给前端UI。</p>
           <div class="read-more">
             <a href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/28/Spark-应用程序调优/">Spark 应用程序调优(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-28
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>对于很多刚接触Spark的人来说，可能主要关心数据处理的逻辑，而对于如何高效运行Spark应用程序了解较少。由于Spark是一种分布式内存计算框架，其性能往往受限于CPU、内存、网络等多方面的因素，对于用户来说，如何在有限的资源下高效地运行Spark应用程序显得尤为重要。下面只针对Spark-On-Yarn的一些常用调优策略做详细分析。</p>
-<h2 id="配置参数优化"><a href="#配置参数优化" class="headerlink" title="配置参数优化"></a>配置参数优化</h2><h3 id="资源申请参数"><a href="#资源申请参数" class="headerlink" title="资源申请参数"></a>资源申请参数</h3><p>Spark-On-Yarn资源调度由Yarn来管理，用户只需指定Spark应用程序要申请的资源即可。我们首先来理解几个资源配置项，一旦资源配置确定，则只能在这些有限的资源下运行Spark应用程序。</p>
-<ul>
-<li>num-executors：同时运行的executor数。</li>
-<li>executor-cores：一个executor上的core数，表示一次能同时运行的task数。一个Spark应用最多可以同时运行的task数为num-executors*executor-cores。</li>
-<li>driver-memory：driver的内存大小。</li>
-<li>executor-memory：executor内存大小，视任务处理的数据量大小而定。</li>
-</ul>
-<p>一开始我们只能通过大致的估算来确定上述资源的配置，例如一个Spark应用程序处理的数据大小为1T，如果读出来默认是500个partitions（可以通过测试运行，从web中查看的到），那么平均每个partition的大小为1T/500≈2G，默认情况下，考虑中间处理过程中的数据膨胀以及一些额外内存消耗，executor中可用于存放rdd的阈值设定为spar.storage.memoryFraction=0.6，所以存储partition需要的内存为executor-memory*0.6，稳妥一点设置executor-memory大于2G/0.6，如果一个executor不止是处理一个partition，假如num-executors设置为100，那么平均每个executor处理的partition为500/100=5，这时如果需要缓存rdd，那么executor-memory就要设置为大于5*2G/0.6；如果读出来的分区数很少（如100），一个partition很大（1T/100≈10G），使得executor-memory有可能OOM，那么就需要考虑加大分区数（调用repartition(numPartitions)等），增加task数量来减少一个task的数据量。一般来说一个executor处理的partition数最好不要超过5个，否则增加num-executors数，接上面的例子，500个分区，配置num-executors为100，每个executor需要处理5个partition。driver-memory的大小取决于最后的action操作，如果是调用collect，那么driver-memory的大小就取决于结果集rdd的大小，如果是调用count，那么driver-memory的大小只需要满足运行需求就够了，对于需要长时间迭代的Spark应用，driver端需要维护rdd的依赖关系，所以需要设置较大的内存。</p>
-          <div class="read-more">
-            <a href="/2019/04/28/Spark-应用程序调优/" class="read-more-link">阅读更多</a>
           </div>
         
       
