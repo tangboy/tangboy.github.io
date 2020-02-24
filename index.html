@@ -208,6 +208,145 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/24/Flink-原理与实现：内存管理/">Flink 原理与实现：内存管理</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-24
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>如今，大数据领域的开源框架（Hadoop，Spark，Storm）都使用的 JVM，当然也包括 Flink。基于 JVM 的数据分析引擎都需要面对将大量数据存到内存中，这就不得不面对 JVM 存在的几个问题：</p>
+<ol>
+<li>Java 对象存储密度低。一个只包含 boolean 属性的对象占用了16个字节内存：对象头占了8个，boolean 属性占了1个，对齐填充占了7个。而实际上只需要一个bit（1/8字节）就够了。</li>
+<li>Full GC 会极大地影响性能，尤其是为了处理更大数据而开了很大内存空间的JVM来说，GC 会达到秒级甚至分钟级。</li>
+<li>OOM 问题影响稳定性。OutOfMemoryError是分布式计算框架经常会遇到的问题，当JVM中所有对象大小超过分配给JVM的内存大小时，就会发生OutOfMemoryError错误，导致JVM崩溃，分布式框架的健壮性和性能都会受到影响。</li>
+</ol>
+<p>所以目前，越来越多的大数据项目开始自己管理JVM内存了，像 Spark、Flink、HBase，为的就是获得像 C 一样的性能以及避免 OOM 的发生。本文将会讨论 Flink 是如何解决上面的问题的，主要内容包括内存管理、定制的序列化工具、缓存友好的数据结构和算法、堆外内存、JIT编译优化等。</p>
+          <div class="read-more">
+            <a href="/2020/02/24/Flink-原理与实现：内存管理/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2020/02/21/Flink-原理与实现：如何处理反压问题/">Flink 原理与实现：如何处理反压问题</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-21
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>流处理系统需要能优雅地处理反压（backpressure）问题。反压通常产生于这样的场景：短时负载高峰导致系统接收数据的速率远高于它处理数据的速率。许多日常问题都会导致反压，例如，垃圾回收停顿可能会导致流入的数据快速堆积，或者遇到大促或秒杀活动导致流量陡增。反压如果不能得到正确的处理，可能会导致资源耗尽甚至系统崩溃。</p>
+<p>目前主流的流处理系统 Storm/JStorm/Spark Streaming/Flink 都已经提供了反压机制，不过其实现各不相同。</p>
+<p>Storm 是通过监控 Bolt 中的接收队列负载情况，如果超过高水位值就会将反压信息写到 Zookeeper ，Zookeeper 上的 watch 会通知该拓扑的所有 Worker 都进入反压状态，最后 Spout 停止发送 tuple。</p>
+<p>JStorm 认为直接停止 Spout 的发送太过暴力，存在大量问题。当下游出现阻塞时，上游停止发送，下游消除阻塞后，上游又开闸放水，过了一会儿，下游又阻塞，上游又限流，如此反复，整个数据流会一直处在一个颠簸状态。所以 JStorm 是通过逐级降速来进行反压的，效果会较 Storm 更为稳定，但算法也更复杂。另外 JStorm 没有引入 Zookeeper 而是通过 TopologyMaster 来协调拓扑进入反压状态，这降低了 Zookeeper 的负载。</p>
+          <div class="read-more">
+            <a href="/2020/02/21/Flink-原理与实现：如何处理反压问题/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2020/02/19/Flink-Table-SQL-时态表Temporal-Table/">Flink Table & SQL 时态表Temporal Table</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-19
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+
+        
+          
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/08/远程工作协议/">远程工作协议</a>
         
       </h1>
@@ -561,204 +700,6 @@
 <p>在本节中，我们主要以spring配置方式为例，对CanalInstance源码进行解析。</p>
           <div class="read-more">
             <a href="/2020/02/06/CANAL源码解析-instance模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/06/CANAL源码解析-server模块/">CANAL源码解析-server模块</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-06
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>server模块的核心接口是CanalServer，其有2个实现类CanalServerWithNetty、CanalServerWithEmbeded。关于CanalServer，官方文档中有有以下描述：</p>
-<img src="/2020/02/06/CANAL源码解析-server模块/1.png">
-<p>下图是笔者对官方文档的进一步描述：</p>
-<img src="/2020/02/06/CANAL源码解析-server模块/2.png">
-          <div class="read-more">
-            <a href="/2020/02/06/CANAL源码解析-server模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/06/CANAL源码解析-deployer模块/">CANAL源码解析-deployer模块</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-06
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>canal有两种使用方式：1、独立部署 2、内嵌到应用中。 deployer模块主要用于独立部署canal server。关于这两种方式的区别，请参见server模块源码分析。deployer模块源码目录结构如下所示：</p>
-<img src="/2020/02/06/CANAL源码解析-deployer模块/1.png">
-<p>在独立部署canal时，需要首先对canal的源码进行打包</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip -Denv=release</span><br></pre></td></tr></table></figure>
-<p>打包后会在target目录生成一个以下两个文件：<br><img src="/2020/02/06/CANAL源码解析-deployer模块/2.png"></p>
-<p>其中canal.deployer-1.0.24.tar.gz就是canal的独立部署包。解压缩后，目录如下所示。其中bin目录和conf目录(包括子目录spring)中的所有文件，都来自于deployer模块。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">canal</span><br><span class="line">├── bin</span><br><span class="line">│   ├── startup.bat</span><br><span class="line">│   ├── startup.sh</span><br><span class="line">│   └── stop.sh</span><br><span class="line">├── conf</span><br><span class="line">│   ├── canal.properties</span><br><span class="line">│   ├── example</span><br><span class="line">│   │   └── instance.properties</span><br><span class="line">│   ├── logback.xml</span><br><span class="line">│   └── spring</span><br><span class="line">│       ├── default-instance.xml</span><br><span class="line">│       ├── file-instance.xml</span><br><span class="line">│       ├── group-instance.xml</span><br><span class="line">│       ├── <span class="built_in">local</span>-instance.xml</span><br><span class="line">│       └── memory-instance.xml</span><br><span class="line">├── lib</span><br><span class="line">│   └── ....依赖的各种jar</span><br><span class="line">└── logs</span><br></pre></td></tr></table></figure>
-<p>deployer模块主要完成以下功能：</p>
-<ol>
-<li>读取canal.properties配置文件</li>
-<li>启动canal server，监听canal client的请求</li>
-<li>启动canal instance，连接mysql数据库，伪装成slave，解析binlog</li>
-<li>在canal的运行过程中，监听配置文件的变化</li>
-</ol>
-          <div class="read-more">
-            <a href="/2020/02/06/CANAL源码解析-deployer模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/06/CANAL源码解析-启动流程/">CANAL源码解析-启动流程</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-06
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="总体"><a href="#总体" class="headerlink" title="总体"></a>总体</h2><p>canal的入口函数是<code>CanalLauncher</code>的<code>main</code>方法，我们来跟踪代码的执行流程。</p>
-<ol>
-<li>加载<code>canal.properties</code>。如果指定了<code>canal.conf</code>则使用指定的配置，否则使用默认的<code>canal.properties</code>文件。</li>
-<li>新建<code>CanalStater</code>并启动<br> a. 判断<code>canal.serverMode</code>，如果为<code>kafka</code>则新建<code>CanalKafkaProducer</code>。设置<code>canal.withoutNetty</code>为<code>true</code>，以及用户定义的<code>canal.destinations</code><br> b. 新建<code>CanalController</code><pre><code> 1. 调用`initGlobalConfig`方法初始化全局参数设置
-     - 获取并设置`mode`，默认为`SPRING`
-     - 获取并设置`lazy`，默认为`false`
-     - 获取并设置`managerAddress`，默认为`null`
-     - 取并设置`springXml`，默认为`classpath:spring/file-instance.xml`
-     - 创建`instanceGenerator`，实例生成器。用于根据`destination`生成实例
- 2. 调用`initInstanceConfig`初始化实例配置
-     - 获取`canal.destinations`配置
-     - 将`canal.destinations`以,分割
-     - 针对每个`destination`：
-         - 调用`parseInstanceConfig`方法解析`destination`的配置。与初始化全局参数设置类似，这里根据具体的`destination`配置`mode`、`lazy`、`managerAddress`、`springXml`
-         - 将解析得到的`destination`配置保存在`instanceConfigs`
- 3. 如果配置了`canal.socketChannel`，设置`canal.socketChannel`属性
- 4. 如果存在的话，分别设置`canal.instance.rds.accesskey`和`canal.instance.rds.secretkey`属性
- 5. 获取`cid`、`ip`、`port`属性
- 6. 获取`embededCanalServer`，并设置`instanceGenerator`。`embededCanalServer`的类型为`CanalServerWithEmbedded`
- 7. 获取并设置`embededCanalServer`的`metricsPort`
- 8. 如果`canal.withoutNetty`为`null`或者`false`，创建`canalServer`并配置`ip`和`port`。
- 9. 如果`ip`属性为空，配置本机`ip`
- 10. 获取`canal.zkServers`，`zookeeper`的地址
-     - 如果`canal.zkServers`不为空，在`zookeeper`中创建`/otter/canal/destinations`和`/otter/canal/cluster`目录
- 11. 创建服务器运行信息`ServerRunningData`
- 12. 将`ServerRunningData`设置在服务器运行监控`ServerRunningMonitors`中。在`ServerRunningMonitors`中设置每个`destination`的运行监控器`ServerRunningMonitor`
- 13. 获取`canal.auto.scan`属性，默认为`true`
-     - 创建`InstanceAction`，实例执行器。其中定义了实例启动、停止、重启3个操作
-     - 创建`InstanceConfigMonitor`，实例配置监视器。
-</code></pre> c. 调用<code>start()</code>方法启动<code>CanalController</code><pre><code> 1. `zookeeper`中创建`canal`服务器的`path`，`path`为`/otter/canal/cluster/{ip}:{port}`
- 2. 在`zookeeper`中创建状态变化的监听器
- 3. 调用`start()`方法启动`embededCanalServer`
-     - 加载并初始化`CanalMetricsService`
-     - 创建`canalInstances`
- 4. 遍历各个`instance`
-     - 调用`ServerRunningMonitor.start()`方法启动每个`destination`的`ServerRunningMonitor`
-         - 调用`processStart()`方法。在`zookeeper`中新建`/otter/canal/destinations/{name}/cluster/{ip}:{port}`目录，并监听`zookeeper`状态的修改
-         - 监听`zookeeper`中`/otter/canal/destinations/{name}/running`目录的变动
-         - 调用`initRunning()`方法
-             - 在`zookeeper`的`/otter/canal/destinations/{name}/running`目录中增加正在运行的`canal`服务器信息
-             - 调用`processActiveEnter`方法触发`destination`对应的`canal`实例`（CanalInstance）`开始执行
-         - 为每个destination注册`InstanceAction`
- 5. 启动实例配置的监听器`InstanceConfigMonitor`
- 6. 如果`canalServer`不为`null`，则调用`start()`方法启动`canalServer`。如果没有指定`mq`模式，则会启动`canalServer`。`canalServer`是使用`Netty`写的服务端，接收用户连接，发送数据。
-</code></pre> d. 设置设置退出时执行的钩子线程<code>shutdownThread</code><br> e. 如果<code>canalMQProducer</code>不为<code>null</code>，新建并启动<code>CanalMQStarter</code><pre><code> 1. 设置mq的属性
- 2. 为每个destination新建一个`CanalMQRunnable`并启动
-</code></pre></li>
-</ol>
-          <div class="read-more">
-            <a href="/2020/02/06/CANAL源码解析-启动流程/" class="read-more-link">阅读更多</a>
           </div>
         
       

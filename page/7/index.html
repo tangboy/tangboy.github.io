@@ -208,6 +208,190 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/09/20/解密谷歌机器学习工程最佳实践/">解密谷歌机器学习工程最佳实践</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-09-20
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>转载于 <strong>张相於</strong></p>
+<p>本文是对<rules of="" machine="" learning:="" best="" practices="" for="" ml="" engineering="">一文的翻译+解读。看过我翻译文章的同学知道我翻译文章一般都不太老实，没有那么“忠于原著”，本篇也不例外，本篇对于原文的解读大概有三种形式：</rules></p>
+<ol>
+<li><strong>原文翻译</strong> 对于作者本身阐述的比较好，而我也没什么可补充的部分，基本会原文翻译。</li>
+<li><strong>半翻译半解读</strong> 有的条目我觉得有些自己的经验和感想可以和大家分享，就会加一些自己的解读在里面。</li>
+<li><strong>省略</strong> 还有一些时候我觉得作者说的太仔（luo）细（suo），或者这个条目说得比较基本，无需太多解释，我就会不同程度的省略原文。</li>
+</ol>
+<p>这种形式对于有的同学来讲可能会对原文信息有所损失，所以想要读到原文的同学，可以在网上搜索。 或者去搜一些其他人比较忠于原著的翻译。</p>
+<h2 id="作者介绍"><a href="#作者介绍" class="headerlink" title="作者介绍"></a>作者介绍</h2><p>什么样的NB人物写东西敢起号称”Rules of Machine Learning”这种不怕闪了腰的题目？首先我们来简单介绍一下本文的作者Martin Zinkevich。</p>
+<p>Martin Zinkevich现在是谷歌大脑的高级科学家，负责和参与了YouTube、Google Play 以及Google Plus等产品中的机器学习项目，本文也是基于作者在这三个产品上面做机器学习项目的各种经验和教训提炼而成。在加入谷歌之前是雅虎的高级科学家，曾在2010年和2011年两度获得雅虎的最高荣誉Yahoo Team Superstar Awards，对雅虎的广告系统做出过很多杰出贡献。</p>
+<p>拥有如此NB的背景，我们有理由相信这哥们儿写出来的东西还是具有足够的参考价值的。</p>
+<h2 id="梗概介绍"><a href="#梗概介绍" class="headerlink" title="梗概介绍"></a>梗概介绍</h2><p>本文把在产品中应用机器学习的过程从浅到深分成了三个大的阶段，又在这三个大的阶段中细分出了一些方面，以此对43条规则进行逻辑分类。简单来说，如果你是从头开始做机器学习系统，那么就可以在不同阶段参考这里面对应的条目，来保证自己走在正确的道路上。</p>
+<h2 id="正文开始"><a href="#正文开始" class="headerlink" title="正文开始"></a>正文开始</h2><blockquote>
+<p>To make great products:<br><strong> do machine learning like the great engineer you are, not like the great machine learning expert you aren’t. </strong></p>
+</blockquote>
+<p>这句话一定程度上是对整篇文章（叫手册可能更合适）的一个高度概括，ML在实际工作确实更多是工程问题，而不是算法问题。优先从工程效率中要效果，当把这部分榨干后，再考虑算法的升级。</p>
+          <div class="read-more">
+            <a href="/2017/09/20/解密谷歌机器学习工程最佳实践/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/09/10/Word2vec原理浅析及tensorflow实现/">Word2vec原理浅析及tensorflow实现</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-09-10
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="Word2vec简介"><a href="#Word2vec简介" class="headerlink" title="Word2vec简介"></a>Word2vec简介</h2><p>Word2Vec是由Google的Mikolov等人提出的一个词向量计算模型。</p>
+<ul>
+<li>输入：大量已分词的文本</li>
+<li>输出：用一个稠密向量来表示每个词</li>
+</ul>
+<p>词向量的重要意义在于将自然语言转换成了计算机能够理解的向量。相对于词袋模型、TF-IDF等模型，词向量能抓住词的上下文、语义，衡量词与词的相似性，在文本分类、情感分析等许多自然语言处理领域有重要作用。</p>
+<h2 id="Word2vec详细实现"><a href="#Word2vec详细实现" class="headerlink" title="Word2vec详细实现"></a>Word2vec详细实现</h2><p>word2vec的详细实现，简而言之，就是一个三层的神经网络。要理解word2vec的实现，需要的预备知识是神经网络和Logistic Regression。</p>
+<h3 id="神经网络结构"><a href="#神经网络结构" class="headerlink" title="神经网络结构"></a>神经网络结构</h3><img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/1.png">
+<p>上图是Word2vec的简要流程图。首先假设，词库里的词数为10000; 词向量的长度为300（根据<a href="https://www.youtube.com/playlist?list=PLlJy-eBtNFt4CSVWYqscHDdP58M3zFHIG" target="_blank" rel="noopener">斯坦福CS224d</a>的讲解，词向量一般为25-1000维，300维是一个好的选择）。下面以单个训练样本为例，依次介绍每个部分的含义。</p>
+<ol>
+<li>输入层：输入为一个词的one-hot向量表示。这个向量长度为10000。假设这个词为ants，ants在词库中的ID为i，则输入向量的第i个分量为1，其余为0。[0, 0, …, 0, 0, 1, 0, 0, …, 0, 0]</li>
+<li>隐藏层：隐藏层的神经元个数就是词向量的长度。隐藏层的参数是一个[10000 ，300]的矩阵。 <strong>实际上，这个参数矩阵就是词向量</strong>。回忆一下矩阵相乘，一个one-hot行向量和矩阵相乘，结果就是矩阵的第i行。经过隐藏层，实际上就是把10000维的one-hot向量映射成了最终想要得到的300维的词向量。</li>
+</ol>
+<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/2.png">
+<ol>
+<li>输出层: 输出层的神经元个数为总词数10000，参数矩阵尺寸为[300，10000]。词向量经过矩阵计算后再加上softmax归一化，重新变为10000维的向量，每一维对应词库中的一个词与输入的词（在这里是ants）共同出现在上下文中的概率。</li>
+</ol>
+<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/3.png">
+<p>上图中计算了car与ants共现的概率，car所对应的300维列向量就是输出层参数矩阵中的一列。输出层的参数矩阵是[300，10000]，也就是计算了词库中所有词与ants共现的概率。输出层的参数矩阵在训练完毕后没有作用。</p>
+<ol>
+<li>训练：训练样本（x, y）有输入也有输出，我们知道哪个词实际上跟ants共现，因此y也是一个10000维的向量。损失函数跟Logistic Regression相似，是神经网络的最终输出向量和y的交叉熵（cross-entropy）。最后用随机梯度下降来求解。</li>
+</ol>
+<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/4.png">
+<p>上述步骤是一个词作为输入和一个上下文中的词作为输出的情况，但实际情况显然更复杂，什么是上下文呢？用一个词去预测周围的其他词，还是用周围的好多词来预测一个词？这里就要引入实际训练时的两个模型skip-gram和CBOW。<br>
+          <div class="read-more">
+            <a href="/2017/09/10/Word2vec原理浅析及tensorflow实现/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </p></div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/">一篇文章搞懂Python中的面向对象编程</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-09-07
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>面向对象的设计思想是从自然界中来的，因为在自然界中，类（Class）和实例（Instance）的概念是很自然的。Class是一种抽象概念，比如我们定义的Class——Student，是指学生这个概念，而实例（Instance）则是一个个具体的Student，比如，Bart Simpson和Lisa Simpson是两个具体的Student。</p>
+<p>面向对象的抽象程度又比函数要高，因为一个Class既包含数据，又包含操作数据的方法。</p>
+<p>数据封装、继承和多态是面向对象的三大特点，我们后面会详细讲解。</p>
+<h2 id="类和实例"><a href="#类和实例" class="headerlink" title="类和实例"></a>类和实例</h2><p>类(Class)和实例(Instance)是面向对象最重要的概念。</p>
+<p>类是指抽象出的模板。实例则是根据类创建出来的具体的“对象”，每个对象都拥有从类中继承的相同的方法，但各自的数据可能不同。</p>
+<p>在python中定义一个类:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<p>关键字class后面跟着类名，类名通常是大写字母开头的单词，紧接着是(object)，表示该类是从哪个类继承下来的。通常，如果没有合适的继承类，就使用object类，这是所有类最终都会继承下来的类。</p>
+<p>定义好了 类，就可以根据Student类创建实例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(object)</span>:</span></span><br><span class="line"><span class="meta">... </span>    <span class="keyword">pass</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart = Student() <span class="comment"># bart是Student()的实例</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart</span><br><span class="line">&lt;__main__.Student object at <span class="number">0x101be77f0</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>Student <span class="comment"># Student 本身是一个类</span></span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">__main__</span>.<span class="title">Student</span>'&gt;</span></span><br></pre></td></tr></table></figure>
+<p>可以自由地给一个实例变量绑定属性，比如，给实例bart绑定一个name属性：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart.name = <span class="string">"diggzhang"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart.name</span><br><span class="line"><span class="string">'diggzhang'</span></span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/09/07/一篇文章踩遍Python中的坑/">一篇文章踩遍Python中的坑</a>
         
       </h1>
@@ -566,150 +750,6 @@
 <p>操作这些参数的接口是两对函数。为了控制样式，使用axesstyle()和setstyle()函数。为了扩展绘图，请使用plotting_context()和set_context()函数。在这两种情况下，第一个函数返回一个参数字典，第二个函数则设置matplotlib默认属性。</p>
           <div class="read-more">
             <a href="/2017/07/08/introduction-to-seaborn/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/01/23/introduction-to-neo4j/">introduction_to_neo4j</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-01-23
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>“Neo4j是一个高性能的，非关系的，具有完全事务特性的,鲁棒的图数据库。” neo4j在处理复杂的网络数据时候，具有很好的性能表现[1]，适用于社交网络，动态网络等场景。它基于java语言实现，有两个分发版本，社区版(community version)以GPLv3的许可在Github上开源，源码地址:<a href="https://github.com/neo4j/community；企业版，同时遵循AGPLv3和商业许可，它在社区版基础上增加了包括高可用性(High" target="_blank" rel="noopener">https://github.com/neo4j/community；企业版，同时遵循AGPLv3和商业许可，它在社区版基础上增加了包括高可用性(High</a> Availability)，全天侯支持等特性。Neo4j的开发非常活跃，围绕它有非常多的项目，包括 REST API 绑定（各种语言实现列表），空间数据库支持（源码地址）等。</p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="Git-安装"><a href="#Git-安装" class="headerlink" title="Git 安装"></a>Git 安装</h2><p>Git的安装非常简单，大多数的Linux发行版本的源中都打包好。以Ubuntu 为例(仅测试Oneiric，Precise)，只需要输入如下命令即可安装。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo  apt-get install git</span><br></pre></td></tr></table></figure>
-<h2 id="Maven-安装"><a href="#Maven-安装" class="headerlink" title="Maven 安装"></a>Maven 安装</h2><p>同样的Ubuntu（我最爱系统）下，安装Maven3非常简单，输入如下命令:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get maven</span><br></pre></td></tr></table></figure>
-<h2 id="Neo4j-安装"><a href="#Neo4j-安装" class="headerlink" title="Neo4j 安装"></a>Neo4j 安装</h2><p>安装好以上两者后，我们直接从github的源码，并用maven来安装neo4j，命令如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir neo4j</span><br><span class="line"><span class="built_in">cd</span> ./neo4j</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/neo4j/community.git</span><br><span class="line">mvn clean install</span><br></pre></td></tr></table></figure>
-<p>如此，neo4j即安装成功。如果需要build不同的版本可以遵照参考文献5Readme的指示来实现。</p>
-          <div class="read-more">
-            <a href="/2017/01/23/introduction-to-neo4j/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/01/04/matrix-summary-in-linear-algebra/">线性代数之各种各样的矩阵</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-01-04
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>矩阵家族成员非常多，本文主要记录了我遇到过的矩阵(前面的文章所提到的矩阵，在这里就不重复列举了)。以后见识了新的矩阵时，会继续扩充本文。</p>
-<p>(以下知识均查阅了wikipedia。单词的中文翻译查的是有道词典。)</p>
-          <div class="read-more">
-            <a href="/2017/01/04/matrix-summary-in-linear-algebra/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/01/04/develop-lbs-using-mongodb/">结合MongoDB开发LBS应用</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-01-04
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>随着近几年各类移动终端的迅速普及，基于地理位置的服务（LBS）和相关应用也越来越多，而支撑这些应用的最基础技术之一，就是基于地理位置信息的处理。</p>
-<p>我将这些技术要点整理成文，希望能够通过本文的介绍和案例，详细解释如何使用MongoDB进行地理位置信息的查询和处理。在文章的开头，我也会先介绍一下业界通常用来处理地理位置信息的一些方案并进行比较，让读者逐步了解使用MongoDB查询及处理地理位置信息的优势。</p>
-          <div class="read-more">
-            <a href="/2017/01/04/develop-lbs-using-mongodb/" class="read-more-link">阅读更多</a>
           </div>
         
       

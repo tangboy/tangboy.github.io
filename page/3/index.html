@@ -208,6 +208,200 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/">深入理解JVM(1)——Java内存区域与Java对象(转载)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-10-21
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h1><p>JVM载执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则是依赖用户线程的启动和结束而建立和销毁。具体如下图所示：</p>
+<img src="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/jvm.jpeg">
+<h2 id="程序计数器（Program-Counter-Register）"><a href="#程序计数器（Program-Counter-Register）" class="headerlink" title="程序计数器（Program Counter Register）"></a>程序计数器（Program Counter Register）</h2><p><strong>程序计数器（Program Counter Register）</strong>是一块较小的内存空间，可以看作是当前线程所执行的字节码的<strong>行号指示器</strong>。在虚拟机概念模型中，<strong>字节码解释器</strong>工作时就是通过改变计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
+<p>程序计数器是一块<strong>线程私有</strong>的内存，如上文的图所示，每条线程都有一个独立的程序计数器，各条线程之间的计数器互不影响，独立存储。这样设计使得在多线程环境下，线程切换后能恢复到正确的执行位置。</p>
+<p>如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的<strong>虚拟机字节码指令的地址</strong>；若执行的是<strong>Native方法</strong>，则<strong>计数器为空（Undefined）</strong>（因为对于Native方法而言，它的方法体并不是由Java字节码构成的，自然无法应用上述的“字节码指令的地址”的概念）。程序计数器也是唯一一个在Java虚拟机规范中没有规定任何<strong>OutOfMemoryError</strong>情况的内存区域。</p>
+<h2 id="Java虚拟机栈（Java-Virtual-Machine-Stacks）"><a href="#Java虚拟机栈（Java-Virtual-Machine-Stacks）" class="headerlink" title="Java虚拟机栈（Java Virtual Machine Stacks）"></a>Java虚拟机栈（Java Virtual Machine Stacks）</h2><p><strong>Java虚拟机栈（Java Virtual Machine Stacks）</strong>描述的是<strong>Java方法执行的内存模型</strong>：每个方法在执行的同时都会创建一个<strong>栈帧（Stack Frame），栈帧中存储着局部变量表、操作数栈、动态链接、方法出口</strong>等信息。每一个方法从调用直至执行完成的过程，会对应一个栈帧在虚拟机栈中入栈到出栈的过程。与程序计数器一样，Java虚拟机栈也是线程私有的。</p>
+<p>函数的调用有完美的嵌套关系——调用者的生命期总是长于被调用者的生命期，并且后者在前者的之内。这样，被调用者的局部信息所占空间的分配总是后于调用者的（后入），而其释放则总是先于调用者的（先出），所以正好可以满足栈的LIFO顺序，选用栈这种数据结构来实现调用栈是一种很自然的选择。</p>
+<p><strong>局部变量表</strong>中存放了编译期可知的各种：</p>
+<ul>
+<li>基本数据类型(boolen、byte、char、short、int、 float、 long、double）</li>
+<li>对象引用（reference类型，它不等于对象本身，可能是一个指向对象起始地址的指针，也可能是指向一个代表对象的句柄或其他与此对象相关的位置）</li>
+<li>returnAddress类型（指向了一条字节码指令的地址）</li>
+</ul>
+<p>其中64位长度的long和double类型的数据会占用2个局部变量空间（Slot），其余数据类型只占用1个。局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，这个方法需要在帧中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
+<p>Java虚拟机规范中对这个区域规定了两种异常状况：</p>
+<ul>
+<li><strong>StackOverflowError：</strong>线程请求的栈深度大于虚拟机所允许的深度，将会抛出此异常。</li>
+<li><strong>OutOfMemoryError：</strong>当可动态扩展的虚拟机栈在扩展时无法申请到足够的内存，就会抛出该异常。</li>
+</ul>
+          <div class="read-more">
+            <a href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2019/06/13/MapReduce之Shuffle过程详述/">MapReduce之Shuffle过程详述</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-06-13
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>MapReduce作为Hadoop的编程框架，对于大数据开发或者想要接触大数据开发的开发者来说，是必须要掌握的，它是一种经典大数据计算框架，现在有很多开源项目的内部实现都会直接或间接地借鉴了MR过程的实现。我在经过了一些hadoop项目的开发，然后前几天又系统地学习MapReduc内部实现过程，尤其是学习中间的Shuffle过程之后，准备对这一块做一下总结，希望这篇文章能给需要的人带来一些帮助（文中Shuffle的分析还是以Hadoop1.0为例，这个跟2.0的区别并不是很大）。</p>
+<h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><p>对于MapReduce作业，完整的作业运行流程：</p>
+<img src="/2019/06/13/MapReduce之Shuffle过程详述/hadoop.png">
+<p>完整过程应该是分为7部分，分别是：</p>
+<ol>
+<li>作业启动：开发者通过控制台启动作业；</li>
+<li>作业初始化：这里主要是切分数据、创建作业和提交作业，与第三步紧密相联；</li>
+<li>作业/任务调度：对于1.0版的Hadoop来说就是JobTracker来负责任务调度，对于2.0版的Hadoop来说就是Yarn中的Resource Manager负责整个系统的资源管理与分配，Yarn可以参考IBM的一篇博客(Hadoop新MapReduce框架Yarn详解)[<a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop-yarn/]；" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop-yarn/]；</a></li>
+<li>Map任务；</li>
+<li>Shuffle；</li>
+<li>Reduce任务；</li>
+<li>作业完成：通知开发者任务完成。</li>
+</ol>
+<p>而这其中最主要的MapReduce过程，主要是第4、5、6步三部分，这也是本篇博客重点讨论的地方，详细作用如下：</p>
+<ol>
+<li><strong>Map</strong>:数据输入,做初步的处理,输出形式的中间结果；</li>
+<li><strong>Shuffle</strong>:按照partition、key对中间结果进行排序合并,输出给reduce线程；</li>
+<li><strong>Reduce</strong>:对相同key的输入进行最终的处理,并将结果写入到文件中。</li>
+</ol>
+<p>这里先给出官网上关于这个过程的经典流程图：</p>
+<img src="/2019/06/13/MapReduce之Shuffle过程详述/mapreduce.png">
+<p>上图是把MapReduce过程分为两个部分，而实际上从两边的Map和Reduce到中间的那一大块都属于Shuffle过程，也就是说，Shuffle过程有一部分是在Map端，有一部分是在Reduce端，下文也将会分两部分来介绍Shuffle过程。</p>
+<p>对于Hadoop集群，当我们在运行作业时，大部分的情况下，map task与reduce task的执行是分布在不同的节点上的，因此，很多情况下，reduce执行时需要跨节点去拉取其他节点上的map task结果，这样造成了集群内部的网络资源消耗很严重，而且在节点的内部，相比于内存，磁盘IO对性能的影响是非常严重的。如果集群中运行的作业有很多，那么task的执行对于集群内部网络的资源消费非常大。因此，我们对于MapRedue作业Shuffle过程的期望是：</p>
+<ul>
+<li>完整地从map task端拉取数据到Reduce端；</li>
+<li>在跨节点拉取数据时，尽可能地减少对带宽的不必要消耗；</li>
+<li>减少磁盘IO对task执行的影响。</li>
+</ul>
+          <div class="read-more">
+            <a href="/2019/06/13/MapReduce之Shuffle过程详述/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-interpreter调试/">Zeppelin源码分析-interpreter调试</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-06-12
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+
+        
+          <p>前面提到了interpreter是以单独的process启动的，想要debug interpreter，需要设置启动interpreter进程的jvm以debug方式启动，然后让IDE进行remote debug，具体步骤如下：</p>
+<ol>
+<li>在bin/interpreter.sh脚本中JAVA_INTP_OPTS变量中加入如下参数：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JAVA_INTP_OPTS+=<span class="string">" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=**`expr <span class="variable">$&#123;PORT&#125;</span> + 1`**  -Dzeppelin.log.file=<span class="variable">$&#123;ZEPPELIN_LOGFILE&#125;</span>"</span></span><br></pre></td></tr></table></figure>
+<p>加粗部分保证启动interpreter的jvm以debug方式启动，监听的端口号比RemoteInterpreterServer process监听的端口号+1（采用<code>expr${PORT} + 1</code>）这里不能写成固定的端口，因为每种interpreter都会启动一个独立的process，该process监听的socket端口是zeppelin在运行时随机获取一个可用的端口（没有被占用的端口）。如果写成固定的端口，那么每种interpreter process在进行remote debug的时候，端口就会冲突。</p>
+<ol>
+<li>启动ZeppelinServer的调试，可以直接run，不用以debug方式启动。</li>
+<li>打开浏览器，访问<a href="http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter" target="_blank" rel="noopener">http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter</a> binding了spark。insert一个paragraph，首行写入%spark (表明采用SparkInterpreter来解释此paragrapph中的代码)，换行，写入scala代码println(“hello,world”)，由于这里主要演示debug interpreter，以最简单的hello world说明问题。然后点击运行该paragraph。此时zeppelin server会调用bin/interpreter.sh脚本，传入“端口、interpreter加载的目录(这里是${ZEPPELIN_HOME}/interpreter/spark)、interpreter各自的log file位置”这些参数以启动该interpreter jvm。由于之前在JAVA_INTP_OPTS设置了jvm支持远程调试的参数，该jvm可以通过IDE remote debug。</li>
+<li>通过ps –ef|grep interpreter来查找RemoteInterpreterServer process启动的参数，可以看到-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=58679类似的输出，表明该jvm在58679端口上支持remote debug。</li>
+</ol>
+<p>在SparkInterpreter.java中的重点位置设置断点，如在方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open()和interpret(String line, InterpreterContext context)</span><br></pre></td></tr></table></figure></p>
+<p>首行设置断点。</p>
+<ol>
+<li>在IDE，以Idea为例：创建Remote Run/Debug Configuration，填入端口号58679</li>
+</ol>
+<img src="/2019/06/12/Zeppelin源码分析-interpreter调试/1.png">
+<p>即可启动remote debug。</p>
+<p>需要注意的是，由于hello world代码简短，可能在你在IDE中启动Remote debug时该Interpreter已经执行完了。再次点击执行该paragraph即可命中SparkInterpreter中的断点。</p>
+
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/06/12/Zeppelin源码分析-note的执行过程/">Zeppelin源码分析-note的执行过程</a>
         
       </h1>
@@ -668,161 +862,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/22/Spark-Scheduler内部原理剖析/">Spark Scheduler内部原理剖析(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-22
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>通过文章<a href="https://code-monkey.top/2019/04/22/Spark%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5RDD/">“Spark核心概念RDD”</a>我们知道，Spark的核心是根据RDD来实现的，Spark Scheduler则为Spark核心实现的重要一环，其作用就是任务调度。Spark的任务调度就是如何组织任务去处理RDD中每个分区的数据，根据RDD的依赖关系构建DAG，基于DAG划分Stage，将每个Stage中的任务发到指定节点运行。基于Spark的任务调度原理，我们可以合理规划资源利用，做到尽可能用最少的资源高效地完成任务计算。</p>
-<h2 id="分布式运行框架"><a href="#分布式运行框架" class="headerlink" title="分布式运行框架"></a>分布式运行框架</h2><p>Spark可以部署在多种资源管理平台，例如Yarn、Mesos等，Spark本身也实现了一个简易的资源管理机制，称之为Standalone模式。由于工作中接触较多的是Saprk on Yarn，不做特别说明，以下所述均表示Spark-on-Yarn。Spark部署在Yarn上有两种运行模式，分别为yarn-client和yarn-cluster模式，它们的区别仅仅在于Spark Driver是运行在Client端还是ApplicationMaster端。如下图所示为Spark部署在Yarn上，以yarn-cluster模式运行的分布式计算框架。</p>
-<img src="/2019/04/22/Spark-Scheduler内部原理剖析/spark-distribution-framework.png">
-<p>其中蓝色部分是Spark里的概念，包括Client、ApplicationMaster、Driver和Executor，其中Client和ApplicationMaster主要是负责与Yarn进行交互；Driver作为Spark应用程序的总控，负责分发任务以及监控任务运行状态；Executor负责执行任务，并上报状态信息给Driver，从逻辑上来看Executor是进程，运行在其中的任务是线程，所以说Spark的任务是线程级别的。通过下面的时序图可以更清晰地理解一个Spark应用程序从提交到运行的完整流程。</p>
-<img src="/2019/04/22/Spark-Scheduler内部原理剖析/spark-submit-time.png">
-<p>提交一个Spark应用程序，首先通过Client向ResourceManager请求启动一个Application，同时检查是否有足够的资源满足Application的需求，如果资源条件满足，则准备ApplicationMaster的启动上下文，交给ResourceManager，并循环监控Application状态。</p>
-<p>当提交的资源队列中有资源时，ResourceManager会在某个NodeManager上启动ApplicationMaster进程，ApplicationMaster会单独启动Driver后台线程，当Driver启动后，ApplicationMaster会通过本地的RPC连接Driver，并开始向ResourceManager申请Container资源运行Executor进程（一个Executor对应与一个Container），当ResourceManager返回Container资源，则在对应的Container上启动Executor。</p>
-<p>Driver线程主要是初始化SparkContext对象，准备运行所需的上下文，然后一方面保持与ApplicationMaster的RPC连接，通过ApplicationMaster申请资源，另一方面根据用户业务逻辑开始调度任务，将任务下发到已有的空闲Executor上。</p>
-<p>当ResourceManager向ApplicationMaster返回Container资源时，ApplicationMaster就尝试在对应的Container上启动Executor进程，Executor进程起来后，会向Driver注册，注册成功后保持与Driver的心跳，同时等待Driver分发任务，当分发的任务执行完毕后，将任务状态上报给Driver。</p>
-<blockquote>
-<blockquote>
-<p>Driver把资源申请的逻辑给抽象出来，以适配不同的资源管理系统，所以才间接地通过ApplicationMaster去和Yarn打交道。</p>
-</blockquote>
-</blockquote>
-<p>从上述时序图可知，Client只管提交Application并监控Application的状态。对于Spark的任务调度主要是集中在两个方面: 资源申请和任务分发，其主要是通过ApplicationMaster、Driver以及Executor之间来完成，下面详细剖析Spark任务调度每个细节。</p>
-          <div class="read-more">
-            <a href="/2019/04/22/Spark-Scheduler内部原理剖析/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/22/Spark核心概念RDD/">Spark核心概念RDD(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-22
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>RDD全称叫做弹性分布式数据集(Resilient Distributed Datasets)，它是一种分布式的内存抽象，表示一个只读的记录分区的集合，它只能通过其他RDD转换而创建，为此，RDD支持丰富的转换操作(如map, join, filter, groupBy等)，通过这种转换操作，新的RDD则包含了如何从其他RDDs衍生所必需的信息，所以说RDDs之间是有依赖关系的。基于RDDs之间的依赖，RDDs会形成一个有向无环图DAG，该DAG描述了整个流式计算的流程，实际执行的时候，RDD是通过血缘关系(Lineage)一气呵成的，即使出现数据分区丢失，也可以通过血缘关系重建分区，总结起来，基于RDD的流式计算任务可描述为：从稳定的物理存储(如分布式文件系统)中加载记录，记录被传入由一组确定性操作构成的DAG，然后写回稳定存储。另外RDD还可以将数据集缓存到内存中，使得在多个操作之间可以重用数据集，基于这个特点可以很方便地构建迭代型应用(图计算、机器学习等)或者交互式数据分析应用。可以说Spark最初也就是实现RDD的一个分布式系统，后面通过不断发展壮大成为现在较为完善的大数据生态系统，简单来讲，Spark-RDD的关系类似于Hadoop-MapReduce关系。</p>
-<h2 id="RDD特点"><a href="#RDD特点" class="headerlink" title="RDD特点"></a>RDD特点</h2><p>RDD表示只读的分区的数据集，对RDD进行改动，只能通过RDD的转换操作，由一个RDD得到一个新的RDD，新的RDD包含了从其他RDD衍生所必需的信息。RDDs之间存在依赖，RDD的执行是按照血缘关系延时计算的。如果血缘关系较长，可以通过持久化RDD来切断血缘关系。</p>
-<h3 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h3><p>如下图所示，RDD逻辑上是分区的，每个分区的数据是抽象存在的，计算的时候会通过一个compute函数得到每个分区的数据。如果RDD是通过已有的文件系统构建，则compute函数是读取指定文件系统中的数据，如果RDD是通过其他RDD转换而来，则compute函数是执行转换逻辑将其他RDD的数据进行转换。</p>
-<img src="/2019/04/22/Spark核心概念RDD/rdd-partition.png">
-          <div class="read-more">
-            <a href="/2019/04/22/Spark核心概念RDD/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/18/PySpark-的背后原理/">PySpark 的背后原理(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-18
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>Spark主要是由Scala语言开发，为了方便和其他系统集成而不引入scala相关依赖，部分实现使用Java语言开发，例如External Shuffle Service等。总体来说，Spark是由JVM语言实现，会运行在JVM中。然而，Spark除了提供Scala/Java开发接口外，还提供了Python、R等语言的开发接口，为了保证Spark核心实现的独立性，Spark仅在外围做包装，实现对不同语言的开发支持，本文主要介绍Python Spark的实现原理，剖析pyspark应用程序是如何运行起来的。</p>
-<h2 id="Spark运行时架构"><a href="#Spark运行时架构" class="headerlink" title="Spark运行时架构"></a>Spark运行时架构</h2><p>首先我们先回顾下Spark的基本运行时架构，如下图所示，其中橙色部分表示为JVM，Spark应用程序运行时主要分为Driver和Executor，Driver负载总体调度及UI展示，Executor负责Task运行，Spark可以部署在多种资源管理系统中，例如Yarn、Mesos等，同时Spark自身也实现了一种简单的Standalone(独立部署)资源管理系统，可以不用借助其他资源管理系统即可运行。更多细节请参考<a href="https://code-monkey.top/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/">Spark Scheduler内部原理剖析</a>。</p>
-<img src="/2019/04/18/PySpark-的背后原理/spark-structure.png">
-<p>用户的Spark应用程序运行在Driver上(某种程度上说，用户的程序就是Spark Driver程序)，经过Spark调度封装成一个个Task，再将这些Task信息发给Executor执行，Task信息包括代码逻辑以及数据信息，Executor不直接运行用户的代码。</p>
-          <div class="read-more">
-            <a href="/2019/04/18/PySpark-的背后原理/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -968,7 +1007,24 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
   </body>
 </html>

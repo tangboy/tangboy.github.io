@@ -208,6 +208,204 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/06/CANAL源码解析-server模块/">CANAL源码解析-server模块</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>server模块的核心接口是CanalServer，其有2个实现类CanalServerWithNetty、CanalServerWithEmbeded。关于CanalServer，官方文档中有有以下描述：</p>
+<img src="/2020/02/06/CANAL源码解析-server模块/1.png">
+<p>下图是笔者对官方文档的进一步描述：</p>
+<img src="/2020/02/06/CANAL源码解析-server模块/2.png">
+          <div class="read-more">
+            <a href="/2020/02/06/CANAL源码解析-server模块/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2020/02/06/CANAL源码解析-deployer模块/">CANAL源码解析-deployer模块</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>canal有两种使用方式：1、独立部署 2、内嵌到应用中。 deployer模块主要用于独立部署canal server。关于这两种方式的区别，请参见server模块源码分析。deployer模块源码目录结构如下所示：</p>
+<img src="/2020/02/06/CANAL源码解析-deployer模块/1.png">
+<p>在独立部署canal时，需要首先对canal的源码进行打包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip -Denv=release</span><br></pre></td></tr></table></figure>
+<p>打包后会在target目录生成一个以下两个文件：<br><img src="/2020/02/06/CANAL源码解析-deployer模块/2.png"></p>
+<p>其中canal.deployer-1.0.24.tar.gz就是canal的独立部署包。解压缩后，目录如下所示。其中bin目录和conf目录(包括子目录spring)中的所有文件，都来自于deployer模块。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">canal</span><br><span class="line">├── bin</span><br><span class="line">│   ├── startup.bat</span><br><span class="line">│   ├── startup.sh</span><br><span class="line">│   └── stop.sh</span><br><span class="line">├── conf</span><br><span class="line">│   ├── canal.properties</span><br><span class="line">│   ├── example</span><br><span class="line">│   │   └── instance.properties</span><br><span class="line">│   ├── logback.xml</span><br><span class="line">│   └── spring</span><br><span class="line">│       ├── default-instance.xml</span><br><span class="line">│       ├── file-instance.xml</span><br><span class="line">│       ├── group-instance.xml</span><br><span class="line">│       ├── <span class="built_in">local</span>-instance.xml</span><br><span class="line">│       └── memory-instance.xml</span><br><span class="line">├── lib</span><br><span class="line">│   └── ....依赖的各种jar</span><br><span class="line">└── logs</span><br></pre></td></tr></table></figure>
+<p>deployer模块主要完成以下功能：</p>
+<ol>
+<li>读取canal.properties配置文件</li>
+<li>启动canal server，监听canal client的请求</li>
+<li>启动canal instance，连接mysql数据库，伪装成slave，解析binlog</li>
+<li>在canal的运行过程中，监听配置文件的变化</li>
+</ol>
+          <div class="read-more">
+            <a href="/2020/02/06/CANAL源码解析-deployer模块/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2020/02/06/CANAL源码解析-启动流程/">CANAL源码解析-启动流程</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="总体"><a href="#总体" class="headerlink" title="总体"></a>总体</h2><p>canal的入口函数是<code>CanalLauncher</code>的<code>main</code>方法，我们来跟踪代码的执行流程。</p>
+<ol>
+<li>加载<code>canal.properties</code>。如果指定了<code>canal.conf</code>则使用指定的配置，否则使用默认的<code>canal.properties</code>文件。</li>
+<li>新建<code>CanalStater</code>并启动<br> a. 判断<code>canal.serverMode</code>，如果为<code>kafka</code>则新建<code>CanalKafkaProducer</code>。设置<code>canal.withoutNetty</code>为<code>true</code>，以及用户定义的<code>canal.destinations</code><br> b. 新建<code>CanalController</code><pre><code> 1. 调用`initGlobalConfig`方法初始化全局参数设置
+     - 获取并设置`mode`，默认为`SPRING`
+     - 获取并设置`lazy`，默认为`false`
+     - 获取并设置`managerAddress`，默认为`null`
+     - 取并设置`springXml`，默认为`classpath:spring/file-instance.xml`
+     - 创建`instanceGenerator`，实例生成器。用于根据`destination`生成实例
+ 2. 调用`initInstanceConfig`初始化实例配置
+     - 获取`canal.destinations`配置
+     - 将`canal.destinations`以,分割
+     - 针对每个`destination`：
+         - 调用`parseInstanceConfig`方法解析`destination`的配置。与初始化全局参数设置类似，这里根据具体的`destination`配置`mode`、`lazy`、`managerAddress`、`springXml`
+         - 将解析得到的`destination`配置保存在`instanceConfigs`
+ 3. 如果配置了`canal.socketChannel`，设置`canal.socketChannel`属性
+ 4. 如果存在的话，分别设置`canal.instance.rds.accesskey`和`canal.instance.rds.secretkey`属性
+ 5. 获取`cid`、`ip`、`port`属性
+ 6. 获取`embededCanalServer`，并设置`instanceGenerator`。`embededCanalServer`的类型为`CanalServerWithEmbedded`
+ 7. 获取并设置`embededCanalServer`的`metricsPort`
+ 8. 如果`canal.withoutNetty`为`null`或者`false`，创建`canalServer`并配置`ip`和`port`。
+ 9. 如果`ip`属性为空，配置本机`ip`
+ 10. 获取`canal.zkServers`，`zookeeper`的地址
+     - 如果`canal.zkServers`不为空，在`zookeeper`中创建`/otter/canal/destinations`和`/otter/canal/cluster`目录
+ 11. 创建服务器运行信息`ServerRunningData`
+ 12. 将`ServerRunningData`设置在服务器运行监控`ServerRunningMonitors`中。在`ServerRunningMonitors`中设置每个`destination`的运行监控器`ServerRunningMonitor`
+ 13. 获取`canal.auto.scan`属性，默认为`true`
+     - 创建`InstanceAction`，实例执行器。其中定义了实例启动、停止、重启3个操作
+     - 创建`InstanceConfigMonitor`，实例配置监视器。
+</code></pre> c. 调用<code>start()</code>方法启动<code>CanalController</code><pre><code> 1. `zookeeper`中创建`canal`服务器的`path`，`path`为`/otter/canal/cluster/{ip}:{port}`
+ 2. 在`zookeeper`中创建状态变化的监听器
+ 3. 调用`start()`方法启动`embededCanalServer`
+     - 加载并初始化`CanalMetricsService`
+     - 创建`canalInstances`
+ 4. 遍历各个`instance`
+     - 调用`ServerRunningMonitor.start()`方法启动每个`destination`的`ServerRunningMonitor`
+         - 调用`processStart()`方法。在`zookeeper`中新建`/otter/canal/destinations/{name}/cluster/{ip}:{port}`目录，并监听`zookeeper`状态的修改
+         - 监听`zookeeper`中`/otter/canal/destinations/{name}/running`目录的变动
+         - 调用`initRunning()`方法
+             - 在`zookeeper`的`/otter/canal/destinations/{name}/running`目录中增加正在运行的`canal`服务器信息
+             - 调用`processActiveEnter`方法触发`destination`对应的`canal`实例`（CanalInstance）`开始执行
+         - 为每个destination注册`InstanceAction`
+ 5. 启动实例配置的监听器`InstanceConfigMonitor`
+ 6. 如果`canalServer`不为`null`，则调用`start()`方法启动`canalServer`。如果没有指定`mq`模式，则会启动`canalServer`。`canalServer`是使用`Netty`写的服务端，接收用户连接，发送数据。
+</code></pre> d. 设置设置退出时执行的钩子线程<code>shutdownThread</code><br> e. 如果<code>canalMQProducer</code>不为<code>null</code>，新建并启动<code>CanalMQStarter</code><pre><code> 1. 设置mq的属性
+ 2. 为每个destination新建一个`CanalMQRunnable`并启动
+</code></pre></li>
+</ol>
+          <div class="read-more">
+            <a href="/2020/02/06/CANAL源码解析-启动流程/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/06/CANAL源码解析-简介/">CANAL源码解析-简介</a>
         
       </h1>
@@ -582,200 +780,6 @@
   </article>
 
       
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/">深入理解JVM(1)——Java内存区域与Java对象(转载)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-10-21
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h1><p>JVM载执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则是依赖用户线程的启动和结束而建立和销毁。具体如下图所示：</p>
-<img src="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/jvm.jpeg">
-<h2 id="程序计数器（Program-Counter-Register）"><a href="#程序计数器（Program-Counter-Register）" class="headerlink" title="程序计数器（Program Counter Register）"></a>程序计数器（Program Counter Register）</h2><p><strong>程序计数器（Program Counter Register）</strong>是一块较小的内存空间，可以看作是当前线程所执行的字节码的<strong>行号指示器</strong>。在虚拟机概念模型中，<strong>字节码解释器</strong>工作时就是通过改变计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
-<p>程序计数器是一块<strong>线程私有</strong>的内存，如上文的图所示，每条线程都有一个独立的程序计数器，各条线程之间的计数器互不影响，独立存储。这样设计使得在多线程环境下，线程切换后能恢复到正确的执行位置。</p>
-<p>如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的<strong>虚拟机字节码指令的地址</strong>；若执行的是<strong>Native方法</strong>，则<strong>计数器为空（Undefined）</strong>（因为对于Native方法而言，它的方法体并不是由Java字节码构成的，自然无法应用上述的“字节码指令的地址”的概念）。程序计数器也是唯一一个在Java虚拟机规范中没有规定任何<strong>OutOfMemoryError</strong>情况的内存区域。</p>
-<h2 id="Java虚拟机栈（Java-Virtual-Machine-Stacks）"><a href="#Java虚拟机栈（Java-Virtual-Machine-Stacks）" class="headerlink" title="Java虚拟机栈（Java Virtual Machine Stacks）"></a>Java虚拟机栈（Java Virtual Machine Stacks）</h2><p><strong>Java虚拟机栈（Java Virtual Machine Stacks）</strong>描述的是<strong>Java方法执行的内存模型</strong>：每个方法在执行的同时都会创建一个<strong>栈帧（Stack Frame），栈帧中存储着局部变量表、操作数栈、动态链接、方法出口</strong>等信息。每一个方法从调用直至执行完成的过程，会对应一个栈帧在虚拟机栈中入栈到出栈的过程。与程序计数器一样，Java虚拟机栈也是线程私有的。</p>
-<p>函数的调用有完美的嵌套关系——调用者的生命期总是长于被调用者的生命期，并且后者在前者的之内。这样，被调用者的局部信息所占空间的分配总是后于调用者的（后入），而其释放则总是先于调用者的（先出），所以正好可以满足栈的LIFO顺序，选用栈这种数据结构来实现调用栈是一种很自然的选择。</p>
-<p><strong>局部变量表</strong>中存放了编译期可知的各种：</p>
-<ul>
-<li>基本数据类型(boolen、byte、char、short、int、 float、 long、double）</li>
-<li>对象引用（reference类型，它不等于对象本身，可能是一个指向对象起始地址的指针，也可能是指向一个代表对象的句柄或其他与此对象相关的位置）</li>
-<li>returnAddress类型（指向了一条字节码指令的地址）</li>
-</ul>
-<p>其中64位长度的long和double类型的数据会占用2个局部变量空间（Slot），其余数据类型只占用1个。局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，这个方法需要在帧中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
-<p>Java虚拟机规范中对这个区域规定了两种异常状况：</p>
-<ul>
-<li><strong>StackOverflowError：</strong>线程请求的栈深度大于虚拟机所允许的深度，将会抛出此异常。</li>
-<li><strong>OutOfMemoryError：</strong>当可动态扩展的虚拟机栈在扩展时无法申请到足够的内存，就会抛出该异常。</li>
-</ul>
-          <div class="read-more">
-            <a href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/06/13/MapReduce之Shuffle过程详述/">MapReduce之Shuffle过程详述</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-06-13
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>MapReduce作为Hadoop的编程框架，对于大数据开发或者想要接触大数据开发的开发者来说，是必须要掌握的，它是一种经典大数据计算框架，现在有很多开源项目的内部实现都会直接或间接地借鉴了MR过程的实现。我在经过了一些hadoop项目的开发，然后前几天又系统地学习MapReduc内部实现过程，尤其是学习中间的Shuffle过程之后，准备对这一块做一下总结，希望这篇文章能给需要的人带来一些帮助（文中Shuffle的分析还是以Hadoop1.0为例，这个跟2.0的区别并不是很大）。</p>
-<h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><p>对于MapReduce作业，完整的作业运行流程：</p>
-<img src="/2019/06/13/MapReduce之Shuffle过程详述/hadoop.png">
-<p>完整过程应该是分为7部分，分别是：</p>
-<ol>
-<li>作业启动：开发者通过控制台启动作业；</li>
-<li>作业初始化：这里主要是切分数据、创建作业和提交作业，与第三步紧密相联；</li>
-<li>作业/任务调度：对于1.0版的Hadoop来说就是JobTracker来负责任务调度，对于2.0版的Hadoop来说就是Yarn中的Resource Manager负责整个系统的资源管理与分配，Yarn可以参考IBM的一篇博客(Hadoop新MapReduce框架Yarn详解)[<a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop-yarn/]；" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop-yarn/]；</a></li>
-<li>Map任务；</li>
-<li>Shuffle；</li>
-<li>Reduce任务；</li>
-<li>作业完成：通知开发者任务完成。</li>
-</ol>
-<p>而这其中最主要的MapReduce过程，主要是第4、5、6步三部分，这也是本篇博客重点讨论的地方，详细作用如下：</p>
-<ol>
-<li><strong>Map</strong>:数据输入,做初步的处理,输出形式的中间结果；</li>
-<li><strong>Shuffle</strong>:按照partition、key对中间结果进行排序合并,输出给reduce线程；</li>
-<li><strong>Reduce</strong>:对相同key的输入进行最终的处理,并将结果写入到文件中。</li>
-</ol>
-<p>这里先给出官网上关于这个过程的经典流程图：</p>
-<img src="/2019/06/13/MapReduce之Shuffle过程详述/mapreduce.png">
-<p>上图是把MapReduce过程分为两个部分，而实际上从两边的Map和Reduce到中间的那一大块都属于Shuffle过程，也就是说，Shuffle过程有一部分是在Map端，有一部分是在Reduce端，下文也将会分两部分来介绍Shuffle过程。</p>
-<p>对于Hadoop集群，当我们在运行作业时，大部分的情况下，map task与reduce task的执行是分布在不同的节点上的，因此，很多情况下，reduce执行时需要跨节点去拉取其他节点上的map task结果，这样造成了集群内部的网络资源消耗很严重，而且在节点的内部，相比于内存，磁盘IO对性能的影响是非常严重的。如果集群中运行的作业有很多，那么task的执行对于集群内部网络的资源消费非常大。因此，我们对于MapRedue作业Shuffle过程的期望是：</p>
-<ul>
-<li>完整地从map task端拉取数据到Reduce端；</li>
-<li>在跨节点拉取数据时，尽可能地减少对带宽的不必要消耗；</li>
-<li>减少磁盘IO对task执行的影响。</li>
-</ul>
-          <div class="read-more">
-            <a href="/2019/06/13/MapReduce之Shuffle过程详述/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-interpreter调试/">Zeppelin源码分析-interpreter调试</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-06-12
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <p>前面提到了interpreter是以单独的process启动的，想要debug interpreter，需要设置启动interpreter进程的jvm以debug方式启动，然后让IDE进行remote debug，具体步骤如下：</p>
-<ol>
-<li>在bin/interpreter.sh脚本中JAVA_INTP_OPTS变量中加入如下参数：</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JAVA_INTP_OPTS+=<span class="string">" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=**`expr <span class="variable">$&#123;PORT&#125;</span> + 1`**  -Dzeppelin.log.file=<span class="variable">$&#123;ZEPPELIN_LOGFILE&#125;</span>"</span></span><br></pre></td></tr></table></figure>
-<p>加粗部分保证启动interpreter的jvm以debug方式启动，监听的端口号比RemoteInterpreterServer process监听的端口号+1（采用<code>expr${PORT} + 1</code>）这里不能写成固定的端口，因为每种interpreter都会启动一个独立的process，该process监听的socket端口是zeppelin在运行时随机获取一个可用的端口（没有被占用的端口）。如果写成固定的端口，那么每种interpreter process在进行remote debug的时候，端口就会冲突。</p>
-<ol>
-<li>启动ZeppelinServer的调试，可以直接run，不用以debug方式启动。</li>
-<li>打开浏览器，访问<a href="http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter" target="_blank" rel="noopener">http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter</a> binding了spark。insert一个paragraph，首行写入%spark (表明采用SparkInterpreter来解释此paragrapph中的代码)，换行，写入scala代码println(“hello,world”)，由于这里主要演示debug interpreter，以最简单的hello world说明问题。然后点击运行该paragraph。此时zeppelin server会调用bin/interpreter.sh脚本，传入“端口、interpreter加载的目录(这里是${ZEPPELIN_HOME}/interpreter/spark)、interpreter各自的log file位置”这些参数以启动该interpreter jvm。由于之前在JAVA_INTP_OPTS设置了jvm支持远程调试的参数，该jvm可以通过IDE remote debug。</li>
-<li>通过ps –ef|grep interpreter来查找RemoteInterpreterServer process启动的参数，可以看到-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=58679类似的输出，表明该jvm在58679端口上支持remote debug。</li>
-</ol>
-<p>在SparkInterpreter.java中的重点位置设置断点，如在方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open()和interpret(String line, InterpreterContext context)</span><br></pre></td></tr></table></figure></p>
-<p>首行设置断点。</p>
-<ol>
-<li>在IDE，以Idea为例：创建Remote Run/Debug Configuration，填入端口号58679</li>
-</ol>
-<img src="/2019/06/12/Zeppelin源码分析-interpreter调试/1.png">
-<p>即可启动remote debug。</p>
-<p>需要注意的是，由于hello world代码简短，可能在你在IDE中启动Remote debug时该Interpreter已经执行完了。再次点击执行该paragraph即可命中SparkInterpreter中的断点。</p>
-
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
       
   <nav class="pagination">
     
@@ -921,24 +925,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>
