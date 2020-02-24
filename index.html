@@ -208,6 +208,65 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/">Flink DataStream流表与维表Join(Async I/O)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-24
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>在Flink 流处理过程中，经常需要和外部系统进行交互，如维度补全，用维度表补全事实表中的字段。默认情况下，在MapFunction中，单个并行只能用同步方式去交互: 将请求发送到外部存储，IO阻塞，等待请求返回，然后继续发送下一个请求。这种同步交互的方式往往在网络等待上就耗费了大量时间。为了提高处理效率，可以增加MapFunction的并行度，但增加并行度就意味着更多的资源，并不是一种非常好的解决方式。Flink 在1.2中引入了Async I/O，在异步模式下,将IO操作异步化，单个并行可以连续发送多个请求，哪个请求先返回就先处理，从而在连续的请求间不需要阻塞式等待，大大提高了流处理效率。</p>
+<img src="/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/1.jpeg">
+<p>注意:</p>
+<ol>
+<li>使用Async I/O，需要外部存储有支持异步请求的客户端。</li>
+<li>使用Async I/O，继承<code>RichAsyncFunction</code>(接口<code>AsyncFunction&lt;IN, OUT&gt;</code>的抽象类)，重写或实现<code>open</code>(建立连接)、<code>close</code>(关闭连接)、<code>asyncInvoke</code>(异步调用)3个方法即可。如下，自定义实现的<code>ElasticsearchAsyncFunction</code>类，用于从ES中获取维度数据。</li>
+<li>使用Async I/O, 最好结合缓存一起使用，可减少请求外部存储的次数，提高效率。</li>
+<li>Async I/O 提供了<code>Timeout</code>参数来控制请求最长等待时间。默认，异步I/O请求超时时，会引发异常并重启或停止作业。 如果要处理超时，可以重写<code>AsyncFunction#timeout</code>方法。</li>
+<li>Async I/O 提供了<code>Capacity</code>参数控制请求并发数，一旦<code>Capacity</code>被耗尽，会触发反压机制来抑制上游数据的摄入。</li>
+<li>Async I/O 输出提供乱序和顺序两种模式。<ol>
+<li>乱序, 用<code>AsyncDataStream.unorderedWait(...)</code> API，每个并行的输出顺序和输入顺序可能不一致。</li>
+<li>顺序, 用<code>AsyncDataStream.orderedWait(...)</code> API，每个并行的输出顺序和输入顺序一致。为保证顺序，需要在输出的Buffer中排序，该方式效率会低一些。</li>
+</ol>
+</li>
+</ol>
+          <div class="read-more">
+            <a href="/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/24/Flink-原理与实现：内存管理/">Flink 原理与实现：内存管理</a>
         
       </h1>
@@ -663,60 +722,6 @@
 <p>其中MemoryEventStoreWithBuffer就是内存模式的实现，是我们分析的重点，其实现了CanalEventStore接口，并继承了AbstractCanalStoreScavenge抽象类。需要注意的是，AbstractCanalStoreScavenge这个类中定义的字段和方法在开源版本中并没有任何地方使用到，因此我们不会对其进行分析。</p>
           <div class="read-more">
             <a href="/2020/02/06/CANAL源码解析-store模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/06/CANAL源码解析-instance模块/">CANAL源码解析-instance模块</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-06
-        </span>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="CanalInstance源码概览"><a href="#CanalInstance源码概览" class="headerlink" title="CanalInstance源码概览"></a>CanalInstance源码概览</h2><p>CanalInstance相关代码位于canal源码的instance模块中，这个模块又有三个子模块，如下所示： </p>
-<img src="/2020/02/06/CANAL源码解析-instance模块/1.png">
-<ul>
-<li><strong>在core模块中</strong>，定义了CanalInstance接口，以及其抽象类子类AbstractCanalInstance。</li>
-<li><strong>在spring模块</strong>，提供了基于spring配置方式的CanalInstanceWithSpring实现，即CanalInstance实例的创建，通过spring配置文件来创建。</li>
-<li><strong>在manager模块中</strong>，提供了基于manager配置方式的CanalInstanceWithManager实现，即CanalInstance实例根据远程配置中心的内容来创建。</li>
-</ul>
-<p>CanalInstance类图继承关系如下所示： </p>
-<img src="/2020/02/06/CANAL源码解析-instance模块/2.png">
-<p>在本节中，我们主要以spring配置方式为例，对CanalInstance源码进行解析。</p>
-          <div class="read-more">
-            <a href="/2020/02/06/CANAL源码解析-instance模块/" class="read-more-link">阅读更多</a>
           </div>
         
       
