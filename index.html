@@ -216,6 +216,120 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/25/Flink-DataStream-Checkpoint和Savepoint/">Flink DataStream Checkpoint和Savepoint</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-25
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/25/Flink-DataStream-Checkpoint和Savepoint/" data-title="Flink DataStream Checkpoint和Savepoint">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>针对不同场景，Flink提供了Checkpoint和Savepoint两种容错机制。</p>
+<p>本文总结Checkpoint和Savepoint的使用。</p>
+<h2 id="Checkpoint"><a href="#Checkpoint" class="headerlink" title="Checkpoint"></a>Checkpoint</h2><p>Checkpoint存储状态数据，由Flink自己定期触发和清除，轻量快速，主要应用于作业生命周期内的故障恢复。</p>
+<h3 id="Checkpoint配置"><a href="#Checkpoint配置" class="headerlink" title="Checkpoint配置"></a>Checkpoint配置</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">CheckpointConfig checkpointConfig = env.getCheckpointConfig();</span><br><span class="line"></span><br><span class="line"># 1、开启Checkpoint</span><br><span class="line"># 默认情况下，不开启Checkpoint</span><br><span class="line"># 设置Checkpoint间隔(单位毫秒)大于0，即开启Checkpoint</span><br><span class="line"># 如果State比较大，建议增大该值</span><br><span class="line">checkpointConfig.setCheckpointInterval(<span class="number">10L</span> * <span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"># 2、设置Checkpoint状态管理器</span><br><span class="line"># 默认MemoryStateBackend 支持MemoryStateBackend、FsStateBackend、RocksDBStateBackend三种</span><br><span class="line"># MemoryStateBackend: 基于内存的状态管理器，状态存储在JVM堆内存中。一般不应用于生产。</span><br><span class="line"># FsStateBackend: 基于文件系统的状态管理器，文件系统可以是本地文件系统，或者是HDFS分布式文件系统。</span><br><span class="line"># RocksDBStateBackend: 基于RocksDB的状态管理器，需要引入相关依赖才可使用。</span><br><span class="line"># true: 是否异步</span><br><span class="line">env.setStateBackend((StateBackend) <span class="keyword">new</span> FsStateBackend(<span class="string">"CheckpointDir"</span>, <span class="keyword">true</span>));</span><br><span class="line"></span><br><span class="line"># 3、设置Checkpoint语义</span><br><span class="line"># EXACTLY_ONCE: 准确一次，结果不丢不重</span><br><span class="line"># AT_LEAST_ONCE: 至少一次，结果可能会重复</span><br><span class="line"># 注意: 如果要实现端到端的准确一次性语义(End-To-End EXACTLY_ONCE)，除了这里设置EXACTLY_ONCE语义外，也需要Source和Sink支持EXACTLY_ONCE</span><br><span class="line">checkpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);</span><br><span class="line"></span><br><span class="line"># 4、任务取消后保留Checkpoint目录</span><br><span class="line">checkpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);</span><br><span class="line"></span><br><span class="line"># 5、设置要保留的Checkpoint数量</span><br><span class="line"># 在conf/flink-conf.yaml中设置</span><br><span class="line"># 默认是1，只保留最新的一份Checkpoint</span><br><span class="line"># 如果需要从历史某个时刻恢复，这个参数很有用，可以根据Checkpoint间隔，设置成多个</span><br><span class="line">state.checkpoints.num-retained=<span class="number">20</span></span><br><span class="line"></span><br><span class="line"># 6、设置Checkpoint超时时间</span><br><span class="line"># Checkpoint超时时间,默认10分钟。当Checkpoint执行时间超过该值，Flink会丢弃此次Checkpoint并标记为失败，可从Flink WebUI Checkpoints上看到</span><br><span class="line">checkpointConfig.setCheckpointTimeout(<span class="keyword">long</span> checkpointTimeout);</span><br><span class="line"></span><br><span class="line"># 7、设置Checkpoint之间的最小间隔</span><br><span class="line"># 两次Checkpoint之间的最小间隔，默认是0，单位毫秒。State太大，Checkpoint时间太长，而间隔又很短，则会导致大量Checkpoint任务积压，占用大量计算资源，进而影响任务性能</span><br><span class="line">checkpointConfig.setMinPauseBetweenCheckpoints(<span class="number">30000</span>);</span><br><span class="line"></span><br><span class="line"># 8、设置同一时间点最多进行Checkpoint的数量，默认是1个</span><br><span class="line">checkpointConfig.setMaxConcurrentCheckpoints(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2020/02/25/Flink-DataStream-Checkpoint和Savepoint/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2020/02/25/Flink-DataStream基于Broadcast-State动态更新配置以实现实时过滤数据并增加字段/">Flink DataStream基于Broadcast State动态更新配置以实现实时过滤数据并增加字段</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-25
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/25/Flink-DataStream基于Broadcast-State动态更新配置以实现实时过滤数据并增加字段/" data-title="Flink DataStream基于Broadcast State动态更新配置以实现实时过滤数据并增加字段">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>Flink从1.5.0开始支持广播状态(<code>Broadcast State</code>)。广播状态可以用来解决如下问题:<br>一条流需要根据规则或配置处理数据，而规则或配置又是随时变化的。此时，就可将规则或配置作为广播流广播出去，并以<code>Broadcast State</code>的形式存储在下游Task中。下游Task根据<code>Broadcast State</code>中的规则或配置来处理常规流中的数据。</p>
+<p>场景举例:</p>
+<ol>
+<li>动态更新计算规则: 如事件流需要根据最新的规则进行计算，则可将规则作为广播状态广播到下游Task中。</li>
+<li>实时增加额外字段: 如事件流需要实时增加用户的基础信息，则可将用户的基础信息作为广播状态广播到下游Task中。</li>
+</ol>
+<p>注意:</p>
+<ol>
+<li><code>Broadcast State</code>是Map类型，即K-V类型。</li>
+<li><code>Broadcast State</code>只有在广播的一侧,即在<code>BroadcastProcessFunction</code>或<code>KeyedBroadcastProcessFunction</code>的<code>processBroadcastElement</code>方法中可以修改。在非广播的一侧，即在<code>BroadcastProcessFunction</code>或<code>KeyedBroadcastProcessFunction</code>的<code>processElement</code>方法中只读。</li>
+<li><code>Broadcast State</code>中元素的顺序，在各Task中可能不同。基于顺序的处理，需要注意。</li>
+<li><code>Broadcast State</code>在<code>Checkpoint</code>时，每个Task都会<code>Checkpoint</code>广播状态。</li>
+<li><code>Broadcast State</code>在运行时保存在内存中，目前还不能保存在RocksDB State Backend中。</li>
+</ol>
+          <div class="read-more">
+            <a href="/2020/02/25/Flink-DataStream基于Broadcast-State动态更新配置以实现实时过滤数据并增加字段/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/">Flink DataStream流表与维表Join(Async I/O)</a>
         
       </h1>
@@ -658,118 +772,6 @@
 <p>在本小节中，我们将首先介绍driver模块的基本使用；接着介绍parser模块是如何使用driver模块的；最后讲解driver模块的实现原理。</p>
           <div class="read-more">
             <a href="/2020/02/07/CANAL源码解析-driver模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/07/CANAL源码解析-filter模块/">CANAL源码解析-filter模块</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-07
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2020/02/07/CANAL源码解析-filter模块/" data-title="CANAL源码解析-filter模块">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="Filter简介"><a href="#Filter简介" class="headerlink" title="Filter简介"></a>Filter简介</h1><p>filter模块用于对binlog进行过滤。在实际开发中，一个mysql实例中可能会有多个库，每个库里面又会有多个表，可能我们只是想订阅某个库中的部分表，这个时候就需要进行过滤。也就是说，parser模块解析出来binlog之后，会进行一次过滤之后，才会存储到store模块中。</p>
-<p>过滤规则的配置既可以在canal服务端进行，也可以在客户端进行。</p>
-<h2 id="服务端配置"><a href="#服务端配置" class="headerlink" title="服务端配置"></a>服务端配置</h2><p>我们在配置一个canal instance时，在instance.properties中有以下两个配置项：</p>
-<img src="/2020/02/07/CANAL源码解析-filter模块/1.png">
-<p>其中：</p>
-<ul>
-<li>canal.instance.filter.regex用于配置白名单，也就是我们希望订阅哪些库，哪些表，默认值为.<em>\..</em>，也就是订阅所有库，所有表。</li>
-<li>canal.instance.filter.black.regex用于配置黑名单，也就是我们不希望订阅哪些库，哪些表。没有默认值，也就是默认黑名单为空。</li>
-</ul>
-<p>需要注意的是，在过滤的时候，会先根据白名单进行过滤，再根据黑名单过滤。意味着，如果一张表在白名单和黑名单中都出现了，那么这张表最终不会被订阅到，因为白名单通过后，黑名单又将这张表给过滤掉了。</p>
-          <div class="read-more">
-            <a href="/2020/02/07/CANAL源码解析-filter模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/06/CANAL源码解析-store模块/">CANAL源码解析-store模块</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-06
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2020/02/06/CANAL源码解析-store模块/" data-title="CANAL源码解析-store模块">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="store模块简介"><a href="#store模块简介" class="headerlink" title="store模块简介"></a>store模块简介</h2><p>store模块用于binlog事件的存储 ，目前开源的版本中仅实现了Memory内存模式。官方文档中提到”后续计划增加本地file存储，mixed混合模式”，这句话大家不必当真，从笔者最开始接触canal到现在已经几年了，依然没有动静，好在Memory内存模式已经可以满足绝大部分场景。</p>
-<p>store模块目录结构如下，该模块的核心接口为CanalEventStore：</p>
-<img src="/2020/02/06/CANAL源码解析-store模块/1.png">
-<p>以下是相关类图：</p>
-<img src="/2020/02/06/CANAL源码解析-store模块/2.png">
-<p>其中MemoryEventStoreWithBuffer就是内存模式的实现，是我们分析的重点，其实现了CanalEventStore接口，并继承了AbstractCanalStoreScavenge抽象类。需要注意的是，AbstractCanalStoreScavenge这个类中定义的字段和方法在开源版本中并没有任何地方使用到，因此我们不会对其进行分析。</p>
-          <div class="read-more">
-            <a href="/2020/02/06/CANAL源码解析-store模块/" class="read-more-link">阅读更多</a>
           </div>
         
       
