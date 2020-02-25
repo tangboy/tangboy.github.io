@@ -216,6 +216,127 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/07/CANAL源码解析-binlog消费位点的控制/">CANAL源码解析-binlog消费位点的控制</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-07
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/07/CANAL源码解析-binlog消费位点的控制/" data-title="CANAL源码解析-binlog消费位点的控制">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>canal是一个订阅消费模式的服务，于是其消费位点的控制就非常重要，在正常情况或者重启canal之后都要保证不重复消费同一个位点，也不能漏掉某一个位点。本文我们来看看canal是如何控制消费位点的。</p>
+<p>首先我们来分析客户端是如何工作，前文我们分析过CanalMQStarter的启动过程会为每个destination都新建一个CanalMQRunnable，在不同的线程中来执行CanalMQRunnable。CanalMQRunnable的执行调用CanalMQStarter的worker方法。数据的消费与传输都在这个worker方法中执行。</p>
+<h2 id="CanalMQStarter-work"><a href="#CanalMQStarter-work" class="headerlink" title="CanalMQStarter.work"></a>CanalMQStarter.work</h2><p>首先是一个准备过程：</p>
+<ol>
+<li>新建ClientIdentity，作为client的标识</li>
+<li>从canalServer（<code>CanalServerWithEmbedded</code>）中获取instance</li>
+<li>新建<code>CanalDestination</code>，这个类保存了mq的配置信息</li>
+<li>调用<code>canalServer.subscribe</code>向<code>CanalServerWithEmbedded</code>中注册client的信息<br> a. 调用checkStart确保destination对应的instance已经启动<br> b. 获取instance中保存的<code>CanalMetaManager</code>，<code>CanalMetaManager</code>是meta信息的管理器，其中保存着关键的position信息<br> c. 判断<code>CanalMetaManager</code>是否已经启动，如果没有启动则调用start()方法启动<code>CanalMetaManager</code>。正常情况下<code>CanalMetaManager</code>在instance启动时已经被启动了<br> d. 调用<code>CanalMetaManager</code>的subscribe方法在<code>CanalMetaManager</code>中增加订阅信息<br> e. 调用<code>CanalMetaManager</code>的getCursor方法获取当前订阅binlog的位置信息<br> f. 如果position为null，说明之前没有记录position信息：<pre><code> - 从`CanalEventStore`中获取保存的第一条数据的position信息
+ - 如果`CanalEventStore`中保存的position信息不为null，调用`CanalMetaManager`的`updateCursor`方法更新`CanalMetaManager`中保存的position信息
+</code></pre> g. 调用<code>CanalInstance</code>的subscribeChange方法，通知CanalInstance订阅关系变化<pre><code> - 如果identity中设置的filter过滤条件不为空，则将其设置到eventParser中
+</code></pre></li>
+</ol>
+<p>前面的准备过程基本就是一个向CanalMetaManager注册客户端并处理消费位点的工作。</p>
+          <div class="read-more">
+            <a href="/2020/02/07/CANAL源码解析-binlog消费位点的控制/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2020/02/07/CANAL源码解析-driver模块/">CANAL源码解析-driver模块</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-07
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/07/CANAL源码解析-driver模块/" data-title="CANAL源码解析-driver模块">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>driver，顾名思义为驱动。熟悉jdbc编程的同学都知道，当项目中需要操作数据库(oracle、sqlserver、mysql等)时，都需要在项目中引入对应的数据库的驱动。以mysql为例，我们需要引入的是mysql-connector-java这个jar包,通过这个驱动包来与数据库进行通信。</p>
+<p>那么为什么canal不使用mysql官方提供的驱动包，而要自己编写一个driver模块？原因在于mysql-connector-java驱动包只是实现了JDBC规范，方便我们在程序中对数据库中的数据进行增删改查。</p>
+<p>对于获取并解析binlog日志这样的场景，mysql-connector-java并没有提供这样的功能。因此，canal编写了自己的driver模块，提供了基本的增删改查功能，并提供了直接获取原始binlog字节流的功能，其他模块在这个模块的基础上对binlog字节进行解析，parser模块底层实际上就是通过driver模块来与数据库建立连接的。</p>
+<p>driver模块目录结构如下所示：</p>
+<img src="/2020/02/07/CANAL源码解析-driver模块/1.png">
+<p>最核心的3个类分别是：</p>
+<ul>
+<li><code>MysqlConnector</code>：表示一个数据库连接，作用类似于java.sql.Connection</li>
+<li><code>MysqlQueryExecutor</code>：查询执行器，作用类似于PrepareStatement.executeQuery()</li>
+<li><code>MysqlUpdateExecutor</code>：更新执行器，作用类似于PrepareStatement.executeUpdate() </li>
+</ul>
+<p>在本小节中，我们将首先介绍driver模块的基本使用；接着介绍parser模块是如何使用driver模块的；最后讲解driver模块的实现原理。</p>
+          <div class="read-more">
+            <a href="/2020/02/07/CANAL源码解析-driver模块/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/07/CANAL源码解析-filter模块/">CANAL源码解析-filter模块</a>
         
       </h1>
@@ -684,121 +805,6 @@
 <p>这一系列关于shufflepartition的性能和易用性挑战，促使我们思考新的方法：我们能否根据运行时获取的shuffle数据量信息，例如数据块大小，记录行数等等，自动为每一个stage设置合适的shuffle partition值？</p>
           <div class="read-more">
             <a href="/2019/11/19/Spark-SQL在100TB上的自适应执行实践（转载）/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/10/24/深入理解JVM-6-G1-转载/">深入理解JVM(6)--G1(转载)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-10-24
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2019/10/24/深入理解JVM-6-G1-转载/" data-title="深入理解JVM(6)--G1(转载)">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>之前根据 Sun 的内存管理白皮书介绍了在 HotSpot JVM 分代算法中的几个垃圾收集器，本文将介绍 G1 垃圾收集器。</p>
-<p>G1 的主要关注点在于达到可控的停顿时间，在这个基础上尽可能提高吞吐量，这一点非常重要。</p>
-<p>G1 被设计用来长期取代 CMS 收集器，和 CMS 相同的地方在于，它们都属于并发收集器，在大部分的收集阶段都不需要挂起应用程序。区别在于，G1 没有 CMS 的碎片化问题（或者说不那么严重），同时提供了更加可控的停顿时间。</p>
-<p>如果你的应用使用了较大的堆（如 6GB 及以上）而且还要求有较低的垃圾收集停顿时间（如 0.5 秒），那么 G1 是你绝佳的选择，是时候放弃 CMS 了。</p>
-<h1 id="G1-总览"><a href="#G1-总览" class="headerlink" title="G1 总览"></a>G1 总览</h1><p>首先是内存划分上，之前介绍的分代收集器将整个堆分为年轻代、老年代和永久代，每个代的空间是确定的。</p>
-<p>而 G1 将整个堆划分为一个个大小相等的小块（每一块称为一个 region），每一块的内存是连续的。和分代算法一样，G1 中每个块也会充当 Eden、Survivor、Old 三种角色，但是它们不是固定的，这使得内存使用更加地灵活。</p>
-<img src="/2019/10/24/深入理解JVM-6-G1-转载/1.png">
-<p>执行垃圾收集时，和 CMS 一样，G1 收集线程在标记阶段和应用程序线程并发执行，标记结束后，G1 也就知道哪些区块基本上是垃圾，存活对象极少，G1 会先从这些区块下手，因为从这些区块能很快释放得到很大的可用空间，这也是为什么 G1 被取名为 Garbage-First 的原因。</p>
-<p>在 G1 中，目标停顿时间非常非常重要，用 -XX:MaxGCPauseMillis=200 指定期望的停顿时间。</p>
-<p>G1 使用了停顿预测模型来满足用户指定的停顿时间目标，并基于目标来选择进行垃圾回收的区块数量。G1 采用增量回收的方式，每次回收一些区块，而不是整堆回收。</p>
-<p>我们要知道 G1 不是一个实时收集器，它会尽力满足我们的停顿时间要求，但也不是绝对的，它基于之前垃圾收集的数据统计，估计出在用户指定的停顿时间内能收集多少个区块。</p>
-<p>注意：G1 有和应用程序一起运行的并发阶段，也有 stop-the-world 的并行阶段。但是，Full GC 的时候还是单线程运行的，所以我们应该尽量避免发生 Full GC，后面我们也会介绍什么时候会触发 Full GC。</p>
-          <div class="read-more">
-            <a href="/2019/10/24/深入理解JVM-6-G1-转载/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/10/24/深入理解JVM-5-——类加载器-转载/">深入理解JVM(5)——类加载器(转载)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-10-24
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2019/10/24/深入理解JVM-5-——类加载器-转载/" data-title="深入理解JVM(5)——类加载器(转载)">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>虚拟机设计团队把类加载阶段中的“通过一个类的全限定名来获取描述此类的二进制字节流(即字节码)”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类。实现这个动作的代码模块称为“类加载器”。</p>
-<p>一般来说，Java 虚拟机使用 Java 类的方式如下：</p>
-<ul>
-<li>Java 源程序（.java 文件）在经过 Java 编译器编译之后就被转换成字节码（.class 文件）。</li>
-<li>类加载器负责读取 Java 字节代码，并转换成 java.lang.Class类的一个实例。每个这样的实例用来表示一个 Java 类。通过此实例的 newInstance()方法就可以创建出该类的一个对象。</li>
-</ul>
-<p>实际的情况可能更加复杂，比如 Java 字节代码可能是通过工具动态生成的，也可能是通过网络下载的。更详细的内容可以参考上一篇文章中讲类加载过程中的加载阶段时介绍的几个例子（JAR包、Applet、动态代理、JSP等）。</p>
-          <div class="read-more">
-            <a href="/2019/10/24/深入理解JVM-5-——类加载器-转载/" class="read-more-link">阅读更多</a>
           </div>
         
       

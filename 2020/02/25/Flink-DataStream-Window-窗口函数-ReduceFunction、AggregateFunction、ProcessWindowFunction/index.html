@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction">
+
+
+
+
+  <meta name="keywords" content="Flink, Window, ReduceFunction, AggregateFunction, ProcessWindowFunction, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz",
+      appKey: "bA46NPkYiSG0QaBP2vX2ckzl"
+    });
+  </script>
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-25
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/" data-title="Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#增量聚合"><span class="toc-text">增量聚合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ReduceFunction"><span class="toc-text">ReduceFunction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AggregateFunction"><span class="toc-text">AggregateFunction</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#全量聚合"><span class="toc-text">全量聚合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ProcessWindowFunction"><span class="toc-text">ProcessWindowFunction</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ProcessWindowFunction与增量聚合结合"><span class="toc-text">ProcessWindowFunction与增量聚合结合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ProcessWindowFunction与ReduceFunction结合"><span class="toc-text">ProcessWindowFunction与ReduceFunction结合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ProcessWindowFunction与AggregateFunction结合"><span class="toc-text">ProcessWindowFunction与AggregateFunction结合</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>Window Function在窗口触发后，负责对窗口内的元素进行计算。Window Function分为两类: 增量聚合和全量聚合。</p>
+<ul>
+<li>增量聚合: 窗口不维护原始数据，只维护中间结果，每次基于中间结果和增量数据进行聚合。如: <code>ReduceFunction</code>、<code>AggregateFunction</code></li>
+<li>全量聚合: 窗口需要维护全部原始数据，窗口触发进行全量聚合。如:<code>ProcessWindowFunction</code></li>
+</ul>
+<p>本文总结增量聚合函数(<code>ReduceFunction</code>、<code>AggregateFunction</code>)和全量聚合函数(<code>ProcessWindowFunction</code>)的使用。</p>
+<p>注意:</p>
+<ol>
+<li><code>FoldFunction</code>也是增量聚合函数，但在Flink 1.9.0中已被标为过时(可用<code>AggregateFunction</code>代替)，这里不做总结。</li>
+<li><code>WindowFunction</code>也是全量聚合函数，已被更高级的<code>ProcessWindowFunction</code>逐渐代替，这里也不做总结</li>
+</ol>
+<h2 id="增量聚合"><a href="#增量聚合" class="headerlink" title="增量聚合"></a>增量聚合</h2><h3 id="ReduceFunction"><a href="#ReduceFunction" class="headerlink" title="ReduceFunction"></a>ReduceFunction</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试数据: 某个用户在某个时刻浏览了某个商品，以及商品的价值</span></span><br><span class="line"><span class="comment">// &#123;"userID": "user_4", "eventTime": "2019-11-09 10:41:32", "eventType": "browse", "productID": "product_1", "productPrice": 10&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// API</span></span><br><span class="line"><span class="comment">// T: 输入输出元素类型</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ReduceFunction</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Function</span>, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">	<span class="function">T <span class="title">reduce</span><span class="params">(T value1, T value2)</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例: 获取一段时间内(Window Size)每个用户(KeyBy)浏览的商品的最大价值的那条记录(ReduceFunction)</span></span><br><span class="line">kafkaStream</span><br><span class="line">    <span class="comment">// 将从Kafka获取的JSON数据解析成Java Bean</span></span><br><span class="line">    .process(<span class="keyword">new</span> KafkaProcessFunction())</span><br><span class="line">    <span class="comment">// 提取时间戳生成水印</span></span><br><span class="line">    .assignTimestampsAndWatermarks(<span class="keyword">new</span> MyCustomBoundedOutOfOrdernessTimestampExtractor(Time.seconds(maxOutOfOrdernessSeconds)))</span><br><span class="line">    <span class="comment">// 按用户分组</span></span><br><span class="line">    .keyBy((KeySelector&lt;UserActionLog, String&gt;) UserActionLog::getUserID)</span><br><span class="line">    <span class="comment">// 构造TimeWindow</span></span><br><span class="line">    .timeWindow(Time.seconds(windowLengthSeconds))</span><br><span class="line">    <span class="comment">// 窗口函数: 获取这段窗口时间内每个用户浏览的商品的最大价值对应的那条记录</span></span><br><span class="line">    .reduce(<span class="keyword">new</span> ReduceFunction&lt;UserActionLog&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> UserActionLog <span class="title">reduce</span><span class="params">(UserActionLog value1, UserActionLog value2)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> value1.getProductPrice() &gt; value2.getProductPrice() ? value1 : value2;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    .print();</span><br><span class="line">     </span><br><span class="line"># 结果</span><br><span class="line">UserActionLog&#123;userID=<span class="string">'user_4'</span>, eventTime=<span class="string">'2019-11-09 12:51:25'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_3'</span>, productPrice=<span class="number">30</span>&#125;</span><br><span class="line">UserActionLog&#123;userID=<span class="string">'user_2'</span>, eventTime=<span class="string">'2019-11-09 12:51:29'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_2'</span>, productPrice=<span class="number">20</span>&#125;</span><br><span class="line">UserActionLog&#123;userID=<span class="string">'user_1'</span>, eventTime=<span class="string">'2019-11-09 12:51:22'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_3'</span>, productPrice=<span class="number">30</span>&#125;</span><br><span class="line">UserActionLog&#123;userID=<span class="string">'user_5'</span>, eventTime=<span class="string">'2019-11-09 12:51:21'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_3'</span>, productPrice=<span class="number">30</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>注意: <code>ReduceFunction</code>输入输出元素类型相同。</p>
+<a id="more"></a>
+<h3 id="AggregateFunction"><a href="#AggregateFunction" class="headerlink" title="AggregateFunction"></a>AggregateFunction</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试数据: 某个用户在某个时刻浏览了某个商品，以及商品的价值</span></span><br><span class="line"><span class="comment">// &#123;"userID": "user_4", "eventTime": "2019-11-09 10:41:32", "eventType": "browse", "productID": "product_1", "productPrice": 10&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// API</span></span><br><span class="line"><span class="comment">// IN:  输入元素类型</span></span><br><span class="line"><span class="comment">// ACC: 累加器类型</span></span><br><span class="line"><span class="comment">// OUT: 输出元素类型</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AggregateFunction</span>&lt;<span class="title">IN</span>, <span class="title">ACC</span>, <span class="title">OUT</span>&gt; <span class="keyword">extends</span> <span class="title">Function</span>, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化累加器</span></span><br><span class="line">	<span class="function">ACC <span class="title">createAccumulator</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 累加</span></span><br><span class="line">	<span class="function">ACC <span class="title">add</span><span class="params">(IN value, ACC accumulator)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 累加器合并</span></span><br><span class="line">	<span class="function">ACC <span class="title">merge</span><span class="params">(ACC a, ACC b)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 输出</span></span><br><span class="line">	<span class="function">OUT <span class="title">getResult</span><span class="params">(ACC accumulator)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例: 获取一段时间内(Window Size)每个用户(KeyBy)浏览的平均价值(AggregateFunction)</span></span><br><span class="line">kafkaStream</span><br><span class="line">   <span class="comment">// 将从Kafka获取的JSON数据解析成Java Bean</span></span><br><span class="line">   .process(<span class="keyword">new</span> KafkaProcessFunction())</span><br><span class="line">   <span class="comment">// 提取时间戳生成水印</span></span><br><span class="line">   .assignTimestampsAndWatermarks(<span class="keyword">new</span> MyCustomBoundedOutOfOrdernessTimestampExtractor(Time.seconds(maxOutOfOrdernessSeconds)))</span><br><span class="line">   <span class="comment">// 按用户分组</span></span><br><span class="line">   .keyBy((KeySelector&lt;UserActionLog, String&gt;) UserActionLog::getUserID)</span><br><span class="line">   <span class="comment">// 构造TimeWindow</span></span><br><span class="line">   .timeWindow(Time.seconds(windowLengthSeconds))</span><br><span class="line">   <span class="comment">// 窗口函数: 获取这段窗口时间内，每个用户浏览的平均价值</span></span><br><span class="line">   .aggregate(<span class="keyword">new</span> AggregateFunction&lt;UserActionLog, Tuple2&lt;Long,Long&gt;, Double&gt;() &#123;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 1、初始值</span></span><br><span class="line">       <span class="comment">// 定义累加器初始值</span></span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> Tuple2&lt;Long, Long&gt; <span class="title">createAccumulator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;&gt;(<span class="number">0L</span>,<span class="number">0L</span>);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 2、累加</span></span><br><span class="line">       <span class="comment">// 定义累加器如何基于输入数据进行累加</span></span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> Tuple2&lt;Long, Long&gt; <span class="title">add</span><span class="params">(UserActionLog value, Tuple2&lt;Long, Long&gt; accumulator)</span> </span>&#123;</span><br><span class="line">           accumulator.f0 += <span class="number">1</span>;</span><br><span class="line">           accumulator.f1 += value.getProductPrice();</span><br><span class="line">           <span class="keyword">return</span> accumulator;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 3、合并</span></span><br><span class="line">       <span class="comment">// 定义累加器如何和State中的累加器进行合并</span></span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> Tuple2&lt;Long, Long&gt; <span class="title">merge</span><span class="params">(Tuple2&lt;Long, Long&gt; acc1, Tuple2&lt;Long, Long&gt; acc2)</span> </span>&#123;</span><br><span class="line">           acc1.f0+=acc2.f0;</span><br><span class="line">           acc1.f1+=acc2.f1;</span><br><span class="line">           <span class="keyword">return</span> acc1;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 4、输出</span></span><br><span class="line">       <span class="comment">// 定义如何输出数据</span></span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> Double <span class="title">getResult</span><span class="params">(Tuple2&lt;Long, Long&gt; accumulator)</span> </span>&#123;</span><br><span class="line">           <span class="keyword">return</span> accumulator.f1 / (accumulator.f0 * <span class="number">1.0</span>);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">   &#125;)</span><br><span class="line">   .print(); </span><br><span class="line">   </span><br><span class="line">#结果</span><br><span class="line"><span class="number">20.0</span></span><br><span class="line"><span class="number">10.0</span></span><br><span class="line"><span class="number">30.0</span></span><br><span class="line"><span class="number">25.0</span></span><br><span class="line"><span class="number">20.0</span></span><br></pre></td></tr></table></figure>
+<h2 id="全量聚合"><a href="#全量聚合" class="headerlink" title="全量聚合"></a>全量聚合</h2><h3 id="ProcessWindowFunction"><a href="#ProcessWindowFunction" class="headerlink" title="ProcessWindowFunction"></a>ProcessWindowFunction</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试数据: 某个用户在某个时刻浏览了某个商品，以及商品的价值</span></span><br><span class="line"><span class="comment">// &#123;"userID": "user_4", "eventTime": "2019-11-09 10:41:32", "eventType": "browse", "productID": "product_1", "productPrice": 10&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// API</span></span><br><span class="line"><span class="comment">// IN:  输入元素类型</span></span><br><span class="line"><span class="comment">// OUT: 输出元素类型</span></span><br><span class="line"><span class="comment">// KEY: Key类型</span></span><br><span class="line"><span class="comment">// W: Window类型</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ProcessWindowFunction</span>&lt;<span class="title">IN</span>, <span class="title">OUT</span>, <span class="title">KEY</span>, <span class="title">W</span> <span class="keyword">extends</span> <span class="title">Window</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractRichFunction</span> </span>&#123;</span><br><span class="line">    ......</span><br><span class="line">    </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(KEY key, Context context, Iterable&lt;IN&gt; elements, Collector&lt;OUT&gt; out)</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">    </span><br><span class="line">    ........</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例: 获取一段时间内(Window Size)每个用户(KeyBy)浏览的商品总价值(ProcessWindowFunction)</span></span><br><span class="line">kafkaStream</span><br><span class="line">    <span class="comment">// 将从Kafka获取的JSON数据解析成Java Bean</span></span><br><span class="line">    .process(<span class="keyword">new</span> KafkaProcessFunction())</span><br><span class="line">    <span class="comment">// 提取时间戳生成水印</span></span><br><span class="line">    .assignTimestampsAndWatermarks(<span class="keyword">new</span> MyCustomBoundedOutOfOrdernessTimestampExtractor(Time.seconds(maxOutOfOrdernessSeconds)))</span><br><span class="line">    <span class="comment">// 按用户分组</span></span><br><span class="line">    .keyBy((KeySelector&lt;UserActionLog, String&gt;) UserActionLog::getUserID)</span><br><span class="line">    <span class="comment">// 构造TimeWindow</span></span><br><span class="line">    .timeWindow(Time.seconds(windowLengthSeconds))</span><br><span class="line">    <span class="comment">// 窗口函数: 用ProcessWindowFunction计算这段时间内每个用户浏览的商品总价值</span></span><br><span class="line">    .process(<span class="keyword">new</span> ProcessWindowFunction&lt;UserActionLog, String, String, TimeWindow&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(String key, Context context, Iterable&lt;UserActionLog&gt; elements, Collector&lt;String&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> sum=<span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (UserActionLog element : elements) &#123;</span><br><span class="line">                sum += element.getProductPrice();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            String windowStart=<span class="keyword">new</span> DateTime(context.window().getStart(), DateTimeZone.forID(<span class="string">"+08:00"</span>)).toString(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">            String windowEnd=<span class="keyword">new</span> DateTime(context.window().getEnd(), DateTimeZone.forID(<span class="string">"+08:00"</span>)).toString(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line"></span><br><span class="line">            String record=<span class="string">"Key: "</span>+key+<span class="string">" 窗口开始时间: "</span>+windowStart+<span class="string">" 窗口结束时间: "</span>+windowEnd+<span class="string">" 浏览的商品总价值: "</span>+sum;</span><br><span class="line">            out.collect(record);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    .print();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果</span></span><br><span class="line">Key: user_1 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">00</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">10</span> 浏览的商品总价值: <span class="number">60</span></span><br><span class="line">Key: user_5 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">00</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">10</span> 浏览的商品总价值: <span class="number">30</span></span><br><span class="line">Key: user_5 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">10</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">20</span> 浏览的商品总价值: <span class="number">80</span></span><br><span class="line">Key: user_3 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">10</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">20</span> 浏览的商品总价值: <span class="number">40</span></span><br><span class="line">Key: user_4 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">10</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">32</span>:<span class="number">20</span> 浏览的商品总价值: <span class="number">70</span></span><br></pre></td></tr></table></figure>
+<h2 id="ProcessWindowFunction与增量聚合结合"><a href="#ProcessWindowFunction与增量聚合结合" class="headerlink" title="ProcessWindowFunction与增量聚合结合"></a>ProcessWindowFunction与增量聚合结合</h2><ol>
+<li>可将<code>ProcessWindowFunction</code>与增量聚合函数<code>ReduceFunction</code>、<code>AggregateFunction结合</code>。</li>
+<li>元素到达窗口时增量聚合，当窗口关闭时对增量聚合的结果用<code>ProcessWindowFunction</code>再进行全量聚合。</li>
+<li>可以增量聚合，也可以访问窗口的元数据信息(如开始结束时间、状态等)</li>
+</ol>
+<h3 id="ProcessWindowFunction与ReduceFunction结合"><a href="#ProcessWindowFunction与ReduceFunction结合" class="headerlink" title="ProcessWindowFunction与ReduceFunction结合"></a>ProcessWindowFunction与ReduceFunction结合</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试数据: 某个用户在某个时刻浏览了某个商品，以及商品的价值</span></span><br><span class="line"><span class="comment">// &#123;"userID": "user_4", "eventTime": "2019-11-09 10:41:32", "eventType": "browse", "productID": "product_1", "productPrice": 10&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// API: 如上ReduceFunction与ProcessWindowFunction</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例: 获取一段时间内(Window Size)每个用户(KeyBy)浏览的商品的最大价值的那条记录(ReduceFunction),并获得Key和Window信息。</span></span><br><span class="line">kafkaStream</span><br><span class="line">    <span class="comment">// 将从Kafka获取的JSON数据解析成Java Bean</span></span><br><span class="line">    .process(<span class="keyword">new</span> KafkaProcessFunction())</span><br><span class="line">    <span class="comment">// 提取时间戳生成水印</span></span><br><span class="line">    .assignTimestampsAndWatermarks(<span class="keyword">new</span> MyCustomBoundedOutOfOrdernessTimestampExtractor(Time.seconds(maxOutOfOrdernessSeconds)))</span><br><span class="line">    <span class="comment">// 按用户分组</span></span><br><span class="line">    .keyBy((KeySelector&lt;UserActionLog, String&gt;) UserActionLog::getUserID)</span><br><span class="line">    <span class="comment">// 构造TimeWindow</span></span><br><span class="line">    .timeWindow(Time.seconds(windowLengthSeconds))</span><br><span class="line">    <span class="comment">// 窗口函数: 获取这段窗口时间内每个用户浏览的商品的最大价值对应的那条记录</span></span><br><span class="line">    .reduce(</span><br><span class="line">            <span class="keyword">new</span> ReduceFunction&lt;UserActionLog&gt;() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> UserActionLog <span class="title">reduce</span><span class="params">(UserActionLog value1, UserActionLog value2)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> value1.getProductPrice() &gt; value2.getProductPrice() ? value1 : value2;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="keyword">new</span> ProcessWindowFunction&lt;UserActionLog, String, String, TimeWindow&gt;() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(String key, Context context, Iterable&lt;UserActionLog&gt; elements, Collector&lt;String&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                    </span><br><span class="line">                    UserActionLog max = elements.iterator().next();</span><br><span class="line">    </span><br><span class="line">                    String windowStart=<span class="keyword">new</span> DateTime(context.window().getStart(), DateTimeZone.forID(<span class="string">"+08:00"</span>)).toString(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">                    String windowEnd=<span class="keyword">new</span> DateTime(context.window().getEnd(), DateTimeZone.forID(<span class="string">"+08:00"</span>)).toString(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">    </span><br><span class="line">                    String record=<span class="string">"Key: "</span>+key+<span class="string">" 窗口开始时间: "</span>+windowStart+<span class="string">" 窗口结束时间: "</span>+windowEnd+<span class="string">" 浏览的商品的最大价值对应的那条记录: "</span>+max;</span><br><span class="line">                    out.collect(record);</span><br><span class="line">    </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">    )</span><br><span class="line">    .print();</span><br><span class="line">    </span><br><span class="line"><span class="comment">// 结果</span></span><br><span class="line">Key: user_2 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">54</span>:<span class="number">10</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">54</span>:<span class="number">20</span> 浏览的商品的最大价值对应的那条记录: UserActionLog&#123;userID=<span class="string">'user_2'</span>, eventTime=<span class="string">'2019-11-09 13:54:10'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_3'</span>, productPrice=<span class="number">30</span>&#125;</span><br><span class="line">Key: user_4 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">54</span>:<span class="number">10</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">54</span>:<span class="number">20</span> 浏览的商品的最大价值对应的那条记录: UserActionLog&#123;userID=<span class="string">'user_4'</span>, eventTime=<span class="string">'2019-11-09 13:54:15'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_3'</span>, productPrice=<span class="number">30</span>&#125;</span><br><span class="line">Key: user_3 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">54</span>:<span class="number">10</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">54</span>:<span class="number">20</span> 浏览的商品的最大价值对应的那条记录: UserActionLog&#123;userID=<span class="string">'user_3'</span>, eventTime=<span class="string">'2019-11-09 13:54:12'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_2'</span>, productPrice=<span class="number">20</span>&#125;</span><br><span class="line">Key: user_5 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">54</span>:<span class="number">10</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">54</span>:<span class="number">20</span> 浏览的商品的最大价值对应的那条记录: UserActionLog&#123;userID=<span class="string">'user_5'</span>, eventTime=<span class="string">'2019-11-09 13:54:17'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_2'</span>, productPrice=<span class="number">20</span>&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ProcessWindowFunction与AggregateFunction结合"><a href="#ProcessWindowFunction与AggregateFunction结合" class="headerlink" title="ProcessWindowFunction与AggregateFunction结合"></a>ProcessWindowFunction与AggregateFunction结合</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试数据: 某个用户在某个时刻浏览了某个商品，以及商品的价值</span></span><br><span class="line"><span class="comment">// &#123;"userID": "user_4", "eventTime": "2019-11-09 10:41:32", "eventType": "browse", "productID": "product_1", "productPrice": 10&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// API: 如上AggregateFunction与ProcessWindowFunction</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例: 获取一段时间内(Window Size)每个用户(KeyBy)浏览的平均价值(AggregateFunction),并获得Key和Window信息。</span></span><br><span class="line">kafkaStream</span><br><span class="line">    <span class="comment">// 将从Kafka获取的JSON数据解析成Java Bean</span></span><br><span class="line">    .process(<span class="keyword">new</span> KafkaProcessFunction())</span><br><span class="line">    <span class="comment">// 提取时间戳生成水印</span></span><br><span class="line">    .assignTimestampsAndWatermarks(<span class="keyword">new</span> MyCustomBoundedOutOfOrdernessTimestampExtractor(Time.seconds(maxOutOfOrdernessSeconds)))</span><br><span class="line">    <span class="comment">// 按用户分组</span></span><br><span class="line">    .keyBy((KeySelector&lt;UserActionLog, String&gt;) UserActionLog::getUserID)</span><br><span class="line">    <span class="comment">// 构造TimeWindow</span></span><br><span class="line">    .timeWindow(Time.seconds(windowLengthSeconds))</span><br><span class="line">    <span class="comment">// 窗口函数: 获取这段窗口时间内，每个用户浏览的商品的平均价值，并发出Key和Window信息</span></span><br><span class="line">    .aggregate(</span><br><span class="line">         <span class="keyword">new</span> AggregateFunction&lt;UserActionLog, Tuple2&lt;Long, Long&gt;, Double&gt;() &#123;</span><br><span class="line"></span><br><span class="line">             <span class="comment">// 1、初始值</span></span><br><span class="line">             <span class="comment">// 定义累加器初始值</span></span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">public</span> Tuple2&lt;Long, Long&gt; <span class="title">createAccumulator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;&gt;(<span class="number">0L</span>, <span class="number">0L</span>);</span><br><span class="line">             &#125;</span><br><span class="line"></span><br><span class="line">             <span class="comment">// 2、累加</span></span><br><span class="line">             <span class="comment">// 定义累加器如何基于输入数据进行累加</span></span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">public</span> Tuple2&lt;Long, Long&gt; <span class="title">add</span><span class="params">(UserActionLog value, Tuple2&lt;Long, Long&gt; accumulator)</span> </span>&#123;</span><br><span class="line">                 accumulator.f0 += <span class="number">1</span>;</span><br><span class="line">                 accumulator.f1 += value.getProductPrice();</span><br><span class="line">                 <span class="keyword">return</span> accumulator;</span><br><span class="line">             &#125;</span><br><span class="line"></span><br><span class="line">             <span class="comment">// 3、合并</span></span><br><span class="line">             <span class="comment">// 定义累加器如何和State中的累加器进行合并</span></span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">public</span> Tuple2&lt;Long, Long&gt; <span class="title">merge</span><span class="params">(Tuple2&lt;Long, Long&gt; acc1, Tuple2&lt;Long, Long&gt; acc2)</span> </span>&#123;</span><br><span class="line">                 acc1.f0 += acc2.f0;</span><br><span class="line">                 acc1.f1 += acc2.f1;</span><br><span class="line">                 <span class="keyword">return</span> acc1;</span><br><span class="line">             &#125;</span><br><span class="line"></span><br><span class="line">             <span class="comment">// 4、输出</span></span><br><span class="line">             <span class="comment">// 定义如何输出数据</span></span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">public</span> Double <span class="title">getResult</span><span class="params">(Tuple2&lt;Long, Long&gt; accumulator)</span> </span>&#123;</span><br><span class="line">                 <span class="keyword">return</span> accumulator.f1 / (accumulator.f0 * <span class="number">1.0</span>);</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;,</span><br><span class="line">         <span class="keyword">new</span> ProcessWindowFunction&lt;Double, String, String, TimeWindow&gt;() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(String key, Context context, Iterable&lt;Double&gt; elements, Collector&lt;String&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">                 Double avg = elements.iterator().next();</span><br><span class="line"></span><br><span class="line">                 String windowStart=<span class="keyword">new</span> DateTime(context.window().getStart(), DateTimeZone.forID(<span class="string">"+08:00"</span>)).toString(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">                 String windowEnd=<span class="keyword">new</span> DateTime(context.window().getEnd(), DateTimeZone.forID(<span class="string">"+08:00"</span>)).toString(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line"></span><br><span class="line">                 String record=<span class="string">"Key: "</span>+key+<span class="string">" 窗口开始时间: "</span>+windowStart+<span class="string">" 窗口结束时间: "</span>+windowEnd+<span class="string">" 浏览的商品的平均价值: "</span>+String.format(<span class="string">"%.2f"</span>,avg);</span><br><span class="line">                 out.collect(record);</span><br><span class="line"></span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">    )</span><br><span class="line">    .print();</span><br><span class="line">    </span><br><span class="line"><span class="comment">//结果</span></span><br><span class="line">Key: user_2 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">05</span>:<span class="number">40</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">05</span>:<span class="number">50</span> 浏览的商品的平均价值: <span class="number">13.33</span></span><br><span class="line">Key: user_3 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">05</span>:<span class="number">50</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">06</span>:<span class="number">00</span> 浏览的商品的平均价值: <span class="number">25.00</span></span><br><span class="line">Key: user_4 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">05</span>:<span class="number">50</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">06</span>:<span class="number">00</span> 浏览的商品的平均价值: <span class="number">20.00</span></span><br><span class="line">Key: user_2 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">05</span>:<span class="number">50</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">06</span>:<span class="number">00</span> 浏览的商品的平均价值: <span class="number">30.00</span></span><br><span class="line">Key: user_5 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">05</span>:<span class="number">50</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">06</span>:<span class="number">00</span> 浏览的商品的平均价值: <span class="number">20.00</span></span><br><span class="line">Key: user_1 窗口开始时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">05</span>:<span class="number">50</span> 窗口结束时间: <span class="number">2019</span>-<span class="number">11</span>-<span class="number">09</span> <span class="number">14</span>:<span class="number">06</span>:<span class="number">00</span> 浏览的商品的平均价值: <span class="number">23.33</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/">http://code-monkey.top/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Flink/">Flink</a>
+            
+              <a href="/tags/Window/">Window</a>
+            
+              <a href="/tags/ReduceFunction/">ReduceFunction</a>
+            
+              <a href="/tags/AggregateFunction/">AggregateFunction</a>
+            
+              <a href="/tags/ProcessWindowFunction/">ProcessWindowFunction</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2020/02/25/Flink-DataStream-提取Timestamp与生成Watermark/">
+        <span class="next-text nav-default">Flink DataStream 提取Timestamp与生成Watermark</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
