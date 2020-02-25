@@ -216,6 +216,58 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/04/18/PySpark-的背后原理/">PySpark 的背后原理(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-04-18
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2019/04/18/PySpark-的背后原理/" data-title="PySpark 的背后原理(转)">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>Spark主要是由Scala语言开发，为了方便和其他系统集成而不引入scala相关依赖，部分实现使用Java语言开发，例如External Shuffle Service等。总体来说，Spark是由JVM语言实现，会运行在JVM中。然而，Spark除了提供Scala/Java开发接口外，还提供了Python、R等语言的开发接口，为了保证Spark核心实现的独立性，Spark仅在外围做包装，实现对不同语言的开发支持，本文主要介绍Python Spark的实现原理，剖析pyspark应用程序是如何运行起来的。</p>
+<h2 id="Spark运行时架构"><a href="#Spark运行时架构" class="headerlink" title="Spark运行时架构"></a>Spark运行时架构</h2><p>首先我们先回顾下Spark的基本运行时架构，如下图所示，其中橙色部分表示为JVM，Spark应用程序运行时主要分为Driver和Executor，Driver负载总体调度及UI展示，Executor负责Task运行，Spark可以部署在多种资源管理系统中，例如Yarn、Mesos等，同时Spark自身也实现了一种简单的Standalone(独立部署)资源管理系统，可以不用借助其他资源管理系统即可运行。更多细节请参考<a href="https://code-monkey.top/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/">Spark Scheduler内部原理剖析</a>。</p>
+<img src="/2019/04/18/PySpark-的背后原理/spark-structure.png">
+<p>用户的Spark应用程序运行在Driver上(某种程度上说，用户的程序就是Spark Driver程序)，经过Spark调度封装成一个个Task，再将这些Task信息发给Executor执行，Task信息包括代码逻辑以及数据信息，Executor不直接运行用户的代码。</p>
+          <div class="read-more">
+            <a href="/2019/04/18/PySpark-的背后原理/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/04/09/Kafka深度解析/">Kafka深度解析(转)</a>
         
       </h1>
@@ -748,65 +800,6 @@
           <p>为了督促自己能够每天刷一道算法题，特将LeetCode常见题目列出，之后每天一题，每完成一题都会总结解答并链接到该博客相应的题目上。</p>
           <div class="read-more">
             <a href="/2018/12/22/LeetCode-算法题目解答/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/">Adaptive Execution 让 Spark SQL 更高效更智能</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-21
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/" data-title="Adaptive Execution 让 Spark SQL 更高效更智能">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>前面<a href="https://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">《Spark SQL / Catalyst 内部原理 与 RBO》</a>与<a href="https://code-monkey.top/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/">《Spark SQL 性能优化再进一步 CBO 基于代价的优化》</a>介绍的优化，从查询本身与目标数据的特点的角度尽可能保证了最终生成的执行计划的高效性。但是</p>
-<ul>
-<li>执行计划一旦生成，便不可更改，即使执行过程中发现后续执行计划可以进一步优化，也只能按原计划执行</li>
-<li>CBO 基于统计信息生成最优执行计划，需要提前生成统计信息，成本较大，且不适合数据更新频繁的场景</li>
-<li>CBO 基于基础表的统计信息与操作对数据的影响推测中间结果的信息，只是估算，不够精确</li>
-</ul>
-<p>本文介绍的 Adaptive Execution 将可以根据执行过程中的中间数据优化后续执行，从而提高整体执行效率。核心在于两点</p>
-<ul>
-<li>执行计划可动态调整</li>
-<li>调整的依据是中间结果的精确统计信息</li>
-</ul>
-          <div class="read-more">
-            <a href="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/" class="read-more-link">阅读更多</a>
           </div>
         
       

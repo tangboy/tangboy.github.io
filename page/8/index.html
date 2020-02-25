@@ -216,6 +216,66 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/">一篇文章搞懂Python中的面向对象编程</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-09-07
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2017/09/07/一篇文章搞懂Python中的面向对象编程/" data-title="一篇文章搞懂Python中的面向对象编程">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>面向对象的设计思想是从自然界中来的，因为在自然界中，类（Class）和实例（Instance）的概念是很自然的。Class是一种抽象概念，比如我们定义的Class——Student，是指学生这个概念，而实例（Instance）则是一个个具体的Student，比如，Bart Simpson和Lisa Simpson是两个具体的Student。</p>
+<p>面向对象的抽象程度又比函数要高，因为一个Class既包含数据，又包含操作数据的方法。</p>
+<p>数据封装、继承和多态是面向对象的三大特点，我们后面会详细讲解。</p>
+<h2 id="类和实例"><a href="#类和实例" class="headerlink" title="类和实例"></a>类和实例</h2><p>类(Class)和实例(Instance)是面向对象最重要的概念。</p>
+<p>类是指抽象出的模板。实例则是根据类创建出来的具体的“对象”，每个对象都拥有从类中继承的相同的方法，但各自的数据可能不同。</p>
+<p>在python中定义一个类:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<p>关键字class后面跟着类名，类名通常是大写字母开头的单词，紧接着是(object)，表示该类是从哪个类继承下来的。通常，如果没有合适的继承类，就使用object类，这是所有类最终都会继承下来的类。</p>
+<p>定义好了 类，就可以根据Student类创建实例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(object)</span>:</span></span><br><span class="line"><span class="meta">... </span>    <span class="keyword">pass</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart = Student() <span class="comment"># bart是Student()的实例</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart</span><br><span class="line">&lt;__main__.Student object at <span class="number">0x101be77f0</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>Student <span class="comment"># Student 本身是一个类</span></span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">__main__</span>.<span class="title">Student</span>'&gt;</span></span><br></pre></td></tr></table></figure>
+<p>可以自由地给一个实例变量绑定属性，比如，给实例bart绑定一个name属性：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart.name = <span class="string">"diggzhang"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart.name</span><br><span class="line"><span class="string">'diggzhang'</span></span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/09/07/一篇文章踩遍Python中的坑/">一篇文章踩遍Python中的坑</a>
         
       </h1>
@@ -708,56 +768,6 @@
 <p>(以下知识均查阅了wikipedia。单词的中文翻译查的是有道词典。)</p>
           <div class="read-more">
             <a href="/2017/01/04/matrix-summary-in-linear-algebra/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/01/04/develop-lbs-using-mongodb/">结合MongoDB开发LBS应用</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-01-04
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2017/01/04/develop-lbs-using-mongodb/" data-title="结合MongoDB开发LBS应用">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>随着近几年各类移动终端的迅速普及，基于地理位置的服务（LBS）和相关应用也越来越多，而支撑这些应用的最基础技术之一，就是基于地理位置信息的处理。</p>
-<p>我将这些技术要点整理成文，希望能够通过本文的介绍和案例，详细解释如何使用MongoDB进行地理位置信息的查询和处理。在文章的开头，我也会先介绍一下业界通常用来处理地理位置信息的一些方案并进行比较，让读者逐步了解使用MongoDB查询及处理地理位置信息的优势。</p>
-          <div class="read-more">
-            <a href="/2017/01/04/develop-lbs-using-mongodb/" class="read-more-link">阅读更多</a>
           </div>
         
       

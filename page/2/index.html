@@ -216,6 +216,67 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/19/Flink-Table-SQL-时态表Temporal-Table/">Flink Table & SQL 时态表Temporal Table</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-19
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/19/Flink-Table-SQL-时态表Temporal-Table/" data-title="Flink Table & SQL 时态表Temporal Table">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>举个栗子，假设你在Mysql中有两张表: browse_event、product_history_info。</p>
+<ul>
+<li><p>browse_event: 事件表，某个用户在某个时刻浏览了某个商品，以及商品的价值。如下:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> browse_event;</span><br><span class="line">    </span><br><span class="line">+<span class="comment">--------+---------------------+-----------+-----------+--------------+</span></span><br><span class="line">| userID | eventTime           | eventType | productID | productPrice |</span><br><span class="line">+<span class="comment">--------+---------------------+-----------+-----------+--------------+</span></span><br><span class="line">| user_1 | 2016-01-01 00:00:00 | browse    | product_5 |           20 |</span><br><span class="line">| user_1 | 2016-01-01 00:00:01 | browse    | product_5 |           20 |</span><br><span class="line">| user_1 | 2016-01-01 00:00:02 | browse    | product_5 |           20 |</span><br><span class="line">| user_1 | 2016-01-01 00:00:03 | browse    | product_5 |           20 |</span><br><span class="line">| user_1 | 2016-01-01 00:00:04 | browse    | product_5 |           20 |</span><br><span class="line">| user_1 | 2016-01-01 00:00:05 | browse    | product_5 |           20 |</span><br><span class="line">| user_1 | 2016-01-01 00:00:06 | browse    | product_5 |           20 |</span><br><span class="line">| user_2 | 2016-01-01 00:00:01 | browse    | product_3 |           20 |</span><br><span class="line">| user_2 | 2016-01-01 00:00:02 | browse    | product_3 |           20 |</span><br><span class="line">| user_2 | 2016-01-01 00:00:05 | browse    | product_3 |           20 |</span><br><span class="line">| user_2 | 2016-01-01 00:00:06 | browse    | product_3 |           20 |</span><br><span class="line">+<span class="comment">--------+---------------------+-----------+-----------+--------------+</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>product_history_info:商品基础信息表，记录了商品历史以来的基础信息。如下:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> product_history_info;</span><br><span class="line">+<span class="comment">-----------+-------------+-----------------+---------------------+</span></span><br><span class="line">| productID | productName | productCategory | updatedAt           |</span><br><span class="line">+<span class="comment">-----------+-------------+-----------------+---------------------+</span></span><br><span class="line">| product_5 | name50      | category50      | 2016-01-01 00:00:00 |</span><br><span class="line">| product_5 | name52      | category52      | 2016-01-01 00:00:02 |</span><br><span class="line">| product_5 | name55      | category55      | 2016-01-01 00:00:05 |</span><br><span class="line">| product_3 | name32      | category32      | 2016-01-01 00:00:02 |</span><br><span class="line">| product_3 | name35      | category35      | 2016-01-01 00:00:05 |</span><br><span class="line">+<span class="comment">-----------+-------------+-----------------+---------------------+</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>此刻，你想获取事件发生时，对应的最新的商品基础信息。可能需要借助以下SQL实现:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> l.userID,</span><br><span class="line">       l.eventTime,</span><br><span class="line">       l.eventType,</span><br><span class="line">       l.productID,</span><br><span class="line">       l.productPrice,</span><br><span class="line">       r.productID,</span><br><span class="line">       r.productName,</span><br><span class="line">       r.productCategory,</span><br><span class="line">       r.updatedAt</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    browse_event <span class="keyword">AS</span> l,</span><br><span class="line">    product_history_info <span class="keyword">AS</span> r</span><br><span class="line"><span class="keyword">WHERE</span> r.productID = l.productID</span><br><span class="line"> <span class="keyword">AND</span> r.updatedAt = (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="keyword">max</span>(updatedAt)</span><br><span class="line">    <span class="keyword">FROM</span> product_history_info <span class="keyword">AS</span> r2</span><br><span class="line">    <span class="keyword">WHERE</span> r2.productID = l.productID</span><br><span class="line">      <span class="keyword">AND</span> r2.updatedAt &lt;= l.eventTime</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">// 结果</span><br><span class="line">+<span class="comment">--------+---------------------+-----------+-----------+--------------+-----------+-------------+-----------------+---------------------+</span></span><br><span class="line">| userID | eventTime           | eventType | productID | productPrice | productID | productName | productCategory | updatedAt           |</span><br><span class="line">+<span class="comment">--------+---------------------+-----------+-----------+--------------+-----------+-------------+-----------------+---------------------+</span></span><br><span class="line">| user_1 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> | browse    | product_5 |           <span class="number">20</span> | product_5 | name50      | category50      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> |</span><br><span class="line">| user_1 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">01</span> | browse    | product_5 |           <span class="number">20</span> | product_5 | name50      | category50      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> |</span><br><span class="line">| user_1 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">02</span> | browse    | product_5 |           <span class="number">20</span> | product_5 | name52      | category52      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">02</span> |</span><br><span class="line">| user_1 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">03</span> | browse    | product_5 |           <span class="number">20</span> | product_5 | name52      | category52      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">02</span> |</span><br><span class="line">| user_1 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">04</span> | browse    | product_5 |           <span class="number">20</span> | product_5 | name52      | category52      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">02</span> |</span><br><span class="line">| user_1 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">05</span> | browse    | product_5 |           <span class="number">20</span> | product_5 | name55      | category55      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">05</span> |</span><br><span class="line">| user_1 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">06</span> | browse    | product_5 |           <span class="number">20</span> | product_5 | name55      | category55      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">05</span> |</span><br><span class="line">| user_2 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">02</span> | browse    | product_3 |           <span class="number">20</span> | product_3 | name32      | category32      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">02</span> |</span><br><span class="line">| user_2 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">05</span> | browse    | product_3 |           <span class="number">20</span> | product_3 | name35      | category35      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">05</span> |</span><br><span class="line">| user_2 | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">06</span> | browse    | product_3 |           <span class="number">20</span> | product_3 | name35      | category35      | <span class="number">2016</span><span class="number">-01</span><span class="number">-01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">05</span> |</span><br><span class="line">+<span class="comment">--------+---------------------+-----------+-----------+--------------+-----------+-------------+-----------------+---------------------+</span></span><br></pre></td></tr></table></figure>
+<p>在Flink中，为了处理类似场景，从1.7开始，提出了时态表(即Temporal Table)的概念。Temporal Table可以简化和加速此类查询，并减少对状态的使用。Temporal Table是将一个Append-Only表(如上product_history_info)中追加的行，根据设置的主键和时间(如上productID、updatedAt)，解释成Chanlog，并在特定时间提供数据的版本。</p>
+<p>以下，在Flink中，实现如上逻辑，并总结在使用Flink Temporal Table时得注意点。<br>
+          <div class="read-more">
+            <a href="/2020/02/19/Flink-Table-SQL-时态表Temporal-Table/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </p></div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/08/远程工作协议/">远程工作协议</a>
         
       </h1>
@@ -711,102 +772,6 @@
 </ol>
           <div class="read-more">
             <a href="/2020/02/06/CANAL源码解析-deployer模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/06/CANAL源码解析-启动流程/">CANAL源码解析-启动流程</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-06
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2020/02/06/CANAL源码解析-启动流程/" data-title="CANAL源码解析-启动流程">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="总体"><a href="#总体" class="headerlink" title="总体"></a>总体</h2><p>canal的入口函数是<code>CanalLauncher</code>的<code>main</code>方法，我们来跟踪代码的执行流程。</p>
-<ol>
-<li>加载<code>canal.properties</code>。如果指定了<code>canal.conf</code>则使用指定的配置，否则使用默认的<code>canal.properties</code>文件。</li>
-<li>新建<code>CanalStater</code>并启动<br> a. 判断<code>canal.serverMode</code>，如果为<code>kafka</code>则新建<code>CanalKafkaProducer</code>。设置<code>canal.withoutNetty</code>为<code>true</code>，以及用户定义的<code>canal.destinations</code><br> b. 新建<code>CanalController</code><pre><code> 1. 调用`initGlobalConfig`方法初始化全局参数设置
-     - 获取并设置`mode`，默认为`SPRING`
-     - 获取并设置`lazy`，默认为`false`
-     - 获取并设置`managerAddress`，默认为`null`
-     - 取并设置`springXml`，默认为`classpath:spring/file-instance.xml`
-     - 创建`instanceGenerator`，实例生成器。用于根据`destination`生成实例
- 2. 调用`initInstanceConfig`初始化实例配置
-     - 获取`canal.destinations`配置
-     - 将`canal.destinations`以,分割
-     - 针对每个`destination`：
-         - 调用`parseInstanceConfig`方法解析`destination`的配置。与初始化全局参数设置类似，这里根据具体的`destination`配置`mode`、`lazy`、`managerAddress`、`springXml`
-         - 将解析得到的`destination`配置保存在`instanceConfigs`
- 3. 如果配置了`canal.socketChannel`，设置`canal.socketChannel`属性
- 4. 如果存在的话，分别设置`canal.instance.rds.accesskey`和`canal.instance.rds.secretkey`属性
- 5. 获取`cid`、`ip`、`port`属性
- 6. 获取`embededCanalServer`，并设置`instanceGenerator`。`embededCanalServer`的类型为`CanalServerWithEmbedded`
- 7. 获取并设置`embededCanalServer`的`metricsPort`
- 8. 如果`canal.withoutNetty`为`null`或者`false`，创建`canalServer`并配置`ip`和`port`。
- 9. 如果`ip`属性为空，配置本机`ip`
- 10. 获取`canal.zkServers`，`zookeeper`的地址
-     - 如果`canal.zkServers`不为空，在`zookeeper`中创建`/otter/canal/destinations`和`/otter/canal/cluster`目录
- 11. 创建服务器运行信息`ServerRunningData`
- 12. 将`ServerRunningData`设置在服务器运行监控`ServerRunningMonitors`中。在`ServerRunningMonitors`中设置每个`destination`的运行监控器`ServerRunningMonitor`
- 13. 获取`canal.auto.scan`属性，默认为`true`
-     - 创建`InstanceAction`，实例执行器。其中定义了实例启动、停止、重启3个操作
-     - 创建`InstanceConfigMonitor`，实例配置监视器。
-</code></pre> c. 调用<code>start()</code>方法启动<code>CanalController</code><pre><code> 1. `zookeeper`中创建`canal`服务器的`path`，`path`为`/otter/canal/cluster/{ip}:{port}`
- 2. 在`zookeeper`中创建状态变化的监听器
- 3. 调用`start()`方法启动`embededCanalServer`
-     - 加载并初始化`CanalMetricsService`
-     - 创建`canalInstances`
- 4. 遍历各个`instance`
-     - 调用`ServerRunningMonitor.start()`方法启动每个`destination`的`ServerRunningMonitor`
-         - 调用`processStart()`方法。在`zookeeper`中新建`/otter/canal/destinations/{name}/cluster/{ip}:{port}`目录，并监听`zookeeper`状态的修改
-         - 监听`zookeeper`中`/otter/canal/destinations/{name}/running`目录的变动
-         - 调用`initRunning()`方法
-             - 在`zookeeper`的`/otter/canal/destinations/{name}/running`目录中增加正在运行的`canal`服务器信息
-             - 调用`processActiveEnter`方法触发`destination`对应的`canal`实例`（CanalInstance）`开始执行
-         - 为每个destination注册`InstanceAction`
- 5. 启动实例配置的监听器`InstanceConfigMonitor`
- 6. 如果`canalServer`不为`null`，则调用`start()`方法启动`canalServer`。如果没有指定`mq`模式，则会启动`canalServer`。`canalServer`是使用`Netty`写的服务端，接收用户连接，发送数据。
-</code></pre> d. 设置设置退出时执行的钩子线程<code>shutdownThread</code><br> e. 如果<code>canalMQProducer</code>不为<code>null</code>，新建并启动<code>CanalMQStarter</code><pre><code> 1. 设置mq的属性
- 2. 为每个destination新建一个`CanalMQRunnable`并启动
-</code></pre></li>
-</ol>
-          <div class="read-more">
-            <a href="/2020/02/06/CANAL源码解析-启动流程/" class="read-more-link">阅读更多</a>
           </div>
         
       
