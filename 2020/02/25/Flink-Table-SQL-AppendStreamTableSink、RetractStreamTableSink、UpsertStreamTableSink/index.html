@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink">
+
+
+
+
+  <meta name="keywords" content="Flink, AppendStreamTableSink, RetractStreamTableSink, UpsertStreamTableSink, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz",
+      appKey: "bA46NPkYiSG0QaBP2vX2ckzl"
+    });
+  </script>
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-25
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/" data-title="Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#测试数据"><span class="toc-text">测试数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AppendStreamTableSink"><span class="toc-text">AppendStreamTableSink</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#示例"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结果"><span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RetractStreamTableSink"><span class="toc-text">RetractStreamTableSink</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#示例-1"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结果-1"><span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UpsertStreamTableSink"><span class="toc-text">UpsertStreamTableSink</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#示例-2"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结果-2"><span class="toc-text">结果</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>Flink Table &amp; SQL <code>StreamTableSink</code>有三类接口: <code>AppendStreamTableSink</code>、<code>UpsertStreamTableSink</code>、<code>RetractStreamTableSink</code>。</p>
+<ul>
+<li>AppendStreamTableSink: 可将动态表转换为Append流。适用于动态表只有Insert的场景。</li>
+<li>RetractStreamTableSink: 可将动态表转换为Retract流。适用于动态表有Insert、Delete、Update的场景。</li>
+<li>UpsertStreamTableSink: 可将动态表转换为Upsert流。适用于动态表有Insert、Delete、Update的场景。</li>
+</ul>
+<p>注意:</p>
+<ul>
+<li>RetractStreamTableSink中: Insert被编码成一条Add消息; Delete被编码成一条Retract消息;Update被编码成两条消息(先是一条Retract消息，再是一条Add消息)，即先删除再增加。</li>
+<li>UpsertStreamTableSink: Insert和Update均被编码成一条消息(Upsert消息); Delete被编码成一条Delete消息。</li>
+<li>UpsertStreamTableSink和RetractStreamTableSink最大的不同在于Update编码成一条消息，效率上比RetractStreamTableSink高。</li>
+<li>上述说的编码指的是动态表转换为DataStream时，表的增删改如何体现到DataStream上。</li>
+</ul>
+<p>本文主要想总结在Update场景下，RetractStreamTableSink和UpsertStreamTableSink的消息编码。</p>
+<h2 id="测试数据"><a href="#测试数据" class="headerlink" title="测试数据"></a>测试数据</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 自己造的测试数据</span><br><span class="line">// 某个用户在某个时刻浏览了某个商品，以及商品的价值</span><br><span class="line">// eventTime: 北京时间，方便测试。如下，乱序数据:</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:00"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:02"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_2"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:10"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_2"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_3"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_3"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:12"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:15"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:16"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="AppendStreamTableSink"><a href="#AppendStreamTableSink" class="headerlink" title="AppendStreamTableSink"></a>AppendStreamTableSink</h2><h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bigdata.flink.tableSqlAppendUpsertRetract.append;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.bigdata.flink.beans.table.UserBrowseLog;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.typeinfo.TypeInformation;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.utils.ParameterTool;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.ProcessFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.sink.RichSinkFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.DataTypes;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.EnvironmentSettings;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.TableSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.sinks.AppendStreamTableSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.sinks.TableSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.types.DataType;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.types.Row;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.OffsetDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.ZoneOffset;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Summary:</span></span><br><span class="line"><span class="comment"> *     自定义 AppendStreamTableSink 查看从只有Insert的Table到DataStream的消息编码</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        args=<span class="keyword">new</span> String[]&#123;<span class="string">"--application"</span>,<span class="string">"flink/src/main/java/com/bigdata/flink/tableSqlAppendUpsertRetract/application.properties"</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1、解析命令行参数</span></span><br><span class="line">        ParameterTool fromArgs = ParameterTool.fromArgs(args);</span><br><span class="line">        ParameterTool parameterTool = ParameterTool.fromPropertiesFile(fromArgs.getRequired(<span class="string">"application"</span>));</span><br><span class="line"></span><br><span class="line">        String kafkaBootstrapServers = parameterTool.getRequired(<span class="string">"kafkaBootstrapServers"</span>);</span><br><span class="line">        String browseTopic = parameterTool.getRequired(<span class="string">"browseTopic"</span>);</span><br><span class="line">        String browseTopicGroupID = parameterTool.getRequired(<span class="string">"browseTopicGroupID"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2、设置运行环境</span></span><br><span class="line">        EnvironmentSettings settings = EnvironmentSettings.newInstance().inStreamingMode().useBlinkPlanner().build();</span><br><span class="line">        StreamExecutionEnvironment streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamEnv, settings);</span><br><span class="line">        streamEnv.setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3、注册Kafka数据源</span></span><br><span class="line">        Properties browseProperties = <span class="keyword">new</span> Properties();</span><br><span class="line">        browseProperties.put(<span class="string">"bootstrap.servers"</span>,kafkaBootstrapServers);</span><br><span class="line">        browseProperties.put(<span class="string">"group.id"</span>,browseTopicGroupID);</span><br><span class="line">        DataStream&lt;UserBrowseLog&gt; browseStream=streamEnv</span><br><span class="line">                .addSource(<span class="keyword">new</span> FlinkKafkaConsumer010&lt;&gt;(browseTopic, <span class="keyword">new</span> SimpleStringSchema(), browseProperties))</span><br><span class="line">                .process(<span class="keyword">new</span> BrowseKafkaProcessFunction());</span><br><span class="line">        tableEnv.registerDataStream(<span class="string">"source_kafka_browse_log"</span>,browseStream,<span class="string">"userID,eventTime,eventType,productID,productPrice,eventTimeTimestamp"</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//4、注册AppendStreamTableSink</span></span><br><span class="line">        String[] sinkFieldNames=&#123;<span class="string">"userID"</span>,<span class="string">"eventTime"</span>,<span class="string">"eventType"</span>,<span class="string">"productID"</span>,<span class="string">"productPrice"</span>,<span class="string">"eventTimeTimestamp"</span>&#125;;</span><br><span class="line">        DataType[] sinkFieldTypes=&#123;DataTypes.STRING(),DataTypes.STRING(),DataTypes.STRING(),DataTypes.STRING(),DataTypes.INT(),DataTypes.BIGINT()&#125;;</span><br><span class="line">        TableSink&lt;Row&gt; myAppendStreamTableSink = <span class="keyword">new</span> MyAppendStreamTableSink(sinkFieldNames,sinkFieldTypes);</span><br><span class="line">        tableEnv.registerTableSink(<span class="string">"sink_stdout"</span>,myAppendStreamTableSink);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//5、连续查询</span></span><br><span class="line">        <span class="comment">//将userID为user_1的记录输出到外部存储</span></span><br><span class="line">        String sql=<span class="string">"insert into sink_stdout select userID,eventTime,eventType,productID,productPrice,eventTimeTimestamp from source_kafka_browse_log where userID='user_1'"</span>;</span><br><span class="line">        tableEnv.sqlUpdate(sql);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//6、开始执行</span></span><br><span class="line">        tableEnv.execute(Test.class.getSimpleName());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解析Kafka数据</span></span><br><span class="line"><span class="comment">     * 将Kafka JSON String 解析成JavaBean: UserBrowseLog</span></span><br><span class="line"><span class="comment">     * UserBrowseLog(String userID, String eventTime, String eventType, String productID, int productPrice, long eventTimeTimestamp)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseKafkaProcessFunction</span> <span class="keyword">extends</span> <span class="title">ProcessFunction</span>&lt;<span class="title">String</span>, <span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processElement</span><span class="params">(String value, Context ctx, Collector&lt;UserBrowseLog&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                UserBrowseLog log = JSON.parseObject(value, UserBrowseLog.class);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 增加一个long类型的时间戳</span></span><br><span class="line">                <span class="comment">// 指定eventTime为yyyy-MM-dd HH:mm:ss格式的北京时间</span></span><br><span class="line">                java.time.format.DateTimeFormatter format = DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">                OffsetDateTime eventTime = LocalDateTime.parse(log.getEventTime(), format).atOffset(ZoneOffset.of(<span class="string">"+08:00"</span>));</span><br><span class="line">                <span class="comment">// 转换成毫秒时间戳</span></span><br><span class="line">                <span class="keyword">long</span> eventTimeTimestamp = eventTime.toInstant().toEpochMilli();</span><br><span class="line">                log.setEventTimeTimestamp(eventTimeTimestamp);</span><br><span class="line"></span><br><span class="line">                out.collect(log);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception ex)&#123;</span><br><span class="line">                log.error(<span class="string">"解析Kafka数据异常..."</span>,ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义 AppendStreamTableSink</span></span><br><span class="line"><span class="comment">     * AppendStreamTableSink 适用于表只有Insert的场景</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAppendStreamTableSink</span> <span class="keyword">implements</span> <span class="title">AppendStreamTableSink</span>&lt;<span class="title">Row</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> TableSchema tableSchema;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyAppendStreamTableSink</span><span class="params">(String[] fieldNames, DataType[] fieldTypes)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.tableSchema = TableSchema.builder().fields(fieldNames,fieldTypes).build();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> TableSchema <span class="title">getTableSchema</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> tableSchema;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> DataType <span class="title">getConsumedDataType</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> tableSchema.toRowDataType();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 已过时</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> TableSink&lt;Row&gt; <span class="title">configure</span><span class="params">(String[] fieldNames, TypeInformation&lt;?&gt;[] fieldTypes)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 已过时</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">emitDataStream</span><span class="params">(DataStream&lt;Row&gt; dataStream)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> DataStreamSink&lt;Row&gt; <span class="title">consumeDataStream</span><span class="params">(DataStream&lt;Row&gt; dataStream)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> dataStream.addSink(<span class="keyword">new</span> SinkFunction());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SinkFunction</span> <span class="keyword">extends</span> <span class="title">RichSinkFunction</span>&lt;<span class="title">Row</span>&gt; </span>&#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="title">SinkFunction</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">invoke</span><span class="params">(Row value, Context context)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                System.out.println(value);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// Table只有Insert操作，不需要特殊编码</span><br><span class="line">user_1,2016-01-01 10:02:06,browse,product_5,20,1451613726000</span><br><span class="line">user_1,2016-01-01 10:02:00,browse,product_5,20,1451613720000</span><br><span class="line">user_1,2016-01-01 10:02:15,browse,product_5,20,1451613735000</span><br><span class="line">user_1,2016-01-01 10:02:02,browse,product_5,20,1451613722000</span><br><span class="line">user_1,2016-01-01 10:02:16,browse,product_5,20,1451613736000</span><br></pre></td></tr></table></figure>
+<h2 id="RetractStreamTableSink"><a href="#RetractStreamTableSink" class="headerlink" title="RetractStreamTableSink"></a>RetractStreamTableSink</h2><h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bigdata.flink.tableSqlAppendUpsertRetract.retract;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.bigdata.flink.beans.table.UserBrowseLog;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.typeinfo.TypeInformation;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.typeutils.RowTypeInfo;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.utils.ParameterTool;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.ProcessFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.sink.RichSinkFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.DataTypes;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.EnvironmentSettings;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.TableSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.sinks.RetractStreamTableSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.sinks.TableSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.types.DataType;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.types.Row;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.OffsetDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.ZoneOffset;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Summary:</span></span><br><span class="line"><span class="comment"> *    自定义RetractStreamTableSink 查看从有更新的Table到DataStream的消息编码</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        args=<span class="keyword">new</span> String[]&#123;<span class="string">"--application"</span>,<span class="string">"flink/src/main/java/com/bigdata/flink/tableSqlAppendUpsertRetract/application.properties"</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1、解析命令行参数</span></span><br><span class="line">        ParameterTool fromArgs = ParameterTool.fromArgs(args);</span><br><span class="line">        ParameterTool parameterTool = ParameterTool.fromPropertiesFile(fromArgs.getRequired(<span class="string">"application"</span>));</span><br><span class="line"></span><br><span class="line">        String kafkaBootstrapServers = parameterTool.getRequired(<span class="string">"kafkaBootstrapServers"</span>);</span><br><span class="line">        String browseTopic = parameterTool.getRequired(<span class="string">"browseTopic"</span>);</span><br><span class="line">        String browseTopicGroupID = parameterTool.getRequired(<span class="string">"browseTopicGroupID"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2、设置运行环境</span></span><br><span class="line">        EnvironmentSettings settings = EnvironmentSettings.newInstance().inStreamingMode().useBlinkPlanner().build();</span><br><span class="line">        StreamExecutionEnvironment streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamEnv, settings);</span><br><span class="line">        streamEnv.setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3、注册Kafka数据源</span></span><br><span class="line">        Properties browseProperties = <span class="keyword">new</span> Properties();</span><br><span class="line">        browseProperties.put(<span class="string">"bootstrap.servers"</span>,kafkaBootstrapServers);</span><br><span class="line">        browseProperties.put(<span class="string">"group.id"</span>,browseTopicGroupID);</span><br><span class="line">        DataStream&lt;UserBrowseLog&gt; browseStream=streamEnv</span><br><span class="line">                .addSource(<span class="keyword">new</span> FlinkKafkaConsumer010&lt;&gt;(browseTopic, <span class="keyword">new</span> SimpleStringSchema(), browseProperties))</span><br><span class="line">                .process(<span class="keyword">new</span> BrowseKafkaProcessFunction());</span><br><span class="line">        tableEnv.registerDataStream(<span class="string">"source_kafka_browse_log"</span>,browseStream,<span class="string">"userID,eventTime,eventType,productID,productPrice,eventTimeTimestamp"</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//4、注册RetractStreamTableSink</span></span><br><span class="line">        String[] sinkFieldNames=&#123;<span class="string">"userID"</span>,<span class="string">"browseNumber"</span>&#125;;</span><br><span class="line">        DataType[] sinkFieldTypes=&#123;DataTypes.STRING(),DataTypes.BIGINT()&#125;;</span><br><span class="line">        RetractStreamTableSink&lt;Row&gt; myRetractStreamTableSink = <span class="keyword">new</span> MyRetractStreamTableSink(sinkFieldNames,sinkFieldTypes);</span><br><span class="line">        tableEnv.registerTableSink(<span class="string">"sink_stdout"</span>,myRetractStreamTableSink);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//5、连续查询</span></span><br><span class="line">        <span class="comment">//统计每个Uid的浏览次数</span></span><br><span class="line">        String sql=<span class="string">"insert into sink_stdout select userID,count(1) as browseNumber from source_kafka_browse_log where userID in ('user_1','user_2') group by userID "</span>;</span><br><span class="line">        tableEnv.sqlUpdate(sql);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//6、开始执行</span></span><br><span class="line">        tableEnv.execute(Test.class.getSimpleName());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解析Kafka数据</span></span><br><span class="line"><span class="comment">     * 将Kafka JSON String 解析成JavaBean: UserBrowseLog</span></span><br><span class="line"><span class="comment">     * UserBrowseLog(String userID, String eventTime, String eventType, String productID, int productPrice, long eventTimeTimestamp)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseKafkaProcessFunction</span> <span class="keyword">extends</span> <span class="title">ProcessFunction</span>&lt;<span class="title">String</span>, <span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processElement</span><span class="params">(String value, Context ctx, Collector&lt;UserBrowseLog&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                UserBrowseLog log = JSON.parseObject(value, UserBrowseLog.class);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 增加一个long类型的时间戳</span></span><br><span class="line">                <span class="comment">// 指定eventTime为yyyy-MM-dd HH:mm:ss格式的北京时间</span></span><br><span class="line">                java.time.format.DateTimeFormatter format = DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">                OffsetDateTime eventTime = LocalDateTime.parse(log.getEventTime(), format).atOffset(ZoneOffset.of(<span class="string">"+08:00"</span>));</span><br><span class="line">                <span class="comment">// 转换成毫秒时间戳</span></span><br><span class="line">                <span class="keyword">long</span> eventTimeTimestamp = eventTime.toInstant().toEpochMilli();</span><br><span class="line">                log.setEventTimeTimestamp(eventTimeTimestamp);</span><br><span class="line"></span><br><span class="line">                out.collect(log);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception ex)&#123;</span><br><span class="line">                log.error(<span class="string">"解析Kafka数据异常..."</span>,ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义RetractStreamTableSink</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * Table在内部被转换成具有Add(增加)和Retract(撤消/删除)的消息流，最终交由DataStream的SinkFunction处理。</span></span><br><span class="line"><span class="comment">     * DataStream里的数据格式是Tuple2类型,如Tuple2&lt;Boolean, Row&gt;。</span></span><br><span class="line"><span class="comment">     * Boolean是Add(增加)或Retract(删除)的flag(标识)。Row是真正的数据类型。</span></span><br><span class="line"><span class="comment">     * Table中的Insert被编码成一条Add消息。如Tuple2&lt;True, Row&gt;。</span></span><br><span class="line"><span class="comment">     * Table中的Update被编码成两条消息。一条删除消息Tuple2&lt;False, Row&gt;，一条增加消息Tuple2&lt;True, Row&gt;。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRetractStreamTableSink</span> <span class="keyword">implements</span> <span class="title">RetractStreamTableSink</span>&lt;<span class="title">Row</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> TableSchema tableSchema;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyRetractStreamTableSink</span><span class="params">(String[] fieldNames, DataType[] fieldTypes)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.tableSchema = TableSchema.builder().fields(fieldNames,fieldTypes).build();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> TableSchema <span class="title">getTableSchema</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> tableSchema;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 已过时</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> TableSink&lt;Tuple2&lt;Boolean, Row&gt;&gt; configure(String[] fieldNames, TypeInformation&lt;?&gt;[] fieldTypes) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 已过时</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">emitDataStream</span><span class="params">(DataStream&lt;Tuple2&lt;Boolean, Row&gt;&gt; dataStream)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 最终会转换成DataStream处理</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> DataStreamSink&lt;Tuple2&lt;Boolean, Row&gt;&gt; consumeDataStream(DataStream&lt;Tuple2&lt;Boolean, Row&gt;&gt; dataStream) &#123;</span><br><span class="line">            <span class="keyword">return</span> dataStream.addSink(<span class="keyword">new</span> SinkFunction());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> TypeInformation&lt;Row&gt; <span class="title">getRecordType</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> RowTypeInfo(tableSchema.getFieldTypes(),tableSchema.getFieldNames());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SinkFunction</span> <span class="keyword">extends</span> <span class="title">RichSinkFunction</span>&lt;<span class="title">Tuple2</span>&lt;<span class="title">Boolean</span>, <span class="title">Row</span>&gt;&gt; </span>&#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="title">SinkFunction</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">invoke</span><span class="params">(Tuple2&lt;Boolean, Row&gt; value, Context context)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                Boolean flag = value.f0;</span><br><span class="line">                <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">                    System.out.println(<span class="string">"增加... "</span>+value);</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    System.out.println(<span class="string">"删除... "</span>+value);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="结果-1"><a href="#结果-1" class="headerlink" title="结果"></a>结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">增加... (<span class="literal">true</span>,user_1,1)</span><br><span class="line">//user_1更新时被编译成两条消息</span><br><span class="line">//先是一条删除的消息</span><br><span class="line">删除... (<span class="literal">false</span>,user_1,1)</span><br><span class="line">//再是一条增加的消息</span><br><span class="line">增加... (<span class="literal">true</span>,user_1,2)</span><br><span class="line">//同理user_2</span><br><span class="line">增加... (<span class="literal">true</span>,user_2,1)</span><br><span class="line">删除... (<span class="literal">false</span>,user_1,2)</span><br><span class="line">增加... (<span class="literal">true</span>,user_1,3)</span><br><span class="line">删除... (<span class="literal">false</span>,user_1,3)</span><br><span class="line">增加... (<span class="literal">true</span>,user_1,4)</span><br><span class="line">删除... (<span class="literal">false</span>,user_2,1)</span><br><span class="line">增加... (<span class="literal">true</span>,user_2,2)</span><br><span class="line">删除... (<span class="literal">false</span>,user_1,4)</span><br><span class="line">增加... (<span class="literal">true</span>,user_1,5)</span><br></pre></td></tr></table></figure>
+<h2 id="UpsertStreamTableSink"><a href="#UpsertStreamTableSink" class="headerlink" title="UpsertStreamTableSink"></a>UpsertStreamTableSink</h2><h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bigdata.flink.tableSqlAppendUpsertRetract.upsert;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.bigdata.flink.beans.table.UserBrowseLog;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.typeinfo.TypeInformation;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.typeutils.RowTypeInfo;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.utils.ParameterTool;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.ProcessFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.sink.RichSinkFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.DataTypes;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.EnvironmentSettings;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.TableSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.sinks.TableSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.sinks.UpsertStreamTableSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.types.DataType;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.types.Row;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"><span class="keyword">import</span> org.joda.time.DateTime;</span><br><span class="line"><span class="keyword">import</span> org.joda.time.format.DateTimeFormat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.OffsetDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.ZoneOffset;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Summary:</span></span><br><span class="line"><span class="comment"> *    自定义UpsertStreamTableSink 查看从有Insert/Update的Table到DataStream的消息编码</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        args=<span class="keyword">new</span> String[]&#123;<span class="string">"--application"</span>,<span class="string">"flink/src/main/java/com/bigdata/flink/tableSqlAppendUpsertRetract/application.properties"</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1、解析命令行参数</span></span><br><span class="line">        ParameterTool fromArgs = ParameterTool.fromArgs(args);</span><br><span class="line">        ParameterTool parameterTool = ParameterTool.fromPropertiesFile(fromArgs.getRequired(<span class="string">"application"</span>));</span><br><span class="line"></span><br><span class="line">        String kafkaBootstrapServers = parameterTool.getRequired(<span class="string">"kafkaBootstrapServers"</span>);</span><br><span class="line">        String browseTopic = parameterTool.getRequired(<span class="string">"browseTopic"</span>);</span><br><span class="line">        String browseTopicGroupID = parameterTool.getRequired(<span class="string">"browseTopicGroupID"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2、设置运行环境</span></span><br><span class="line">        EnvironmentSettings settings = EnvironmentSettings.newInstance().inStreamingMode().useBlinkPlanner().build();</span><br><span class="line">        StreamExecutionEnvironment streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamEnv, settings);</span><br><span class="line">        streamEnv.setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3、注册Kafka数据源</span></span><br><span class="line">        Properties browseProperties = <span class="keyword">new</span> Properties();</span><br><span class="line">        browseProperties.put(<span class="string">"bootstrap.servers"</span>,kafkaBootstrapServers);</span><br><span class="line">        browseProperties.put(<span class="string">"group.id"</span>,browseTopicGroupID);</span><br><span class="line">        DataStream&lt;UserBrowseLog&gt; browseStream=streamEnv</span><br><span class="line">                .addSource(<span class="keyword">new</span> FlinkKafkaConsumer010&lt;&gt;(browseTopic, <span class="keyword">new</span> SimpleStringSchema(), browseProperties))</span><br><span class="line">                .process(<span class="keyword">new</span> BrowseKafkaProcessFunction());</span><br><span class="line">        tableEnv.registerDataStream(<span class="string">"source_kafka_browse_log"</span>,browseStream,<span class="string">"userID,eventTime,eventType,productID,productPrice,eventTimeTimestamp"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//4、注册UpsertStreamTableSink</span></span><br><span class="line">        String[] sinkFieldNames=&#123;<span class="string">"userID"</span>,<span class="string">"browseNumber"</span>&#125;;</span><br><span class="line">        DataType[] sinkFieldTypes=&#123;DataTypes.STRING(),DataTypes.BIGINT()&#125;;</span><br><span class="line">        UpsertStreamTableSink&lt;Row&gt; myRetractStreamTableSink = <span class="keyword">new</span> MyUpsertStreamTableSink(sinkFieldNames,sinkFieldTypes);</span><br><span class="line">        tableEnv.registerTableSink(<span class="string">"sink_stdout"</span>,myRetractStreamTableSink);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//5、连续查询</span></span><br><span class="line">        <span class="comment">//统计每个Uid的浏览次数</span></span><br><span class="line">        String sql=<span class="string">"insert into sink_stdout select userID,count(1) as browseNumber from source_kafka_browse_log where userID in ('user_1','user_2') group by userID "</span>;</span><br><span class="line">        tableEnv.sqlUpdate(sql);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//6、开始执行</span></span><br><span class="line">        tableEnv.execute(Test.class.getSimpleName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解析Kafka数据</span></span><br><span class="line"><span class="comment">     * 将Kafka JSON String 解析成JavaBean: UserBrowseLog</span></span><br><span class="line"><span class="comment">     * UserBrowseLog(String userID, String eventTime, String eventType, String productID, int productPrice, long eventTimeTimestamp)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseKafkaProcessFunction</span> <span class="keyword">extends</span> <span class="title">ProcessFunction</span>&lt;<span class="title">String</span>, <span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processElement</span><span class="params">(String value, Context ctx, Collector&lt;UserBrowseLog&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                UserBrowseLog log = JSON.parseObject(value, UserBrowseLog.class);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 增加一个long类型的时间戳</span></span><br><span class="line">                <span class="comment">// 指定eventTime为yyyy-MM-dd HH:mm:ss格式的北京时间</span></span><br><span class="line">                java.time.format.DateTimeFormatter format = DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">                OffsetDateTime eventTime = LocalDateTime.parse(log.getEventTime(), format).atOffset(ZoneOffset.of(<span class="string">"+08:00"</span>));</span><br><span class="line">                <span class="comment">// 转换成毫秒时间戳</span></span><br><span class="line">                <span class="keyword">long</span> eventTimeTimestamp = eventTime.toInstant().toEpochMilli();</span><br><span class="line">                log.setEventTimeTimestamp(eventTimeTimestamp);</span><br><span class="line"></span><br><span class="line">                out.collect(log);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception ex)&#123;</span><br><span class="line">                log.error(<span class="string">"解析Kafka数据异常..."</span>,ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义UpsertStreamTableSink</span></span><br><span class="line"><span class="comment">     * Table在内部被转换成具有Add(增加)和Retract(撤消/删除)的消息流，最终交由DataStream的SinkFunction处理。</span></span><br><span class="line"><span class="comment">     * Boolean是Add(增加)或Retract(删除)的flag(标识)。Row是真正的数据类型。</span></span><br><span class="line"><span class="comment">     * Table中的Insert被编码成一条Add消息。如Tuple2&lt;True, Row&gt;。</span></span><br><span class="line"><span class="comment">     * Table中的Update被编码成一条Add消息。如Tuple2&lt;True, Row&gt;。</span></span><br><span class="line"><span class="comment">     * 在SortLimit(即order by ... limit ...)的场景下，被编码成两条消息。一条删除消息Tuple2&lt;False, Row&gt;，一条增加消息Tuple2&lt;True, Row&gt;。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyUpsertStreamTableSink</span> <span class="keyword">implements</span> <span class="title">UpsertStreamTableSink</span>&lt;<span class="title">Row</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> TableSchema tableSchema;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyUpsertStreamTableSink</span><span class="params">(String[] fieldNames, DataType[] fieldTypes)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.tableSchema = TableSchema.builder().fields(fieldNames,fieldTypes).build();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> TableSchema <span class="title">getTableSchema</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> tableSchema;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置Unique Key</span></span><br><span class="line">        <span class="comment">// 如上SQL中有GroupBy，则这里的唯一键会自动被推导为GroupBy的字段</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setKeyFields</span><span class="params">(String[] keys)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 是否只有Insert</span></span><br><span class="line">        <span class="comment">// 如上SQL场景，需要Update，则这里被推导为isAppendOnly=false</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setIsAppendOnly</span><span class="params">(Boolean isAppendOnly)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> TypeInformation&lt;Row&gt; <span class="title">getRecordType</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> RowTypeInfo(tableSchema.getFieldTypes(),tableSchema.getFieldNames());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 已过时</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">emitDataStream</span><span class="params">(DataStream&lt;Tuple2&lt;Boolean, Row&gt;&gt; dataStream)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 最终会转换成DataStream处理</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> DataStreamSink&lt;Tuple2&lt;Boolean, Row&gt;&gt; consumeDataStream(DataStream&lt;Tuple2&lt;Boolean, Row&gt;&gt; dataStream) &#123;</span><br><span class="line">            <span class="keyword">return</span> dataStream.addSink(<span class="keyword">new</span> SinkFunction());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> TableSink&lt;Tuple2&lt;Boolean, Row&gt;&gt; configure(String[] fieldNames, TypeInformation&lt;?&gt;[] fieldTypes) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SinkFunction</span> <span class="keyword">extends</span> <span class="title">RichSinkFunction</span>&lt;<span class="title">Tuple2</span>&lt;<span class="title">Boolean</span>, <span class="title">Row</span>&gt;&gt; </span>&#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="title">SinkFunction</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">invoke</span><span class="params">(Tuple2&lt;Boolean, Row&gt; value, Context context)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                Boolean flag = value.f0;</span><br><span class="line">                <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">                    System.out.println(<span class="string">"增加... "</span>+value);</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    System.out.println(<span class="string">"删除... "</span>+value);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="结果-2"><a href="#结果-2" class="headerlink" title="结果"></a>结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">增加... (<span class="literal">true</span>,user_1,1)</span><br><span class="line">//user_1更新时被编译成一条消息</span><br><span class="line">增加... (<span class="literal">true</span>,user_1,2)</span><br><span class="line">//user_1更新时被编译成一条消息</span><br><span class="line">增加... (<span class="literal">true</span>,user_1,3)</span><br><span class="line">增加... (<span class="literal">true</span>,user_1,4)</span><br><span class="line">//同理user_2更新</span><br><span class="line">增加... (<span class="literal">true</span>,user_2,1)</span><br><span class="line">增加... (<span class="literal">true</span>,user_2,2)</span><br><span class="line">增加... (<span class="literal">true</span>,user_1,5)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/">http://code-monkey.top/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Flink/">Flink</a>
+            
+              <a href="/tags/AppendStreamTableSink/">AppendStreamTableSink</a>
+            
+              <a href="/tags/RetractStreamTableSink/">RetractStreamTableSink</a>
+            
+              <a href="/tags/UpsertStreamTableSink/">UpsertStreamTableSink</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/">
+        <span class="next-text nav-default">Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>

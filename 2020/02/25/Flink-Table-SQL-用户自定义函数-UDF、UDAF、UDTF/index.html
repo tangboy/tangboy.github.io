@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF">
+
+
+
+
+  <meta name="keywords" content="Flink, UDF, UDAF, UDTF, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz",
+      appKey: "bA46NPkYiSG0QaBP2vX2ckzl"
+    });
+  </script>
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-25
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/" data-title="Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#测试数据"><span class="toc-text">测试数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UDF时间转换"><span class="toc-text">UDF时间转换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#示例"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结果"><span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UDAF求Sum"><span class="toc-text">UDAF求Sum</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#示例-1"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结果-1"><span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UDTF一列转多列"><span class="toc-text">UDTF一列转多列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#示例-2"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结果-2"><span class="toc-text">结果</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>本文总结Flink Table &amp; SQL中的用户自定义函数: UDF、UDAF、UDTF。</p>
+<ul>
+<li><strong>UDF</strong>: 自定义标量函数(User Defined Scalar Function)。一行输入一行输出。</li>
+<li><strong>UDAF</strong>: 自定义聚合函数。多行输入一行输出。</li>
+<li><strong>UDTF</strong>: 自定义表函数。一行输入多行输出或一列输入多列输出。</li>
+</ul>
+<h2 id="测试数据"><a href="#测试数据" class="headerlink" title="测试数据"></a>测试数据</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 某个用户在某个时刻浏览了某个商品，以及商品的价值</span><br><span class="line">// eventTime: 北京时间，方便测试。如下，乱序数据:</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:00"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:02"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:10"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:12"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:15"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:16"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="UDF时间转换"><a href="#UDF时间转换" class="headerlink" title="UDF时间转换"></a>UDF时间转换</h2><p>UDF需要继承<code>ScalarFunction</code>抽象类，主要实现eval方法。</p>
+<p>自定义UDF，实现将Flink Window Start/End Timestamp类型时间转换为指定时区时间。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bigdata.flink.tableSqlUDF.udf;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.bigdata.flink.beans.table.UserBrowseLog;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.utils.ParameterTool;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.TimeCharacteristic;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.ProcessFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.windowing.time.Time;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.EnvironmentSettings;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.Table;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.functions.ScalarFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.types.Row;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.Timestamp;</span><br><span class="line"><span class="keyword">import</span> java.time.*;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Summary:</span></span><br><span class="line"><span class="comment"> *  UDF</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//args=new String[]&#123;"--application","flink/src/main/java/com/bigdata/flink/tableSqlUDF/application.properties"&#125;;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//1、解析命令行参数</span></span><br><span class="line">        ParameterTool fromArgs = ParameterTool.fromArgs(args);</span><br><span class="line">        ParameterTool parameterTool = ParameterTool.fromPropertiesFile(fromArgs.getRequired(<span class="string">"application"</span>));</span><br><span class="line">        String kafkaBootstrapServers = parameterTool.getRequired(<span class="string">"kafkaBootstrapServers"</span>);</span><br><span class="line">        String browseTopic = parameterTool.getRequired(<span class="string">"browseTopic"</span>);</span><br><span class="line">        String browseTopicGroupID = parameterTool.getRequired(<span class="string">"browseTopicGroupID"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2、设置运行环境</span></span><br><span class="line">        EnvironmentSettings settings = EnvironmentSettings.newInstance().inStreamingMode().useBlinkPlanner().build();</span><br><span class="line">        StreamExecutionEnvironment streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        streamEnv.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line">        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamEnv, settings);</span><br><span class="line">        streamEnv.setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3、注册Kafka数据源</span></span><br><span class="line">        Properties browseProperties = <span class="keyword">new</span> Properties();</span><br><span class="line">        browseProperties.put(<span class="string">"bootstrap.servers"</span>,kafkaBootstrapServers);</span><br><span class="line">        browseProperties.put(<span class="string">"group.id"</span>,browseTopicGroupID);</span><br><span class="line">        DataStream&lt;UserBrowseLog&gt; browseStream=streamEnv</span><br><span class="line">                .addSource(<span class="keyword">new</span> FlinkKafkaConsumer010&lt;&gt;(browseTopic, <span class="keyword">new</span> SimpleStringSchema(), browseProperties))</span><br><span class="line">                .process(<span class="keyword">new</span> BrowseKafkaProcessFunction())</span><br><span class="line">                .assignTimestampsAndWatermarks(<span class="keyword">new</span> BrowseBoundedOutOfOrdernessTimestampExtractor(Time.seconds(<span class="number">5</span>)));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 增加一个额外的字段rowtime为事件时间属性</span></span><br><span class="line">        tableEnv.registerDataStream(<span class="string">"source_kafka"</span>,browseStream,<span class="string">"userID,eventTime,eventTimeTimestamp,eventType,productID,productPrice,rowtime.rowtime"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//4、注册UDF</span></span><br><span class="line">        <span class="comment">//日期转换函数: 将Flink Window Start/End Timestamp转换为指定时区时间(默认转换为北京时间)</span></span><br><span class="line">        tableEnv.registerFunction(<span class="string">"UDFTimestampConverter"</span>, <span class="keyword">new</span> UDFTimestampConverter());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//5、运行SQL</span></span><br><span class="line">        <span class="comment">//基于事件时间，maxOutOfOrderness为5秒，滚动窗口，计算10秒内每个商品被浏览的PV</span></span><br><span class="line">        String sql = <span class="string">""</span></span><br><span class="line">                + <span class="string">"	select "</span></span><br><span class="line">                + <span class="string">"		UDFTimestampConverter(TUMBLE_START(rowtime, INTERVAL '10' SECOND),'YYYY-MM-dd HH:mm:ss') as window_start, "</span></span><br><span class="line">                + <span class="string">"		UDFTimestampConverter(TUMBLE_END(rowtime, INTERVAL '10' SECOND),'YYYY-MM-dd HH:mm:ss','+08:00') as window_end, "</span></span><br><span class="line">                + <span class="string">"		productID, "</span></span><br><span class="line">                + <span class="string">"		count(1) as browsePV"</span></span><br><span class="line">                + <span class="string">"	from source_kafka "</span></span><br><span class="line">                + <span class="string">"	group by productID,TUMBLE(rowtime, INTERVAL '10' SECOND)"</span>;</span><br><span class="line"></span><br><span class="line">        Table table = tableEnv.sqlQuery(sql);</span><br><span class="line">        tableEnv.toAppendStream(table,Row.class).print();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//6、开始执行</span></span><br><span class="line">        tableEnv.execute(Test.class.getSimpleName());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义UDF</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">UDFTimestampConverter</span> <span class="keyword">extends</span> <span class="title">ScalarFunction</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 默认转换为北京时间</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> timestamp Flink Timestamp 格式时间</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> format 目标格式,如"YYYY-MM-dd HH:mm:ss"</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> 目标时区的时间</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">eval</span><span class="params">(Timestamp timestamp,String format)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">            LocalDateTime noZoneDateTime = timestamp.toLocalDateTime();</span><br><span class="line">            ZonedDateTime utcZoneDateTime = ZonedDateTime.of(noZoneDateTime, ZoneId.of(<span class="string">"UTC"</span>));</span><br><span class="line"></span><br><span class="line">            ZonedDateTime targetZoneDateTime = utcZoneDateTime.withZoneSameInstant(ZoneId.of(<span class="string">"+08:00"</span>));</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> targetZoneDateTime.format(DateTimeFormatter.ofPattern(format));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 转换为指定时区时间</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> timestamp Flink Timestamp 格式时间</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> format 目标格式,如"YYYY-MM-dd HH:mm:ss"</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> zoneOffset 目标时区偏移量</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> 目标时区的时间</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">eval</span><span class="params">(Timestamp timestamp,String format,String zoneOffset)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">            LocalDateTime noZoneDateTime = timestamp.toLocalDateTime();</span><br><span class="line">            ZonedDateTime utcZoneDateTime = ZonedDateTime.of(noZoneDateTime, ZoneId.of(<span class="string">"UTC"</span>));</span><br><span class="line"></span><br><span class="line">            ZonedDateTime targetZoneDateTime = utcZoneDateTime.withZoneSameInstant(ZoneId.of(zoneOffset));</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> targetZoneDateTime.format(DateTimeFormatter.ofPattern(format));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解析Kafka数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseKafkaProcessFunction</span> <span class="keyword">extends</span> <span class="title">ProcessFunction</span>&lt;<span class="title">String</span>, <span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processElement</span><span class="params">(String value, Context ctx, Collector&lt;UserBrowseLog&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                UserBrowseLog log = JSON.parseObject(value, UserBrowseLog.class);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 增加一个long类型的时间戳</span></span><br><span class="line">                <span class="comment">// 指定eventTime为yyyy-MM-dd HH:mm:ss格式的北京时间</span></span><br><span class="line">                DateTimeFormatter format = DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">                OffsetDateTime eventTime = LocalDateTime.parse(log.getEventTime(), format).atOffset(ZoneOffset.of(<span class="string">"+08:00"</span>));</span><br><span class="line">                <span class="comment">// 转换成毫秒时间戳</span></span><br><span class="line">                <span class="keyword">long</span> eventTimeTimestamp = eventTime.toInstant().toEpochMilli();</span><br><span class="line">                log.setEventTimeTimestamp(eventTimeTimestamp);</span><br><span class="line"></span><br><span class="line">                out.collect(log);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception ex)&#123;</span><br><span class="line">                log.error(<span class="string">"解析Kafka数据异常..."</span>,ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提取时间戳生成水印</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseBoundedOutOfOrdernessTimestampExtractor</span> <span class="keyword">extends</span> <span class="title">BoundedOutOfOrdernessTimestampExtractor</span>&lt;<span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        BrowseBoundedOutOfOrdernessTimestampExtractor(Time maxOutOfOrderness) &#123;</span><br><span class="line">            <span class="keyword">super</span>(maxOutOfOrderness);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">extractTimestamp</span><span class="params">(UserBrowseLog element)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> element.getEventTimeTimestamp();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-12-01 10:02:00,2019-12-01 10:02:10,product_5,7</span><br></pre></td></tr></table></figure>
+<h2 id="UDAF求Sum"><a href="#UDAF求Sum" class="headerlink" title="UDAF求Sum"></a>UDAF求Sum</h2><p>UDAF，自定义聚合函数，需要继承<code>AggregateFunction</code>抽象类，实现一系列方法。<code>AggregateFunction</code>抽象类如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AggregateFunction</span>&lt;<span class="title">T</span>, <span class="title">ACC</span>&gt; <span class="keyword">extends</span> <span class="title">UserDefinedAggregateFunction</span>&lt;<span class="title">T</span>, <span class="title">ACC</span>&gt;</span></span><br><span class="line">T: UDAF输出的结果类型</span><br><span class="line">ACC: UDAF存放中间结果的类型</span><br></pre></td></tr></table></figure>
+<p>最基本的UDAF至少需要实现如下三个方法:</p>
+<ul>
+<li><code>createAccumulator</code>: UDAF是聚合操作，需要定义一个存放中间结果的数据结构(即Accumulator)。一般，在这里，初始化时，定义这个Accumulator</li>
+<li><code>accumulate</code>: 定义如何根据输入更新Accumulator</li>
+<li><code>getValue</code>: 定义如何返回Accumulator中存储的中间结果作为UDAF的最终结果</li>
+</ul>
+<p>除了三个基本方法外，在一些特殊的场景，可能还需要以下三个方法:</p>
+<ul>
+<li><code>retract</code>: 和accumulate操作相反,定义如何Restract，即减少Accumulator中的值</li>
+<li><code>merge</code>: 定义如何merge多个Accumulator</li>
+<li><code>resetAccumulator</code>: 定义如何重置Accumulator</li>
+</ul>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bigdata.flink.tableSqlUDF.udaf;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.bigdata.flink.beans.table.UserBrowseLog;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.utils.ParameterTool;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.TimeCharacteristic;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.ProcessFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.windowing.time.Time;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.EnvironmentSettings;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.Table;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.functions.AggregateFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.functions.ScalarFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.types.Row;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.Timestamp;</span><br><span class="line"><span class="keyword">import</span> java.time.*;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Summary:</span></span><br><span class="line"><span class="comment"> *   UDAF</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//args=new String[]&#123;"--application","flink/src/main/java/com/bigdata/flink/tableSqlUDF/application.properties"&#125;;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//1、解析命令行参数</span></span><br><span class="line">        ParameterTool fromArgs = ParameterTool.fromArgs(args);</span><br><span class="line">        ParameterTool parameterTool = ParameterTool.fromPropertiesFile(fromArgs.getRequired(<span class="string">"application"</span>));</span><br><span class="line">        String kafkaBootstrapServers = parameterTool.getRequired(<span class="string">"kafkaBootstrapServers"</span>);</span><br><span class="line">        String browseTopic = parameterTool.getRequired(<span class="string">"browseTopic"</span>);</span><br><span class="line">        String browseTopicGroupID = parameterTool.getRequired(<span class="string">"browseTopicGroupID"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2、设置运行环境</span></span><br><span class="line">        EnvironmentSettings settings = EnvironmentSettings.newInstance().inStreamingMode().useBlinkPlanner().build();</span><br><span class="line">        StreamExecutionEnvironment streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        streamEnv.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line">        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamEnv, settings);</span><br><span class="line">        streamEnv.setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3、注册Kafka数据源</span></span><br><span class="line">        Properties browseProperties = <span class="keyword">new</span> Properties();</span><br><span class="line">        browseProperties.put(<span class="string">"bootstrap.servers"</span>,kafkaBootstrapServers);</span><br><span class="line">        browseProperties.put(<span class="string">"group.id"</span>,browseTopicGroupID);</span><br><span class="line">        DataStream&lt;UserBrowseLog&gt; browseStream=streamEnv</span><br><span class="line">                .addSource(<span class="keyword">new</span> FlinkKafkaConsumer010&lt;&gt;(browseTopic, <span class="keyword">new</span> SimpleStringSchema(), browseProperties))</span><br><span class="line">                .process(<span class="keyword">new</span> BrowseKafkaProcessFunction())</span><br><span class="line">                .assignTimestampsAndWatermarks(<span class="keyword">new</span> BrowseBoundedOutOfOrdernessTimestampExtractor(Time.seconds(<span class="number">5</span>)));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 增加一个额外的字段rowtime为事件时间属性</span></span><br><span class="line">        tableEnv.registerDataStream(<span class="string">"source_kafka"</span>,browseStream,<span class="string">"userID,eventTime,eventTimeTimestamp,eventType,productID,productPrice,rowtime.rowtime"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//4、注册自定义函数</span></span><br><span class="line">        <span class="comment">//UDF: 时间转换</span></span><br><span class="line">        tableEnv.registerFunction(<span class="string">"UDFTimestampConverter"</span>, <span class="keyword">new</span> UDFTimestampConverter());</span><br><span class="line">        <span class="comment">//UDAF: 求Sum</span></span><br><span class="line">        tableEnv.registerFunction(<span class="string">"UDAFSum"</span>, <span class="keyword">new</span> UDAFSum());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//5、运行SQL</span></span><br><span class="line">        <span class="comment">//基于事件时间，maxOutOfOrderness为5秒，滚动窗口，计算10秒内每个商品被浏览的总价值</span></span><br><span class="line">        String sql = <span class="string">""</span></span><br><span class="line">                + <span class="string">"	select "</span></span><br><span class="line">                + <span class="string">"		UDFTimestampConverter(TUMBLE_START(rowtime, INTERVAL '10' SECOND),'YYYY-MM-dd HH:mm:ss') as window_start, "</span></span><br><span class="line">                + <span class="string">"		UDFTimestampConverter(TUMBLE_END(rowtime, INTERVAL '10' SECOND),'YYYY-MM-dd HH:mm:ss','+08:00') as window_end, "</span></span><br><span class="line">                + <span class="string">"		productID, "</span></span><br><span class="line">                + <span class="string">"		UDAFSum(productPrice) as sumPrice"</span></span><br><span class="line">                + <span class="string">"	from source_kafka "</span></span><br><span class="line">                + <span class="string">"	group by productID,TUMBLE(rowtime, INTERVAL '10' SECOND)"</span>;</span><br><span class="line"></span><br><span class="line">        Table table = tableEnv.sqlQuery(sql);</span><br><span class="line">        tableEnv.toAppendStream(table,Row.class).print();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//6、开始执行</span></span><br><span class="line">        tableEnv.execute(Test.class.getSimpleName());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义UDF</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">UDFTimestampConverter</span> <span class="keyword">extends</span> <span class="title">ScalarFunction</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 默认转换为北京时间</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> timestamp Flink Timestamp 格式时间</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> format 目标格式,如"YYYY-MM-dd HH:mm:ss"</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> 目标时区的时间</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">eval</span><span class="params">(Timestamp timestamp,String format)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">            LocalDateTime noZoneDateTime = timestamp.toLocalDateTime();</span><br><span class="line">            ZonedDateTime utcZoneDateTime = ZonedDateTime.of(noZoneDateTime, ZoneId.of(<span class="string">"UTC"</span>));</span><br><span class="line"></span><br><span class="line">            ZonedDateTime targetZoneDateTime = utcZoneDateTime.withZoneSameInstant(ZoneId.of(<span class="string">"+08:00"</span>));</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> targetZoneDateTime.format(DateTimeFormatter.ofPattern(format));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 转换为指定时区时间</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> timestamp Flink Timestamp 格式时间</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> format 目标格式,如"YYYY-MM-dd HH:mm:ss"</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> zoneOffset 目标时区偏移量</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> 目标时区的时间</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">eval</span><span class="params">(Timestamp timestamp,String format,String zoneOffset)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">            LocalDateTime noZoneDateTime = timestamp.toLocalDateTime();</span><br><span class="line">            ZonedDateTime utcZoneDateTime = ZonedDateTime.of(noZoneDateTime, ZoneId.of(<span class="string">"UTC"</span>));</span><br><span class="line"></span><br><span class="line">            ZonedDateTime targetZoneDateTime = utcZoneDateTime.withZoneSameInstant(ZoneId.of(zoneOffset));</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> targetZoneDateTime.format(DateTimeFormatter.ofPattern(format));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义UDAF</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">UDAFSum</span> <span class="keyword">extends</span> <span class="title">AggregateFunction</span>&lt;<span class="title">Long</span>, <span class="title">UDAFSum</span>.<span class="title">SumAccumulator</span>&gt;</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 定义一个Accumulator，存放聚合的中间结果</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SumAccumulator</span></span>&#123;</span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">long</span> sumPrice;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 初始化Accumulator</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> SumAccumulator <span class="title">createAccumulator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            SumAccumulator sumAccumulator = <span class="keyword">new</span> SumAccumulator();</span><br><span class="line">            sumAccumulator.sumPrice=<span class="number">0</span>;</span><br><span class="line">            <span class="keyword">return</span> sumAccumulator;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 定义如何根据输入更新Accumulator</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> accumulator  Accumulator</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> productPrice 输入</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accumulate</span><span class="params">(SumAccumulator accumulator,<span class="keyword">int</span> productPrice)</span></span>&#123;</span><br><span class="line">            accumulator.sumPrice += productPrice;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 返回聚合的最终结果</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> accumulator Accumulator</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Long <span class="title">getValue</span><span class="params">(SumAccumulator accumulator)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> accumulator.sumPrice;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解析Kafka数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseKafkaProcessFunction</span> <span class="keyword">extends</span> <span class="title">ProcessFunction</span>&lt;<span class="title">String</span>, <span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processElement</span><span class="params">(String value, Context ctx, Collector&lt;UserBrowseLog&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                UserBrowseLog log = JSON.parseObject(value, UserBrowseLog.class);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 增加一个long类型的时间戳</span></span><br><span class="line">                <span class="comment">// 指定eventTime为yyyy-MM-dd HH:mm:ss格式的北京时间</span></span><br><span class="line">                DateTimeFormatter format = DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">                OffsetDateTime eventTime = LocalDateTime.parse(log.getEventTime(), format).atOffset(ZoneOffset.of(<span class="string">"+08:00"</span>));</span><br><span class="line">                <span class="comment">// 转换成毫秒时间戳</span></span><br><span class="line">                <span class="keyword">long</span> eventTimeTimestamp = eventTime.toInstant().toEpochMilli();</span><br><span class="line">                log.setEventTimeTimestamp(eventTimeTimestamp);</span><br><span class="line"></span><br><span class="line">                out.collect(log);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception ex)&#123;</span><br><span class="line">                log.error(<span class="string">"解析Kafka数据异常..."</span>,ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提取时间戳生成水印</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseBoundedOutOfOrdernessTimestampExtractor</span> <span class="keyword">extends</span> <span class="title">BoundedOutOfOrdernessTimestampExtractor</span>&lt;<span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        BrowseBoundedOutOfOrdernessTimestampExtractor(Time maxOutOfOrderness) &#123;</span><br><span class="line">            <span class="keyword">super</span>(maxOutOfOrderness);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">extractTimestamp</span><span class="params">(UserBrowseLog element)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> element.getEventTimeTimestamp();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="结果-1"><a href="#结果-1" class="headerlink" title="结果"></a>结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-12-01 10:02:00,2019-12-01 10:02:10,product_5,140</span><br></pre></td></tr></table></figure>
+<h2 id="UDTF一列转多列"><a href="#UDTF一列转多列" class="headerlink" title="UDTF一列转多列"></a>UDTF一列转多列</h2><p>UDTF，自定义表函数，继承TableFunction抽象类，主要实现eval方法。TableFunction抽象类如下:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">TableFunction</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">UserDefinedFunction</span></span></span><br><span class="line">T: 输出的数据类型</span><br></pre></td></tr></table></figure>
+<p>注意:</p>
+<ol>
+<li>如果需要UDTF返回多列，只需要将返回值类型声明为<code>Row</code>或<code>Tuple</code>即可。若返回Row,需要重写<code>getResultType</code>方法，显示声明返回的<code>Row</code>的字段类型。如下，示例。</li>
+<li>在使用UDTF时，需要带上<code>LATERAL</code>和<code>TABLE</code>两个关键字。</li>
+<li>UDTF支持<code>CROSS JOIN</code>和<code>LEFT JOIN</code>。<ol>
+<li><code>CROSS JOIN</code>: 对于左侧表的每一行，右侧UDTF不输出，则这一行不输出。</li>
+<li><code>LEFT JOIN</code>: 对于左侧表的每一行，右侧UDTF不输出，则这一行会输出，右侧UDTF字段为Null。</li>
+</ol>
+</li>
+</ol>
+<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bigdata.flink.tableSqlUDF.udtf;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.bigdata.flink.beans.table.UserBrowseLog;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.typeinfo.TypeInformation;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.typeinfo.Types;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.typeutils.RowTypeInfo;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.utils.ParameterTool;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.TimeCharacteristic;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.ProcessFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.windowing.time.Time;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.EnvironmentSettings;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.Table;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.functions.AggregateFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.functions.ScalarFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.table.functions.TableFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.types.Row;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.Timestamp;</span><br><span class="line"><span class="keyword">import</span> java.time.*;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Summary:</span></span><br><span class="line"><span class="comment"> *    UDTF</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//args=new String[]&#123;"--application","flink/src/main/java/com/bigdata/flink/tableSqlUDF/application.properties"&#125;;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//1、解析命令行参数</span></span><br><span class="line">        ParameterTool fromArgs = ParameterTool.fromArgs(args);</span><br><span class="line">        ParameterTool parameterTool = ParameterTool.fromPropertiesFile(fromArgs.getRequired(<span class="string">"application"</span>));</span><br><span class="line">        String kafkaBootstrapServers = parameterTool.getRequired(<span class="string">"kafkaBootstrapServers"</span>);</span><br><span class="line">        String browseTopic = parameterTool.getRequired(<span class="string">"browseTopic"</span>);</span><br><span class="line">        String browseTopicGroupID = parameterTool.getRequired(<span class="string">"browseTopicGroupID"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2、设置运行环境</span></span><br><span class="line">        EnvironmentSettings settings = EnvironmentSettings.newInstance().inStreamingMode().useBlinkPlanner().build();</span><br><span class="line">        StreamExecutionEnvironment streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        streamEnv.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line">        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamEnv, settings);</span><br><span class="line">        streamEnv.setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3、注册Kafka数据源</span></span><br><span class="line">        Properties browseProperties = <span class="keyword">new</span> Properties();</span><br><span class="line">        browseProperties.put(<span class="string">"bootstrap.servers"</span>,kafkaBootstrapServers);</span><br><span class="line">        browseProperties.put(<span class="string">"group.id"</span>,browseTopicGroupID);</span><br><span class="line">        DataStream&lt;UserBrowseLog&gt; browseStream=streamEnv</span><br><span class="line">                .addSource(<span class="keyword">new</span> FlinkKafkaConsumer010&lt;&gt;(browseTopic, <span class="keyword">new</span> SimpleStringSchema(), browseProperties))</span><br><span class="line">                .process(<span class="keyword">new</span> BrowseKafkaProcessFunction())</span><br><span class="line">                .assignTimestampsAndWatermarks(<span class="keyword">new</span> BrowseBoundedOutOfOrdernessTimestampExtractor(Time.seconds(<span class="number">5</span>)));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 增加一个额外的字段rowtime为事件时间属性</span></span><br><span class="line">        tableEnv.registerDataStream(<span class="string">"source_kafka"</span>,browseStream,<span class="string">"userID,eventTime,eventTimeTimestamp,eventType,productID,productPrice,rowtime.rowtime"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//4、注册自定义函数</span></span><br><span class="line">        tableEnv.registerFunction(<span class="string">"UDTFOneColumnToMultiColumn"</span>,<span class="keyword">new</span> UDTFOneColumnToMultiColumn());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//5、运行SQL</span></span><br><span class="line">        String sql = <span class="string">""</span></span><br><span class="line">                + <span class="string">"select "</span></span><br><span class="line">                + <span class="string">"	userID,eventTime,eventTimeTimestamp,eventType,productID,productPrice,rowtime,date1,time1 "</span></span><br><span class="line">                + <span class="string">"from source_kafka ,"</span></span><br><span class="line">                + <span class="string">"lateral table(UDTFOneColumnToMultiColumn(eventTime)) as T(date1,time1)"</span>;</span><br><span class="line"></span><br><span class="line">        Table table = tableEnv.sqlQuery(sql);</span><br><span class="line">        tableEnv.toAppendStream(table,Row.class).print();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//6、开始执行</span></span><br><span class="line">        tableEnv.execute(Test.class.getSimpleName());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义UDTF</span></span><br><span class="line"><span class="comment">     * 将一列变成两列。</span></span><br><span class="line"><span class="comment">     * 如:2019-12-01 10:02:06 转换成date1(2019-12-01)和time1(10:02:06)两列。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">UDTFOneColumnToMultiColumn</span> <span class="keyword">extends</span> <span class="title">TableFunction</span>&lt;<span class="title">Row</span>&gt;</span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eval</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">            String[] valueSplits = value.split(<span class="string">" "</span>);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//一行，两列</span></span><br><span class="line">            Row row = <span class="keyword">new</span> Row(<span class="number">2</span>);</span><br><span class="line">            row.setField(<span class="number">0</span>,valueSplits[<span class="number">0</span>]);</span><br><span class="line">            row.setField(<span class="number">1</span>,valueSplits[<span class="number">1</span>]);</span><br><span class="line">            collect(row);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> TypeInformation&lt;Row&gt; <span class="title">getResultType</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> RowTypeInfo(Types.STRING,Types.STRING);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解析Kafka数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseKafkaProcessFunction</span> <span class="keyword">extends</span> <span class="title">ProcessFunction</span>&lt;<span class="title">String</span>, <span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processElement</span><span class="params">(String value, Context ctx, Collector&lt;UserBrowseLog&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                UserBrowseLog log = JSON.parseObject(value, UserBrowseLog.class);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 增加一个long类型的时间戳</span></span><br><span class="line">                <span class="comment">// 指定eventTime为yyyy-MM-dd HH:mm:ss格式的北京时间</span></span><br><span class="line">                DateTimeFormatter format = DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">                OffsetDateTime eventTime = LocalDateTime.parse(log.getEventTime(), format).atOffset(ZoneOffset.of(<span class="string">"+08:00"</span>));</span><br><span class="line">                <span class="comment">// 转换成毫秒时间戳</span></span><br><span class="line">                <span class="keyword">long</span> eventTimeTimestamp = eventTime.toInstant().toEpochMilli();</span><br><span class="line">                log.setEventTimeTimestamp(eventTimeTimestamp);</span><br><span class="line"></span><br><span class="line">                out.collect(log);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception ex)&#123;</span><br><span class="line">                log.error(<span class="string">"解析Kafka数据异常..."</span>,ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提取时间戳生成水印</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BrowseBoundedOutOfOrdernessTimestampExtractor</span> <span class="keyword">extends</span> <span class="title">BoundedOutOfOrdernessTimestampExtractor</span>&lt;<span class="title">UserBrowseLog</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        BrowseBoundedOutOfOrdernessTimestampExtractor(Time maxOutOfOrderness) &#123;</span><br><span class="line">            <span class="keyword">super</span>(maxOutOfOrderness);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">extractTimestamp</span><span class="params">(UserBrowseLog element)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> element.getEventTimeTimestamp();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="结果-2"><a href="#结果-2" class="headerlink" title="结果"></a>结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 最后两列是用UDTF从第二列中解析出来</span><br><span class="line">user_5,2019-12-01 10:02:06,1575165726000,browse,product_5,20,2019-12-01T02:02:06,2019-12-01,10:02:06</span><br><span class="line">user_5,2019-12-01 10:02:06,1575165726000,browse,product_5,20,2019-12-01T02:02:06,2019-12-01,10:02:06</span><br><span class="line">user_5,2019-12-01 10:02:06,1575165726000,browse,product_5,20,2019-12-01T02:02:06,2019-12-01,10:02:06</span><br><span class="line">user_5,2019-12-01 10:02:00,1575165720000,browse,product_5,20,2019-12-01T02:02:00,2019-12-01,10:02:00</span><br><span class="line">user_4,2019-12-01 10:02:10,1575165730000,browse,product_5,20,2019-12-01T02:02:10,2019-12-01,10:02:10</span><br><span class="line">user_4,2019-12-01 10:02:12,1575165732000,browse,product_5,20,2019-12-01T02:02:12,2019-12-01,10:02:12</span><br><span class="line">user_4,2019-12-01 10:02:15,1575165735000,browse,product_5,20,2019-12-01T02:02:15,2019-12-01,10:02:15</span><br><span class="line">user_4,2019-12-01 10:02:02,1575165722000,browse,product_5,20,2019-12-01T02:02:02,2019-12-01,10:02:02</span><br><span class="line">user_5,2019-12-01 10:02:06,1575165726000,browse,product_5,20,2019-12-01T02:02:06,2019-12-01,10:02:06</span><br><span class="line">user_5,2019-12-01 10:02:06,1575165726000,browse,product_5,20,2019-12-01T02:02:06,2019-12-01,10:02:06</span><br><span class="line">user_4,2019-12-01 10:02:16,1575165736000,browse,product_5,20,2019-12-01T02:02:16,2019-12-01,10:02:16</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/">http://code-monkey.top/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Flink/">Flink</a>
+            
+              <a href="/tags/UDF/">UDF</a>
+            
+              <a href="/tags/UDAF/">UDAF</a>
+            
+              <a href="/tags/UDTF/">UDTF</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/">
+        <span class="next-text nav-default">Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>

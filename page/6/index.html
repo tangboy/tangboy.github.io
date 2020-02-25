@@ -216,6 +216,130 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/">Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-13
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/" data-title="Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="Spark-CBO-背景"><a href="#Spark-CBO-背景" class="headerlink" title="Spark CBO 背景"></a>Spark CBO 背景</h2><p>上文<a href="https://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">Spark SQL 内部原理中介绍的 Optimizer</a> 属于 RBO，实现简单有效。它属于 LogicalPlan 的优化，所有优化均基于 LogicalPlan 本身的特点，未考虑数据本身的特点，也未考虑算子本身的代价。</p>
+<p>本文将介绍 CBO，它充分考虑了数据本身的特点（如大小、分布）以及操作算子的特点（中间结果集的分布及大小）及代价，从而更好的选择执行代价最小的物理执行计划，即 SparkPlan。</p>
+<h2 id="Spark-CBO-原理"><a href="#Spark-CBO-原理" class="headerlink" title="Spark CBO 原理"></a>Spark CBO 原理</h2><p>CBO 原理是计算所有可能的物理计划的代价，并挑选出代价最小的物理执行计划。其核心在于评估一个给定的物理执行计划的代价。</p>
+<p>物理执行计划是一个树状结构，其代价等于每个执行节点的代价总合，如下图所示。</p>
+<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_sql_cost_model.png">
+<p>而每个执行节点的代价，分为两个部分</p>
+<ul>
+<li>该执行节点对数据集的影响，或者说该节点输出数据集的大小与分布</li>
+<li>该执行节点操作算子的代价</li>
+</ul>
+<p>每个操作算子的代价相对固定，可用规则来描述。而执行节点输出数据集的大小与分布，分为两个部分：1) 初始数据集，也即原始表，其数据集的大小与分布可直接通过统计得到；2)中间节点输出数据集的大小与分布可由其输入数据集的信息与操作本身的特点推算。</p>
+<p>所以，最终主要需要解决两个问题</p>
+<ul>
+<li>如何获取原始数据集的统计信息</li>
+<li>如何根据输入数据集估算特定算子的输出数据集</li>
+</ul>
+          <div class="read-more">
+            <a href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">Spark SQL / Catalyst 内部原理 与 RBO(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-13
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/" data-title="Spark SQL / Catalyst 内部原理 与 RBO(转)">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="Spark-SQL-架构"><a href="#Spark-SQL-架构" class="headerlink" title="Spark SQL 架构"></a>Spark SQL 架构</h2><p>Spark SQL 的整体架构如下图所示</p>
+<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql.png">
+<p>从上图可见，无论是直接使用 SQL 语句还是使用 DataFrame，都会经过如下步骤转换成 DAG 对 RDD 的操作</p>
+<ul>
+<li>Parser 解析 SQL，生成 Unresolved Logical Plan</li>
+<li>由 Analyzer 结合 Catalog 信息生成 Resolved Logical Plan</li>
+<li>Optimizer根据预先定义好的规则对 Resolved Logical Plan 进行优化并生成 Optimized Logical Plan</li>
+<li>Query Planner 将 Optimized Logical Plan 转换成多个 Physical Plan</li>
+<li>CBO 根据 Cost Model 算出每个 Physical Plan 的代价并选取代价最小的 Physical Plan 作为最终的 Physical Plan</li>
+<li>Spark 以 DAG 的方法执行上述 Physical Plan</li>
+<li>在执行 DAG 的过程中，Adaptive Execution 根据运行时信息动态调整执行计划从而提高执行效率</li>
+</ul>
+          <div class="read-more">
+            <a href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">Spark CommitCoordinator 保证数据一致性(转)</a>
         
       </h1>
@@ -690,114 +814,6 @@
 <p>从上表可以看到，一致性、隔离性和持久性靠的是各分布式事务参与方自己原有的机制，而两阶段提交主要保证了分布式事务的原子性。</p>
           <div class="read-more">
             <a href="/2017/12/24/两阶段提交及JTA/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/24/快速计算Distinct-Count/">快速计算Distinct Count(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-12-24
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2017/12/24/快速计算Distinct-Count/" data-title="快速计算Distinct Count(转)">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="UV-vs-PV"><a href="#UV-vs-PV" class="headerlink" title="UV vs. PV"></a>UV vs. PV</h2><p>在互联网中，经常需要计算UV和PV。所谓PV即Page View，网页被打开多少次（YouTube等视频网站非常重视视频的点击率，即被播放多少次，也即PV）。而UV即Unique Visitor（微信朋友圈或者微信公众号中的文章则统计有多少人看过该文章，也即UV。虽然微信上显示是指明该值是PV，但经笔者测试，实为UV）。这两个概念非常重要，比如淘宝卖家在做活动时，他往往需要统计宝贝被看了多少次，有多少个不同的人看过该活动介绍。至于如何在互联网上唯一标识一个自然人，也是一个难点，目前还没有一个非常准确的方法，常用的方法是用户名加cookie，这里不作深究。</p>
-<h2 id="count-distinct-vs-count-group-by"><a href="#count-distinct-vs-count-group-by" class="headerlink" title="count distinct vs. count group by"></a>count distinct vs. count group by</h2><p>很多情景下，尤其对于文本类型的字段，直接使用count distinct的查询效率是非常低的，而先做group by更count往往能提升查询效率。但实验表明，对于不同的字段，count distinct与count group by的性能并不一样，而且其效率也与目标数据集的数据重复度相关。</p>
-<p>本节通过几组实验说明了不同场景下不同query的不同效率，同时分析性能差异的原因。 （本文所有实验皆基于PostgreSQL 9.3.5平台）<br>分别使用count distinct 和 count group by对 bigint, macaddr, text三种类型的字段做查询。<br>首先创建如下结构的表</p>
-          <div class="read-more">
-            <a href="/2017/12/24/快速计算Distinct-Count/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/">Merge Join vs. Hash Join vs. Nested Loop(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-12-24
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/" data-title="Merge Join vs. Hash Join vs. Nested Loop(转)">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="Nested-Loop"><a href="#Nested-Loop" class="headerlink" title="Nested Loop"></a>Nested Loop</h2><p>对于被连接的数据子集较小的情况，Nested Loop是个较好的选择。Nested Loop就是扫描一个表（外表），每读到一条记录，就根据Join字段上的索引去另一张表（内表）里面查找，若Join字段上没有索引查询优化器一般就不会选择 Nested Loop。在Nested Loop中，内表（一般是带索引的大表）被外表（也叫“驱动表”，一般为小表——不紧相对其它表为小表，而且记录数的绝对值也较小，不要求有索引）驱动，外表返回的每一行都要在内表中检索找到与它匹配的行，因此整个查询返回的结果集不能太大（大于1 万不适合）。</p>
-<h2 id="Hash-Join"><a href="#Hash-Join" class="headerlink" title="Hash Join"></a>Hash Join</h2><p>Hash Join是做大数据集连接时的常用方式，优化器使用两个表中较小（相对较小）的表利用Join Key在内存中建立散列表，然后扫描较大的表并探测散列表，找出与Hash表匹配的行。<br>这种方式适用于较小的表完全可以放于内存中的情况，这样总成本就是访问两个表的成本之和。但是在表很大的情况下并不能完全放入内存，这时优化器会将它分割成若干不同的分区，不能放入内存的部分就把该分区写入磁盘的临时段，此时要求有较大的临时段从而尽量提高I/O 的性能。它能够很好的工作于没有索引的大表和并行查询的环境中，并提供最好的性能。大多数人都说它是Join的重型升降机。Hash Join只能应用于等值连接(如WHERE A.COL3 = B.COL4)，这是由Hash的特点决定的。</p>
-<h2 id="Merge-Join"><a href="#Merge-Join" class="headerlink" title="Merge Join"></a>Merge Join</h2><p>通常情况下Hash Join的效果都比排序合并连接要好，然而如果两表已经被排过序，在执行排序合并连接时不需要再排序了，这时Merge Join的性能会优于Hash Join。Merge join的操作通常分三步：</p>
-<ol>
-<li>对连接的每个表做table access full;</li>
-<li>对table access full的结果进行排序。</li>
-<li>进行merge join对排序结果进行合并。</li>
-</ol>
-<p>在全表扫描比索引范围扫描再进行表访问更可取的情况下，Merge Join会比Nested Loop性能更佳。当表特别小或特别巨大的时候，实行全表访问可能会比索引范围扫描更有效。Merge Join的性能开销几乎都在前两步。Merge Join可适于于非等值Join（&gt;，&lt;，&gt;=，&lt;=，但是不包含!=，也即&lt;&gt;）</p>
-          <div class="read-more">
-            <a href="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/" class="read-more-link">阅读更多</a>
           </div>
         
       

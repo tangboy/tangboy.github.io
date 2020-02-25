@@ -216,6 +216,124 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/">Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-25
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/" data-title="Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>本文总结Flink Table &amp; SQL中的用户自定义函数: UDF、UDAF、UDTF。</p>
+<ul>
+<li><strong>UDF</strong>: 自定义标量函数(User Defined Scalar Function)。一行输入一行输出。</li>
+<li><strong>UDAF</strong>: 自定义聚合函数。多行输入一行输出。</li>
+<li><strong>UDTF</strong>: 自定义表函数。一行输入多行输出或一列输入多列输出。</li>
+</ul>
+<h2 id="测试数据"><a href="#测试数据" class="headerlink" title="测试数据"></a>测试数据</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 某个用户在某个时刻浏览了某个商品，以及商品的价值</span><br><span class="line">// eventTime: 北京时间，方便测试。如下，乱序数据:</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:00"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:02"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:10"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:12"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:15"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:16"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/">Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-25
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/" data-title="Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>Flink Table &amp; SQL <code>StreamTableSink</code>有三类接口: <code>AppendStreamTableSink</code>、<code>UpsertStreamTableSink</code>、<code>RetractStreamTableSink</code>。</p>
+<ul>
+<li>AppendStreamTableSink: 可将动态表转换为Append流。适用于动态表只有Insert的场景。</li>
+<li>RetractStreamTableSink: 可将动态表转换为Retract流。适用于动态表有Insert、Delete、Update的场景。</li>
+<li>UpsertStreamTableSink: 可将动态表转换为Upsert流。适用于动态表有Insert、Delete、Update的场景。</li>
+</ul>
+<p>注意:</p>
+<ul>
+<li>RetractStreamTableSink中: Insert被编码成一条Add消息; Delete被编码成一条Retract消息;Update被编码成两条消息(先是一条Retract消息，再是一条Add消息)，即先删除再增加。</li>
+<li>UpsertStreamTableSink: Insert和Update均被编码成一条消息(Upsert消息); Delete被编码成一条Delete消息。</li>
+<li>UpsertStreamTableSink和RetractStreamTableSink最大的不同在于Update编码成一条消息，效率上比RetractStreamTableSink高。</li>
+<li>上述说的编码指的是动态表转换为DataStream时，表的增删改如何体现到DataStream上。</li>
+</ul>
+<p>本文主要想总结在Update场景下，RetractStreamTableSink和UpsertStreamTableSink的消息编码。</p>
+<h2 id="测试数据"><a href="#测试数据" class="headerlink" title="测试数据"></a>测试数据</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 自己造的测试数据</span><br><span class="line">// 某个用户在某个时刻浏览了某个商品，以及商品的价值</span><br><span class="line">// eventTime: 北京时间，方便测试。如下，乱序数据:</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:00"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:02"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_2"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:10"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_2"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_3"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_3"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:12"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:15"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:16"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/">Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction</a>
         
       </h1>
@@ -661,113 +779,6 @@
         
       
     </p></div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/08/远程工作协议/">远程工作协议</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-08
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2020/02/08/远程工作协议/" data-title="远程工作协议">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="Principles"><a href="#Principles" class="headerlink" title="Principles"></a>Principles</h2><h3 id="Ownership-amp-Leadership"><a href="#Ownership-amp-Leadership" class="headerlink" title="Ownership &amp; Leadership"></a>Ownership &amp; Leadership</h3><p>每个人都是 Owner，都是 Leader，如果看到团队或是项目有问题的时候，不要等，也不忍，请马上说出来，并给出相应的方案，自己跳出来召集开会，及时调整。不要闷在那里，自己憋！</p>
-<h3 id="Initiative"><a href="#Initiative" class="headerlink" title="Initiative"></a>Initiative</h3><p>每人个都必需是主动的，都需要自己发起要做的事，或是自己要认领要做的事，如果发现自己没有事情了， 需要学会主动发现问题，主动找到可以 improve 的地方，创新来源于此。没有路要学会自己造路！</p>
-<h3 id="Objectives-Oriented"><a href="#Objectives-Oriented" class="headerlink" title="Objectives Oriented"></a>Objectives Oriented</h3><p>每个人都是产品经理，也都是项目经理，每个人都必需把自己的工作和我们大的目标连接在一起，知道什么是重点，重点的东西就是两件事：一）从用户的角度出发；二）从产品的角度出发。这意味着我们要随时观察整个产品的样子，而不只是自己这一块东西 。</p>
-<h3 id="Insists-on-High-Standard"><a href="#Insists-on-High-Standard" class="headerlink" title="Insists on High Standard"></a>Insists on High Standard</h3><p>举法其上，得乎其中，举法其中，得乎其下，举法其下，法不得也。我们要坚持用高的标准要求自己，对于高标准的目标不妥协，但是在实施路径和策略上可以妥协。</p>
-          <div class="read-more">
-            <a href="/2020/02/08/远程工作协议/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/07/CANAL源码解析-monitor机制/">CANAL源码解析-monitor机制</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-07
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2020/02/07/CANAL源码解析-monitor机制/" data-title="CANAL源码解析-monitor机制">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>canal的流程描述中提及了两个monitor：<code>InstanceConfigMonitor</code>、<code>ServerRunningMonitor</code>。本文重点对这两个monitor进行分析。</p>
-<h2 id="InstanceConfigMonitor"><a href="#InstanceConfigMonitor" class="headerlink" title="InstanceConfigMonitor"></a>InstanceConfigMonitor</h2><p>从字面意思就可以得出，<code>InstanceConfigMonitor</code>是对canal实例配置的监控。实际上也确实如此，它的功能就是监控canal实例的配置文件——instance.properties，如果其中有增加、修改、删除，执行实例的启动、重启、停止操作。下面我们来分析<code>InstanceConfigMonitor</code>的代码。</p>
-<h3 id="InstanceConfigMonitor的创建"><a href="#InstanceConfigMonitor的创建" class="headerlink" title="InstanceConfigMonitor的创建"></a>InstanceConfigMonitor的创建</h3><p><code>InstanceConfigMonitor</code>在<code>CanalController</code>构造函数中被创建：</p>
-<p>首先获取canal.auto.scan配置，该配置控制是否监听canal实例配置的变化。如果该配置为false，则不需要创建<code>InstanceConfigMonitor</code>。默认该配置为true，此时需要创建<code>InstanceConfigMonitor</code>。</p>
-<p>在创建InstanceConfigMonitor之前先创建一个defaultAction（实际类为<code>InstanceAction</code>），<code>InstanceAction</code>是一个接口，其中定义了三个函数，分别对应启动实例、定制实例、重启实例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">InstanceAction</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 启动destination</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">(String destination)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 停止destination</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">(String destination)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 重载destination，可能需要stop,start操作，或者只是更新下内存配置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">reload</span><span class="params">(String destination)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>InstanceAction</code>的具体操作我们在后面再分析。</p>
-          <div class="read-more">
-            <a href="/2020/02/07/CANAL源码解析-monitor机制/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
 
     
 
