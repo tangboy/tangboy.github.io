@@ -216,6 +216,78 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/09/10/Word2vec原理浅析及tensorflow实现/">Word2vec原理浅析及tensorflow实现</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-09-10
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2017/09/10/Word2vec原理浅析及tensorflow实现/" data-title="Word2vec原理浅析及tensorflow实现">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="Word2vec简介"><a href="#Word2vec简介" class="headerlink" title="Word2vec简介"></a>Word2vec简介</h2><p>Word2Vec是由Google的Mikolov等人提出的一个词向量计算模型。</p>
+<ul>
+<li>输入：大量已分词的文本</li>
+<li>输出：用一个稠密向量来表示每个词</li>
+</ul>
+<p>词向量的重要意义在于将自然语言转换成了计算机能够理解的向量。相对于词袋模型、TF-IDF等模型，词向量能抓住词的上下文、语义，衡量词与词的相似性，在文本分类、情感分析等许多自然语言处理领域有重要作用。</p>
+<h2 id="Word2vec详细实现"><a href="#Word2vec详细实现" class="headerlink" title="Word2vec详细实现"></a>Word2vec详细实现</h2><p>word2vec的详细实现，简而言之，就是一个三层的神经网络。要理解word2vec的实现，需要的预备知识是神经网络和Logistic Regression。</p>
+<h3 id="神经网络结构"><a href="#神经网络结构" class="headerlink" title="神经网络结构"></a>神经网络结构</h3><img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/1.png">
+<p>上图是Word2vec的简要流程图。首先假设，词库里的词数为10000; 词向量的长度为300（根据<a href="https://www.youtube.com/playlist?list=PLlJy-eBtNFt4CSVWYqscHDdP58M3zFHIG" target="_blank" rel="noopener">斯坦福CS224d</a>的讲解，词向量一般为25-1000维，300维是一个好的选择）。下面以单个训练样本为例，依次介绍每个部分的含义。</p>
+<ol>
+<li>输入层：输入为一个词的one-hot向量表示。这个向量长度为10000。假设这个词为ants，ants在词库中的ID为i，则输入向量的第i个分量为1，其余为0。[0, 0, …, 0, 0, 1, 0, 0, …, 0, 0]</li>
+<li>隐藏层：隐藏层的神经元个数就是词向量的长度。隐藏层的参数是一个[10000 ，300]的矩阵。 <strong>实际上，这个参数矩阵就是词向量</strong>。回忆一下矩阵相乘，一个one-hot行向量和矩阵相乘，结果就是矩阵的第i行。经过隐藏层，实际上就是把10000维的one-hot向量映射成了最终想要得到的300维的词向量。</li>
+</ol>
+<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/2.png">
+<ol>
+<li>输出层: 输出层的神经元个数为总词数10000，参数矩阵尺寸为[300，10000]。词向量经过矩阵计算后再加上softmax归一化，重新变为10000维的向量，每一维对应词库中的一个词与输入的词（在这里是ants）共同出现在上下文中的概率。</li>
+</ol>
+<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/3.png">
+<p>上图中计算了car与ants共现的概率，car所对应的300维列向量就是输出层参数矩阵中的一列。输出层的参数矩阵是[300，10000]，也就是计算了词库中所有词与ants共现的概率。输出层的参数矩阵在训练完毕后没有作用。</p>
+<ol>
+<li>训练：训练样本（x, y）有输入也有输出，我们知道哪个词实际上跟ants共现，因此y也是一个10000维的向量。损失函数跟Logistic Regression相似，是神经网络的最终输出向量和y的交叉熵（cross-entropy）。最后用随机梯度下降来求解。</li>
+</ol>
+<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/4.png">
+<p>上述步骤是一个词作为输入和一个上下文中的词作为输出的情况，但实际情况显然更复杂，什么是上下文呢？用一个词去预测周围的其他词，还是用周围的好多词来预测一个词？这里就要引入实际训练时的两个模型skip-gram和CBOW。<br>
+          <div class="read-more">
+            <a href="/2017/09/10/Word2vec原理浅析及tensorflow实现/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </p></div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/">一篇文章搞懂Python中的面向对象编程</a>
         
       </h1>
@@ -718,56 +790,6 @@
 <p>如此，neo4j即安装成功。如果需要build不同的版本可以遵照参考文献5Readme的指示来实现。</p>
           <div class="read-more">
             <a href="/2017/01/23/introduction-to-neo4j/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/01/04/matrix-summary-in-linear-algebra/">线性代数之各种各样的矩阵</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-01-04
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2017/01/04/matrix-summary-in-linear-algebra/" data-title="线性代数之各种各样的矩阵">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>矩阵家族成员非常多，本文主要记录了我遇到过的矩阵(前面的文章所提到的矩阵，在这里就不重复列举了)。以后见识了新的矩阵时，会继续扩充本文。</p>
-<p>(以下知识均查阅了wikipedia。单词的中文翻译查的是有道词典。)</p>
-          <div class="read-more">
-            <a href="/2017/01/04/matrix-summary-in-linear-algebra/" class="read-more-link">阅读更多</a>
           </div>
         
       

@@ -216,6 +216,82 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/06/13/MapReduce之Shuffle过程详述/">MapReduce之Shuffle过程详述</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-06-13
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2019/06/13/MapReduce之Shuffle过程详述/" data-title="MapReduce之Shuffle过程详述">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>MapReduce作为Hadoop的编程框架，对于大数据开发或者想要接触大数据开发的开发者来说，是必须要掌握的，它是一种经典大数据计算框架，现在有很多开源项目的内部实现都会直接或间接地借鉴了MR过程的实现。我在经过了一些hadoop项目的开发，然后前几天又系统地学习MapReduc内部实现过程，尤其是学习中间的Shuffle过程之后，准备对这一块做一下总结，希望这篇文章能给需要的人带来一些帮助（文中Shuffle的分析还是以Hadoop1.0为例，这个跟2.0的区别并不是很大）。</p>
+<h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><p>对于MapReduce作业，完整的作业运行流程：</p>
+<img src="/2019/06/13/MapReduce之Shuffle过程详述/hadoop.png">
+<p>完整过程应该是分为7部分，分别是：</p>
+<ol>
+<li>作业启动：开发者通过控制台启动作业；</li>
+<li>作业初始化：这里主要是切分数据、创建作业和提交作业，与第三步紧密相联；</li>
+<li>作业/任务调度：对于1.0版的Hadoop来说就是JobTracker来负责任务调度，对于2.0版的Hadoop来说就是Yarn中的Resource Manager负责整个系统的资源管理与分配，Yarn可以参考IBM的一篇博客(Hadoop新MapReduce框架Yarn详解)[<a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop-yarn/]；" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop-yarn/]；</a></li>
+<li>Map任务；</li>
+<li>Shuffle；</li>
+<li>Reduce任务；</li>
+<li>作业完成：通知开发者任务完成。</li>
+</ol>
+<p>而这其中最主要的MapReduce过程，主要是第4、5、6步三部分，这也是本篇博客重点讨论的地方，详细作用如下：</p>
+<ol>
+<li><strong>Map</strong>:数据输入,做初步的处理,输出形式的中间结果；</li>
+<li><strong>Shuffle</strong>:按照partition、key对中间结果进行排序合并,输出给reduce线程；</li>
+<li><strong>Reduce</strong>:对相同key的输入进行最终的处理,并将结果写入到文件中。</li>
+</ol>
+<p>这里先给出官网上关于这个过程的经典流程图：</p>
+<img src="/2019/06/13/MapReduce之Shuffle过程详述/mapreduce.png">
+<p>上图是把MapReduce过程分为两个部分，而实际上从两边的Map和Reduce到中间的那一大块都属于Shuffle过程，也就是说，Shuffle过程有一部分是在Map端，有一部分是在Reduce端，下文也将会分两部分来介绍Shuffle过程。</p>
+<p>对于Hadoop集群，当我们在运行作业时，大部分的情况下，map task与reduce task的执行是分布在不同的节点上的，因此，很多情况下，reduce执行时需要跨节点去拉取其他节点上的map task结果，这样造成了集群内部的网络资源消耗很严重，而且在节点的内部，相比于内存，磁盘IO对性能的影响是非常严重的。如果集群中运行的作业有很多，那么task的执行对于集群内部网络的资源消费非常大。因此，我们对于MapRedue作业Shuffle过程的期望是：</p>
+<ul>
+<li>完整地从map task端拉取数据到Reduce端；</li>
+<li>在跨节点拉取数据时，尽可能地减少对带宽的不必要消耗；</li>
+<li>减少磁盘IO对task执行的影响。</li>
+</ul>
+          <div class="read-more">
+            <a href="/2019/06/13/MapReduce之Shuffle过程详述/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/06/12/Zeppelin源码分析-interpreter调试/">Zeppelin源码分析-interpreter调试</a>
         
       </h1>
@@ -818,58 +894,6 @@
 <p>从上述时序图可知，Client只管提交Application并监控Application的状态。对于Spark的任务调度主要是集中在两个方面: 资源申请和任务分发，其主要是通过ApplicationMaster、Driver以及Executor之间来完成，下面详细剖析Spark任务调度每个细节。</p>
           <div class="read-more">
             <a href="/2019/04/22/Spark-Scheduler内部原理剖析/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/22/Spark核心概念RDD/">Spark核心概念RDD(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-22
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2019/04/22/Spark核心概念RDD/" data-title="Spark核心概念RDD(转)">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>RDD全称叫做弹性分布式数据集(Resilient Distributed Datasets)，它是一种分布式的内存抽象，表示一个只读的记录分区的集合，它只能通过其他RDD转换而创建，为此，RDD支持丰富的转换操作(如map, join, filter, groupBy等)，通过这种转换操作，新的RDD则包含了如何从其他RDDs衍生所必需的信息，所以说RDDs之间是有依赖关系的。基于RDDs之间的依赖，RDDs会形成一个有向无环图DAG，该DAG描述了整个流式计算的流程，实际执行的时候，RDD是通过血缘关系(Lineage)一气呵成的，即使出现数据分区丢失，也可以通过血缘关系重建分区，总结起来，基于RDD的流式计算任务可描述为：从稳定的物理存储(如分布式文件系统)中加载记录，记录被传入由一组确定性操作构成的DAG，然后写回稳定存储。另外RDD还可以将数据集缓存到内存中，使得在多个操作之间可以重用数据集，基于这个特点可以很方便地构建迭代型应用(图计算、机器学习等)或者交互式数据分析应用。可以说Spark最初也就是实现RDD的一个分布式系统，后面通过不断发展壮大成为现在较为完善的大数据生态系统，简单来讲，Spark-RDD的关系类似于Hadoop-MapReduce关系。</p>
-<h2 id="RDD特点"><a href="#RDD特点" class="headerlink" title="RDD特点"></a>RDD特点</h2><p>RDD表示只读的分区的数据集，对RDD进行改动，只能通过RDD的转换操作，由一个RDD得到一个新的RDD，新的RDD包含了从其他RDD衍生所必需的信息。RDDs之间存在依赖，RDD的执行是按照血缘关系延时计算的。如果血缘关系较长，可以通过持久化RDD来切断血缘关系。</p>
-<h3 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h3><p>如下图所示，RDD逻辑上是分区的，每个分区的数据是抽象存在的，计算的时候会通过一个compute函数得到每个分区的数据。如果RDD是通过已有的文件系统构建，则compute函数是读取指定文件系统中的数据，如果RDD是通过其他RDD转换而来，则compute函数是执行转换逻辑将其他RDD的数据进行转换。</p>
-<img src="/2019/04/22/Spark核心概念RDD/rdd-partition.png">
-          <div class="read-more">
-            <a href="/2019/04/22/Spark核心概念RDD/" class="read-more-link">阅读更多</a>
           </div>
         
       

@@ -216,6 +216,58 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2020/02/21/Flink-原理与实现：如何处理反压问题/">Flink 原理与实现：如何处理反压问题</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-02-21
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/02/21/Flink-原理与实现：如何处理反压问题/" data-title="Flink 原理与实现：如何处理反压问题">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>流处理系统需要能优雅地处理反压（backpressure）问题。反压通常产生于这样的场景：短时负载高峰导致系统接收数据的速率远高于它处理数据的速率。许多日常问题都会导致反压，例如，垃圾回收停顿可能会导致流入的数据快速堆积，或者遇到大促或秒杀活动导致流量陡增。反压如果不能得到正确的处理，可能会导致资源耗尽甚至系统崩溃。</p>
+<p>目前主流的流处理系统 Storm/JStorm/Spark Streaming/Flink 都已经提供了反压机制，不过其实现各不相同。</p>
+<p>Storm 是通过监控 Bolt 中的接收队列负载情况，如果超过高水位值就会将反压信息写到 Zookeeper ，Zookeeper 上的 watch 会通知该拓扑的所有 Worker 都进入反压状态，最后 Spout 停止发送 tuple。</p>
+<p>JStorm 认为直接停止 Spout 的发送太过暴力，存在大量问题。当下游出现阻塞时，上游停止发送，下游消除阻塞后，上游又开闸放水，过了一会儿，下游又阻塞，上游又限流，如此反复，整个数据流会一直处在一个颠簸状态。所以 JStorm 是通过逐级降速来进行反压的，效果会较 Storm 更为稳定，但算法也更复杂。另外 JStorm 没有引入 Zookeeper 而是通过 TopologyMaster 来协调拓扑进入反压状态，这降低了 Zookeeper 的负载。</p>
+          <div class="read-more">
+            <a href="/2020/02/21/Flink-原理与实现：如何处理反压问题/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2020/02/19/Flink-Table-SQL-时态表Temporal-Table/">Flink Table & SQL 时态表Temporal Table</a>
         
       </h1>
@@ -710,68 +762,6 @@
 <img src="/2020/02/06/CANAL源码解析-server模块/2.png">
           <div class="read-more">
             <a href="/2020/02/06/CANAL源码解析-server模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/06/CANAL源码解析-deployer模块/">CANAL源码解析-deployer模块</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-06
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2020/02/06/CANAL源码解析-deployer模块/" data-title="CANAL源码解析-deployer模块">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>canal有两种使用方式：1、独立部署 2、内嵌到应用中。 deployer模块主要用于独立部署canal server。关于这两种方式的区别，请参见server模块源码分析。deployer模块源码目录结构如下所示：</p>
-<img src="/2020/02/06/CANAL源码解析-deployer模块/1.png">
-<p>在独立部署canal时，需要首先对canal的源码进行打包</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip -Denv=release</span><br></pre></td></tr></table></figure>
-<p>打包后会在target目录生成一个以下两个文件：<br><img src="/2020/02/06/CANAL源码解析-deployer模块/2.png"></p>
-<p>其中canal.deployer-1.0.24.tar.gz就是canal的独立部署包。解压缩后，目录如下所示。其中bin目录和conf目录(包括子目录spring)中的所有文件，都来自于deployer模块。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">canal</span><br><span class="line">├── bin</span><br><span class="line">│   ├── startup.bat</span><br><span class="line">│   ├── startup.sh</span><br><span class="line">│   └── stop.sh</span><br><span class="line">├── conf</span><br><span class="line">│   ├── canal.properties</span><br><span class="line">│   ├── example</span><br><span class="line">│   │   └── instance.properties</span><br><span class="line">│   ├── logback.xml</span><br><span class="line">│   └── spring</span><br><span class="line">│       ├── default-instance.xml</span><br><span class="line">│       ├── file-instance.xml</span><br><span class="line">│       ├── group-instance.xml</span><br><span class="line">│       ├── <span class="built_in">local</span>-instance.xml</span><br><span class="line">│       └── memory-instance.xml</span><br><span class="line">├── lib</span><br><span class="line">│   └── ....依赖的各种jar</span><br><span class="line">└── logs</span><br></pre></td></tr></table></figure>
-<p>deployer模块主要完成以下功能：</p>
-<ol>
-<li>读取canal.properties配置文件</li>
-<li>启动canal server，监听canal client的请求</li>
-<li>启动canal instance，连接mysql数据库，伪装成slave，解析binlog</li>
-<li>在canal的运行过程中，监听配置文件的变化</li>
-</ol>
-          <div class="read-more">
-            <a href="/2020/02/06/CANAL源码解析-deployer模块/" class="read-more-link">阅读更多</a>
           </div>
         
       

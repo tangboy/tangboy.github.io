@@ -216,6 +216,58 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/04/22/Spark核心概念RDD/">Spark核心概念RDD(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-04-22
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2019/04/22/Spark核心概念RDD/" data-title="Spark核心概念RDD(转)">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>RDD全称叫做弹性分布式数据集(Resilient Distributed Datasets)，它是一种分布式的内存抽象，表示一个只读的记录分区的集合，它只能通过其他RDD转换而创建，为此，RDD支持丰富的转换操作(如map, join, filter, groupBy等)，通过这种转换操作，新的RDD则包含了如何从其他RDDs衍生所必需的信息，所以说RDDs之间是有依赖关系的。基于RDDs之间的依赖，RDDs会形成一个有向无环图DAG，该DAG描述了整个流式计算的流程，实际执行的时候，RDD是通过血缘关系(Lineage)一气呵成的，即使出现数据分区丢失，也可以通过血缘关系重建分区，总结起来，基于RDD的流式计算任务可描述为：从稳定的物理存储(如分布式文件系统)中加载记录，记录被传入由一组确定性操作构成的DAG，然后写回稳定存储。另外RDD还可以将数据集缓存到内存中，使得在多个操作之间可以重用数据集，基于这个特点可以很方便地构建迭代型应用(图计算、机器学习等)或者交互式数据分析应用。可以说Spark最初也就是实现RDD的一个分布式系统，后面通过不断发展壮大成为现在较为完善的大数据生态系统，简单来讲，Spark-RDD的关系类似于Hadoop-MapReduce关系。</p>
+<h2 id="RDD特点"><a href="#RDD特点" class="headerlink" title="RDD特点"></a>RDD特点</h2><p>RDD表示只读的分区的数据集，对RDD进行改动，只能通过RDD的转换操作，由一个RDD得到一个新的RDD，新的RDD包含了从其他RDD衍生所必需的信息。RDDs之间存在依赖，RDD的执行是按照血缘关系延时计算的。如果血缘关系较长，可以通过持久化RDD来切断血缘关系。</p>
+<h3 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h3><p>如下图所示，RDD逻辑上是分区的，每个分区的数据是抽象存在的，计算的时候会通过一个compute函数得到每个分区的数据。如果RDD是通过已有的文件系统构建，则compute函数是读取指定文件系统中的数据，如果RDD是通过其他RDD转换而来，则compute函数是执行转换逻辑将其他RDD的数据进行转换。</p>
+<img src="/2019/04/22/Spark核心概念RDD/rdd-partition.png">
+          <div class="read-more">
+            <a href="/2019/04/22/Spark核心概念RDD/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/04/18/PySpark-的背后原理/">PySpark 的背后原理(转)</a>
         
       </h1>
@@ -751,55 +803,6 @@
 </ol>
           <div class="read-more">
             <a href="/2018/12/22/数据复制与一致性/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/22/LeetCode-算法题目解答/">LeetCode 算法题目解答</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-22
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2018/12/22/LeetCode-算法题目解答/" data-title="LeetCode 算法题目解答">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>为了督促自己能够每天刷一道算法题，特将LeetCode常见题目列出，之后每天一题，每完成一题都会总结解答并链接到该博客相应的题目上。</p>
-          <div class="read-more">
-            <a href="/2018/12/22/LeetCode-算法题目解答/" class="read-more-link">阅读更多</a>
           </div>
         
       
