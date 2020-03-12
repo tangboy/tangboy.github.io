@@ -216,6 +216,62 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/01/23/introduction-to-neo4j/">introduction_to_neo4j</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-01-23
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2017/01/23/introduction-to-neo4j/" data-title="introduction_to_neo4j">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>“Neo4j是一个高性能的，非关系的，具有完全事务特性的,鲁棒的图数据库。” neo4j在处理复杂的网络数据时候，具有很好的性能表现[1]，适用于社交网络，动态网络等场景。它基于java语言实现，有两个分发版本，社区版(community version)以GPLv3的许可在Github上开源，源码地址:<a href="https://github.com/neo4j/community；企业版，同时遵循AGPLv3和商业许可，它在社区版基础上增加了包括高可用性(High" target="_blank" rel="noopener">https://github.com/neo4j/community；企业版，同时遵循AGPLv3和商业许可，它在社区版基础上增加了包括高可用性(High</a> Availability)，全天侯支持等特性。Neo4j的开发非常活跃，围绕它有非常多的项目，包括 REST API 绑定（各种语言实现列表），空间数据库支持（源码地址）等。</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="Git-安装"><a href="#Git-安装" class="headerlink" title="Git 安装"></a>Git 安装</h2><p>Git的安装非常简单，大多数的Linux发行版本的源中都打包好。以Ubuntu 为例(仅测试Oneiric，Precise)，只需要输入如下命令即可安装。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo  apt-get install git</span><br></pre></td></tr></table></figure>
+<h2 id="Maven-安装"><a href="#Maven-安装" class="headerlink" title="Maven 安装"></a>Maven 安装</h2><p>同样的Ubuntu（我最爱系统）下，安装Maven3非常简单，输入如下命令:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get maven</span><br></pre></td></tr></table></figure>
+<h2 id="Neo4j-安装"><a href="#Neo4j-安装" class="headerlink" title="Neo4j 安装"></a>Neo4j 安装</h2><p>安装好以上两者后，我们直接从github的源码，并用maven来安装neo4j，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir neo4j</span><br><span class="line"><span class="built_in">cd</span> ./neo4j</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/neo4j/community.git</span><br><span class="line">mvn clean install</span><br></pre></td></tr></table></figure>
+<p>如此，neo4j即安装成功。如果需要build不同的版本可以遵照参考文献5Readme的指示来实现。</p>
+          <div class="read-more">
+            <a href="/2017/01/23/introduction-to-neo4j/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/01/04/matrix-summary-in-linear-algebra/">线性代数之各种各样的矩阵</a>
         
       </h1>

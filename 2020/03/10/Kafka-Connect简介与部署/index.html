@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Kafka Connect简介与部署">
+
+
+
+
+  <meta name="keywords" content="Kafka Connect, Anthon">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/03/10/Kafka-Connect简介与部署/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz",
+      appKey: "bA46NPkYiSG0QaBP2vX2ckzl"
+    });
+  </script>
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> Kafka Connect简介与部署 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Kafka Connect简介与部署
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-03-10
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2020/03/10/Kafka-Connect简介与部署/" data-title="Kafka Connect简介与部署">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是Kafka-Connect"><span class="toc-text">什么是Kafka Connect</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kafka-connect概念"><span class="toc-text">Kafka connect概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Connectors"><span class="toc-text">Connectors</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tasks"><span class="toc-text">Tasks</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Task-Rebalancing"><span class="toc-text">Task Rebalancing</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Workers"><span class="toc-text">Workers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Converters"><span class="toc-text">Converters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Transforms"><span class="toc-text">Transforms</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dead-Letter-Queue"><span class="toc-text">Dead Letter Queue</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Creating-a-Dead-Letter-Queue-Topic"><span class="toc-text">Creating a Dead Letter Queue Topic</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Using-a-Dead-Letter-Queue-with-Security"><span class="toc-text">Using a Dead Letter Queue with Security</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kafka-connect的启动"><span class="toc-text">Kafka connect的启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#通过rest-api管理connector"><span class="toc-text">通过rest api管理connector</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="什么是Kafka-Connect"><a href="#什么是Kafka-Connect" class="headerlink" title="什么是Kafka Connect"></a>什么是Kafka Connect</h2><p>Kafka 0.9+增加了一个新的特性<strong>Kafka Connect,</strong>可以更方便的创建和管理数据流管道。它为Kafka和其它系统创建规模可扩展的、可信赖的流数据提供了一个简单的模型，通过<strong>connectors</strong>可以将大数据从其它系统导入到Kafka中，也可以从Kafka中导出到其它系统。Kafka Connect可以将完整的数据库注入到Kafka的Topic中，或者将服务器的系统监控指标注入到Kafka，然后像正常的Kafka流处理机制一样进行数据流处理。而导出工作则是将数据从Kafka Topic中导出到其它数据存储系统、查询系统或者离线分析系统等，比如数据库、Elastic Search、Apache Ignite等。</p>
+<p>Kafka Connect特性包括：</p>
+<ul>
+<li>Kafka connector通用框架,提供统一的集成API</li>
+<li>同时支持分布式模式和单机模式</li>
+<li>REST 接口，用来查看和管理Kafka connectors</li>
+<li>自动化的offset管理，开发人员不必担心错误处理的影响</li>
+<li>分布式、可扩展</li>
+<li>流/批处理集成</li>
+</ul>
+<p>KafkaCnnect有两个核心概念：Source和Sink。 Source负责导入数据到Kafka，Sink负责从Kafka导出数据，它们都被称为Connector。</p>
+<img src="/2020/03/10/Kafka-Connect简介与部署/Kafka_and_the_age_of_streaming_data_integration_image_sources_sinks.png">
+<a id="more"></a>
+<h2 id="Kafka-connect概念"><a href="#Kafka-connect概念" class="headerlink" title="Kafka connect概念"></a>Kafka connect概念</h2><p>Kafka connect的几个重要的概念包括：connectors、tasks、workers和converters。</p>
+<ul>
+<li><strong>Connectors</strong>: 通过管理任务来协调数据流的高级抽象</li>
+<li><strong>Tasks</strong>: 数据写入kafka和数据从kafka读出的实现</li>
+<li><strong>Workers</strong>: 运行connectors和tasks的进程</li>
+<li><strong>Converters</strong>: kafka connect和其他存储系统直接发送或者接受数据之间转换数据</li>
+<li><strong>Transforms</strong>: 用在connect消费或者产生的记录上的简单转换逻辑</li>
+<li><strong>Dead Letter Queue</strong>: Connect如何处理connector错误</li>
+</ul>
+<h3 id="Connectors"><a href="#Connectors" class="headerlink" title="Connectors"></a>Connectors</h3><p>在kafka connect中，connector决定了数据应该从哪里复制过来以及数据应该写入到哪里去，一个connector实例是一个需要负责在kafka和其他系统之间复制数据的逻辑作业，connector plugin是jar文件，实现了kafka定义的一些接口来完成特定的任务。</p>
+<p>目前业界已经提供了很多<a href="https://www.confluent.io/hub/" target="_blank" rel="noopener">connector</a>，优先可以使用现有的connector来解决自己的问题，当然，你也可以从头写一个新的connector plugin。可以按照如下流程来开发自己的connector plugin。</p>
+<p>开发文档可以参考</p>
+<ol>
+<li><a href="https://docs.confluent.io/current/connect/devguide.html#connect-devguide" target="_blank" rel="noopener">developer guide</a></li>
+<li><a href="https://kafka.apache.org/documentation/#connect" target="_blank" rel="noopener">kafka documentation</a></li>
+</ol>
+<img src="/2020/03/10/Kafka-Connect简介与部署/connector-model-simple.png">
+<h3 id="Tasks"><a href="#Tasks" class="headerlink" title="Tasks"></a>Tasks</h3><p>task是kafka connect数据模型的主角，每一个connector都会协调一系列的task去执行任务，connector可以把一项工作分割成许多的task，然后再把task分发到各个worker中去执行（分布式模式下），task不自己保存自己的状态信息，而是交给特定的kafka 主题去保存（config.storage.topic 和status.storage.topic）。</p>
+<img src="/2020/03/10/Kafka-Connect简介与部署/data-model-simple.png">
+<h4 id="Task-Rebalancing"><a href="#Task-Rebalancing" class="headerlink" title="Task Rebalancing"></a>Task Rebalancing</h4><p>在分布式模式下有一个概念叫做任务再平衡（Task Rebalancing），当一个connector第一次提交到集群时，所有的worker都会做一个task rebalancing从而保证每一个worker都运行了差不多数量的工作，而不是所有的工作压力都集中在某个worker进程中，而当某个进程挂了之后也会执行task rebalance。</p>
+<p>当一个task fail，但是是由于是一个异常case，那么task rebalancing并不会被触发，这个时候框架并不会自动重启task，需要通过<a href="https://docs.confluent.io/current/connect/managing/monitoring.html#connect-managing-rest-examples" target="_blank" rel="noopener">rest api</a>来重启<br><img src="/2020/03/10/Kafka-Connect简介与部署/task-failover.png"></p>
+<h3 id="Workers"><a href="#Workers" class="headerlink" title="Workers"></a>Workers</h3><p>connectors和tasks都是逻辑工作单位，必须安排在进程中执行，而在kafka connect中，这些进程就是workers，分别有两种worker：standalone和distributed。这里不对standalone进行介绍，具体的可以查看官方文档。我个人觉得distributed worker很棒，因为它提供了可扩展性以及自动容错的功能，你可以使用一个group.ip来启动很多worker进程，在有效的worker进程中它们会自动的去协调执行connector和task，如果你新加了一个worker或者挂了一个worker，其他的worker会检测到然后在重新分配connector和task。</p>
+<img src="/2020/03/10/Kafka-Connect简介与部署/worker-model-basics.png">
+<h3 id="Converters"><a href="#Converters" class="headerlink" title="Converters"></a>Converters</h3><p>converter会把bytes数据转换成kafka connect内部的格式，也可以把kafka connect内部存储格式的数据转变成bytes。</p>
+<p>converter对connector来说是解耦的，所以其他的connector都可以重用，例如，使用了avro converter，那么jdbc connector可以写avro格式的数据到kafka，当然，hdfs connector也可以从kafka中读出avro格式的数据。</p>
+<img src="/2020/03/10/Kafka-Connect简介与部署/converter-basics.png">
+<h3 id="Transforms"><a href="#Transforms" class="headerlink" title="Transforms"></a>Transforms</h3><p>connector可以配置一些transformations，用来对于单独一条message做一些轻量级或者简单的逻辑修改。这对于小的数据调整和事件路由都很方便，当然多种transformations可以在connector配置中链式串起来。当然，对于复杂的转换和多条message的处理逻辑还是建议采用<a href="https://docs.confluent.io/current/ksql/docs/index.html" target="_blank" rel="noopener">KSQL</a>或者Kafka Streams。</p>
+<p>一个transform就是一个简单的函数，接受一个record作为输入，并输出修改之后的结果。Kafka Connect提供了很多非常有用的transform。当然你可以自己实现一个基于自己的逻辑的Transformation，然后将实现之后的transform打包作为一个Kafka Connect 插件，并在任何connector上使用。</p>
+<p>常见的Transform参考<a href="https://docs.confluent.io/current/connect/transforms/index.html#connect-transforms-supported" target="_blank" rel="noopener">Kafka Connect Transformations</a></p>
+<h3 id="Dead-Letter-Queue"><a href="#Dead-Letter-Queue" class="headerlink" title="Dead Letter Queue"></a>Dead Letter Queue</h3><p>一个无效的记录发生的原因有很多。一个原因就是在记录到达sink的时候，是采用的JSON序列号，但是sink配置的期待格式是Avro。当一个无效记录不能够被sink connector处理的时候，错误就会基于connector的配置<code>errors.tolerance</code>来处理。 这个配置有两个有效的参数，<code>none(默认值)</code>或者<code>all</code>。 下表给出Connector处于不同状态下，错误是否会被Connect处理</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>Connector State</strong></th>
+<th style="text-align:center"><strong>Description</strong></th>
+<th style="text-align:center"><strong>Errors Handled by Connect</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Starting</td>
+<td style="text-align:center">Can’t connect to the datastore at connector startup</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:center">Polling(source connector)</td>
+<td style="text-align:center">Can’t read records from the source database</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:center">Converting data</td>
+<td style="text-align:center">Can’t read from or write to a Kafka topic, or deserialize or serialize JSON,Avro, etc.</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">Transforming data</td>
+<td style="text-align:center">Can’t apply a single message transform(SMT)</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">Putting(sink connector)</td>
+<td style="text-align:center">Can’t write records to the target dataset</td>
+<td style="text-align:center">No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>需要注意的是，Dead letter queues 只适用于sink connector</p>
+<p>当<code>errors.tolerance</code>设置为<code>none</code>， 一个无效的记录会导致connector task立即失败，并且connector会进入到failed state。 为了解决这个问题，你需要去查看Kafka connect Worker的自制，找出导致错误的原因，修改并重启connector</p>
+<p>当<code>errors.tolerance</code>设置为<code>all</code>， 所有无效或者错误的记录都会被忽略，并且connect会正常继续处理。没有任何错误信息会被写到Connect Worker 日志。 所以需要采用其他手段来监控错误的情况，例如采用internal metrics或者记录源和处理之后的记录的条数</p>
+<h4 id="Creating-a-Dead-Letter-Queue-Topic"><a href="#Creating-a-Dead-Letter-Queue-Topic" class="headerlink" title="Creating a Dead Letter Queue Topic"></a>Creating a Dead Letter Queue Topic</h4><p>可以在sink配置中，采用以下方式来创建一个dead letter queue</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">errors.tolerance = all</span><br><span class="line">errors.deadletterqueue.topic.name = &lt;dead-letter-topic-name&gt;</span><br></pre></td></tr></table></figure>
+<p>以下为一个sink配置示例</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> &#123;</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"gcs-sink-01"</span>,</span><br><span class="line">  <span class="attr">"config"</span>: &#123;</span><br><span class="line">    <span class="attr">"connector.class"</span>: <span class="string">"io.confluent.connect.gcs.GcsSinkConnector"</span>,</span><br><span class="line">    <span class="attr">"tasks.max"</span>: <span class="string">"1"</span>,</span><br><span class="line">    <span class="attr">"topics"</span>: <span class="string">"gcs_topic"</span>,</span><br><span class="line">    <span class="attr">"gcs.bucket.name"</span>: <span class="string">"&lt;my-gcs-bucket&gt;"</span>,</span><br><span class="line">    <span class="attr">"gcs.part.size"</span>: <span class="string">"5242880"</span>,</span><br><span class="line">    <span class="attr">"flush.size"</span>: <span class="string">"3"</span>,</span><br><span class="line">    <span class="attr">"storage.class"</span>: <span class="string">"io.confluent.connect.gcs.storage.GcsStorage"</span>,</span><br><span class="line">    <span class="attr">"format.class"</span>: <span class="string">"io.confluent.connect.gcs.format.avro.AvroFormat"</span>,</span><br><span class="line">    <span class="attr">"partitioner.class"</span>: <span class="string">"io.confluent.connect.storage.partitioner.DefaultPartitioner"</span>,</span><br><span class="line">    <span class="attr">"value.converter"</span>: <span class="string">"io.confluent.connect.avro.AvroConverter"</span>,</span><br><span class="line">    <span class="attr">"value.converter.schema.registry.url"</span>: <span class="string">"http://localhost:8081"</span>,</span><br><span class="line">    <span class="attr">"schema.compatibility"</span>: <span class="string">"NONE"</span>,</span><br><span class="line">    <span class="attr">"confluent.topic.bootstrap.servers"</span>: <span class="string">"localhost:9092"</span>,</span><br><span class="line">    <span class="attr">"confluent.topic.replication.factor"</span>: <span class="string">"1"</span>,</span><br><span class="line">    <span class="attr">"errors.tolerance"</span>: <span class="string">"all"</span>,</span><br><span class="line">    <span class="attr">"errors.deadletterqueue.topic.name"</span>: <span class="string">"dlq-gcs-sink-01"</span>,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>即使dead letter topic中记录了失败的record，但是也不会显示出为什么失败，可以增加如下配置将失败信息也放到记录的header中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">errors.deadletterqueue.context.headers.enable = true</span><br></pre></td></tr></table></figure>
+<p>当这个配置设置为<code>true</code>之后，Record Headers会被加入到dead letter queue中。你可以使用kafkacat Utility 来查看header并找出失败原因。</p>
+<p>需要注意： 为了避免和原有的record header冲突，dead letter queue的header key是以<code>_connect.errors</code>开头</p>
+<p>以下是更新之后的配置</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> &#123;</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"gcs-sink-01"</span>,</span><br><span class="line">  <span class="attr">"config"</span>: &#123;</span><br><span class="line">    <span class="attr">"connector.class"</span>: <span class="string">"io.confluent.connect.gcs.GcsSinkConnector"</span>,</span><br><span class="line">    <span class="attr">"tasks.max"</span>: <span class="string">"1"</span>,</span><br><span class="line">    <span class="attr">"topics"</span>: <span class="string">"gcs_topic"</span>,</span><br><span class="line">    <span class="attr">"gcs.bucket.name"</span>: <span class="string">"&lt;my-gcs-bucket&gt;"</span>,</span><br><span class="line">    <span class="attr">"gcs.part.size"</span>: <span class="string">"5242880"</span>,</span><br><span class="line">    <span class="attr">"flush.size"</span>: <span class="string">"3"</span>,</span><br><span class="line">    <span class="attr">"storage.class"</span>: <span class="string">"io.confluent.connect.gcs.storage.GcsStorage"</span>,</span><br><span class="line">    <span class="attr">"format.class"</span>: <span class="string">"io.confluent.connect.gcs.format.avro.AvroFormat"</span>,</span><br><span class="line">    <span class="attr">"partitioner.class"</span>: <span class="string">"io.confluent.connect.storage.partitioner.DefaultPartitioner"</span>,</span><br><span class="line">    <span class="attr">"value.converter"</span>: <span class="string">"io.confluent.connect.avro.AvroConverter"</span>,</span><br><span class="line">    <span class="attr">"value.converter.schema.registry.url"</span>: <span class="string">"http://localhost:8081"</span>,</span><br><span class="line">    <span class="attr">"schema.compatibility"</span>: <span class="string">"NONE"</span>,</span><br><span class="line">    <span class="attr">"confluent.topic.bootstrap.servers"</span>: <span class="string">"localhost:9092"</span>,</span><br><span class="line">    <span class="attr">"confluent.topic.replication.factor"</span>: <span class="string">"1"</span>,</span><br><span class="line">    <span class="attr">"errors.tolerance"</span>: <span class="string">"all"</span>,</span><br><span class="line">    <span class="attr">"errors.deadletterqueue.topic.name"</span>: <span class="string">"dlq-gcs-sink-01"</span>,</span><br><span class="line">    <span class="attr">"errors.deadletterqueue.context.headers.enable"</span>:<span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Using-a-Dead-Letter-Queue-with-Security"><a href="#Using-a-Dead-Letter-Queue-with-Security" class="headerlink" title="Using a Dead Letter Queue with Security"></a>Using a Dead Letter Queue with Security</h4><p>当kafka开启了security， 那么相应的dead letter queue也要增加配置，如下</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">admin.ssl.endpoint.identification.algorithm=https</span><br><span class="line">admin.sasl.mechanism=PLAIN</span><br><span class="line">admin.security.protocol=SASL_SSL</span><br><span class="line">admin.request.timeout.ms=20000</span><br><span class="line">admin.retry.backoff.ms=500</span><br><span class="line">admin.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \</span><br><span class="line">  username="&lt;user&gt;" \</span><br><span class="line">  password="&lt;secret&gt;";</span><br></pre></td></tr></table></figure>
+<h2 id="Kafka-connect的启动"><a href="#Kafka-connect的启动" class="headerlink" title="Kafka connect的启动"></a>Kafka connect的启动</h2><p>Kafka connect的工作模式分为两种，分别是standalone模式和distributed模式。</p>
+<p>在独立模式种，所有的work都在一个独立的进程种完成，如果用于生产环境，建议使用分布式模式，都在真的就有点浪费kafka connect提供的容错功能了。</p>
+<p>standalone启动的命令很简单，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/connect-standalone.shconfig/connect-standalone.properties connector1.properties[connector2.properties ...]</span><br></pre></td></tr></table></figure>
+<p>一次可以启动多个connector，只需要在参数中加上connector的配置文件路径即可。</p>
+<p>启动distributed模式命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/connect-distributed.shconfig/connect-distributed.properties</span><br></pre></td></tr></table></figure>
+<p>在connect-distributed.properties的配置文件中，其实并没有配置了你的connector的信息，因为在distributed模式下，启动不需要传递connector的参数，而是通过REST API来对kafka connect进行管理，包括启动、暂停、重启、恢复和查看状态的操作，具体介绍详见下文。</p>
+<p>在启动kafkaconnect的distributed模式之前，首先需要创建三个主题，这三个主题的配置分别对应connect-distributed.properties文件中config.storage.topic(default connect-configs)、offset.storage.topic (default connect-offsets) 、status.storage.topic (default connect-status)的配置，那么它们分别有啥用处呢？</p>
+<ul>
+<li>config.storage.topic：用以保存connector和task的配置信息，需要注意的是这个主题的分区数只能是1，而且是有多副本的。（推荐partition 1，replica 3）</li>
+<li>offset.storage.topic:用以保存offset信息。（推荐partition50，replica 3）</li>
+<li>status.storage.topic:用以保存connetor的状态信息。（推荐partition10，replica 3）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># config.storage.topic=connect-configs</span></span><br><span class="line">$ bin/kafka-topics --create --zookeeper localhost:2181 --topicconnect-configs --replication-factor 3 --partitions 1</span><br><span class="line"> </span><br><span class="line"><span class="comment"># offset.storage.topic=connect-offsets</span></span><br><span class="line">$ bin/kafka-topics --create --zookeeper localhost:2181 --topicconnect-offsets --replication-factor 3 --partitions 50</span><br><span class="line"> </span><br><span class="line"><span class="comment"># status.storage.topic=connect-status</span></span><br><span class="line">$ bin/kafka-topics --create --zookeeper localhost:2181 --topicconnect-status --replication-factor 3 --partitions 10</span><br></pre></td></tr></table></figure>
+<p>具体配置可以参考<a href="http://kafka.apache.org/documentation/#connect" target="_blank" rel="noopener">Kafka官方文档</a></p>
+<h2 id="通过rest-api管理connector"><a href="#通过rest-api管理connector" class="headerlink" title="通过rest api管理connector"></a>通过rest api管理connector</h2><p>因为kafka connect的意图是以服务的方式去运行，所以它提供了REST API去管理connectors，默认的端口是8083，你也可以在启动kafka connect之前在配置文件中添加rest.port配置。</p>
+<ul>
+<li><strong>GET /connectors</strong> – 返回所有正在运行的connector名</li>
+<li><strong>POST /connectors</strong> – 新建一个connector; 请求体必须是json格式并且需要包含name字段和config字段，name是connector的名字，config是json格式，必须包含你的connector的配置信息。</li>
+<li><strong>GET /connectors/{name}</strong> – 获取指定connetor的信息</li>
+<li><strong>GET /connectors/{name}/config</strong> – 获取指定connector的配置信息</li>
+<li><strong>PUT /connectors/{name}/config</strong> – 更新指定connector的配置信息</li>
+<li><strong>GET /connectors/{name}/status</strong> – 获取指定connector的状态，包括它是否在运行、停止、或者失败，如果发生错误，还会列出错误的具体信息。</li>
+<li><strong>GET /connectors/{name}/tasks</strong> – 获取指定connector正在运行的task。</li>
+<li><strong>GET /connectors/{name}/tasks/{taskid}/status</strong> – 获取指定connector的task的状态信息</li>
+<li><strong>PUT /connectors/{name}/pause</strong> – 暂停connector和它的task，停止数据处理知道它被恢复。</li>
+<li><strong>PUT /connectors/{name}/resume</strong> – 恢复一个被暂停的connector</li>
+<li><strong>POST /connectors/{name}/restart</strong> – 重启一个connector，尤其是在一个connector运行失败的情况下比较常用</li>
+<li><strong>POST /connectors/{name}/tasks/{taskId}/restart</strong> – 重启一个task，一般是因为它运行失败才这样做。</li>
+<li><strong>DELETE /connectors/{name}</strong> – 删除一个connector，停止它的所有task并删除配置。</li>
+</ul>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/03/10/Kafka-Connect简介与部署/">http://code-monkey.top/2020/03/10/Kafka-Connect简介与部署/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Kafka-Connect/">Kafka Connect</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2020/03/10/Log-Compacted-Topics-in-Apache-Kafka/">
+        <span class="next-text nav-default">Log Compacted Topics in Apache Kafka</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>

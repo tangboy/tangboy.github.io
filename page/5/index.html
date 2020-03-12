@@ -216,6 +216,69 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/04/22/Spark-Scheduler内部原理剖析/">Spark Scheduler内部原理剖析(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-04-22
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2019/04/22/Spark-Scheduler内部原理剖析/" data-title="Spark Scheduler内部原理剖析(转)">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>通过文章<a href="https://code-monkey.top/2019/04/22/Spark%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5RDD/">“Spark核心概念RDD”</a>我们知道，Spark的核心是根据RDD来实现的，Spark Scheduler则为Spark核心实现的重要一环，其作用就是任务调度。Spark的任务调度就是如何组织任务去处理RDD中每个分区的数据，根据RDD的依赖关系构建DAG，基于DAG划分Stage，将每个Stage中的任务发到指定节点运行。基于Spark的任务调度原理，我们可以合理规划资源利用，做到尽可能用最少的资源高效地完成任务计算。</p>
+<h2 id="分布式运行框架"><a href="#分布式运行框架" class="headerlink" title="分布式运行框架"></a>分布式运行框架</h2><p>Spark可以部署在多种资源管理平台，例如Yarn、Mesos等，Spark本身也实现了一个简易的资源管理机制，称之为Standalone模式。由于工作中接触较多的是Saprk on Yarn，不做特别说明，以下所述均表示Spark-on-Yarn。Spark部署在Yarn上有两种运行模式，分别为yarn-client和yarn-cluster模式，它们的区别仅仅在于Spark Driver是运行在Client端还是ApplicationMaster端。如下图所示为Spark部署在Yarn上，以yarn-cluster模式运行的分布式计算框架。</p>
+<img src="/2019/04/22/Spark-Scheduler内部原理剖析/spark-distribution-framework.png">
+<p>其中蓝色部分是Spark里的概念，包括Client、ApplicationMaster、Driver和Executor，其中Client和ApplicationMaster主要是负责与Yarn进行交互；Driver作为Spark应用程序的总控，负责分发任务以及监控任务运行状态；Executor负责执行任务，并上报状态信息给Driver，从逻辑上来看Executor是进程，运行在其中的任务是线程，所以说Spark的任务是线程级别的。通过下面的时序图可以更清晰地理解一个Spark应用程序从提交到运行的完整流程。</p>
+<img src="/2019/04/22/Spark-Scheduler内部原理剖析/spark-submit-time.png">
+<p>提交一个Spark应用程序，首先通过Client向ResourceManager请求启动一个Application，同时检查是否有足够的资源满足Application的需求，如果资源条件满足，则准备ApplicationMaster的启动上下文，交给ResourceManager，并循环监控Application状态。</p>
+<p>当提交的资源队列中有资源时，ResourceManager会在某个NodeManager上启动ApplicationMaster进程，ApplicationMaster会单独启动Driver后台线程，当Driver启动后，ApplicationMaster会通过本地的RPC连接Driver，并开始向ResourceManager申请Container资源运行Executor进程（一个Executor对应与一个Container），当ResourceManager返回Container资源，则在对应的Container上启动Executor。</p>
+<p>Driver线程主要是初始化SparkContext对象，准备运行所需的上下文，然后一方面保持与ApplicationMaster的RPC连接，通过ApplicationMaster申请资源，另一方面根据用户业务逻辑开始调度任务，将任务下发到已有的空闲Executor上。</p>
+<p>当ResourceManager向ApplicationMaster返回Container资源时，ApplicationMaster就尝试在对应的Container上启动Executor进程，Executor进程起来后，会向Driver注册，注册成功后保持与Driver的心跳，同时等待Driver分发任务，当分发的任务执行完毕后，将任务状态上报给Driver。</p>
+<blockquote>
+<blockquote>
+<p>Driver把资源申请的逻辑给抽象出来，以适配不同的资源管理系统，所以才间接地通过ApplicationMaster去和Yarn打交道。</p>
+</blockquote>
+</blockquote>
+<p>从上述时序图可知，Client只管提交Application并监控Application的状态。对于Spark的任务调度主要是集中在两个方面: 资源申请和任务分发，其主要是通过ApplicationMaster、Driver以及Executor之间来完成，下面详细剖析Spark任务调度每个细节。</p>
+          <div class="read-more">
+            <a href="/2019/04/22/Spark-Scheduler内部原理剖析/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/04/22/Spark核心概念RDD/">Spark核心概念RDD(转)</a>
         
       </h1>
@@ -736,73 +799,6 @@
 <p>假如上述两个解决方案里，将军们无法直接通信时，该论文亦有进一步的解决方案。<br>此外，1980年代还有其他用来达到拜占庭容错的架构被提出，如：FTMP、MMFCS 与 SIFT。</p>
           <div class="read-more">
             <a href="/2019/01/10/共识算法概述/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018/12/22/数据复制与一致性/">数据复制与一致性</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-22
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2018/12/22/数据复制与一致性/" data-title="数据复制与一致性">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>在大数据存储系统中，为了增加系统高可用性，往往会将同一数据存储多份副本，工业界的常规做法是三备份。将数据复制成多份除了增加存储系统高可用性外还可以增加读操作的并发性，但是这样会引入一致性问题。本文会详细介绍。</p>
-<h2 id="基本原则与设计理念"><a href="#基本原则与设计理念" class="headerlink" title="基本原则与设计理念"></a>基本原则与设计理念</h2><p>首先介绍一下CAP、BASE、ACID基础理论模型。</p>
-<h3 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h3><ol>
-<li><strong>强一致性</strong>：即在分布式系统中的同一数据多副本情形下，对于数据的更新操作体现出的效果与只有单份数据是一样的</li>
-<li><strong>可用性</strong>：客户端在任何时刻对大规模数据系统的读/写操作都应该保证在限定延时内完成</li>
-<li><strong>分区容忍性</strong>：在大规模分布式数据系统中，网络分布现象，即分区间的机器无法进行网络通信的情况是必然会发生的，所以系统应该能够在这种情况下仍然继续工作</li>
-</ol>
-<p>在设计具体分布式架构技术方案时，必须再一致性和可用性方面做出取舍，要么选择强一致性减弱服务可用性，要么选择高可用性容忍弱一致性。依然认为，传统的关系数据库在三要素中选择CA两个因素，即强一致性，高可用性，但是可扩展性与容错性差。而NoSQL系统往往更关注AP因素，即高扩展性和高可用性，但是往往以弱一致性作为代价。</p>
-<h3 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h3><ol>
-<li><strong>原子性(Atomicity)</strong></li>
-<li><strong>一致性(Consistency)</strong></li>
-<li><strong>事务独立(Isolation)</strong></li>
-<li><strong>持久性(Durability)</strong></li>
-</ol>
-<h3 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h3><ol>
-<li><strong>基本可用(Basically Available)</strong></li>
-<li><strong>软状态或者柔性状态(Soft State)</strong></li>
-<li><strong>最终一致性(Eventual Consistency)</strong></li>
-</ol>
-          <div class="read-more">
-            <a href="/2018/12/22/数据复制与一致性/" class="read-more-link">阅读更多</a>
           </div>
         
       
