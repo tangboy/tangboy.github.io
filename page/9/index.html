@@ -216,6 +216,69 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/07/08/introduction-to-seaborn/">introduction to seaborn</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-07-08
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2017/07/08/introduction-to-seaborn/" data-title="introduction to seaborn">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="Seaborn-sns-官方文档学习笔记"><a href="#Seaborn-sns-官方文档学习笔记" class="headerlink" title="Seaborn(sns)官方文档学习笔记"></a>Seaborn(sns)官方文档学习笔记</h1><p>一直苦于没有系统学习seanborn的教程，似乎市面上也还没有完整的官方文档的学习资料。终于下决心用几天的时间通读下官方文档，并把记录下来。</p>
+<p>基于官方<a href="seaborn.pydata.org/tutorial.html">0.71版本</a>，所有代码和图片皆已验证，与官方结论不符的地方会进行标注。如果有翻译失当或理解有误的地方，敬请随意指正！</p>
+<h2 id="第一章-艺术化的图表控制"><a href="#第一章-艺术化的图表控制" class="headerlink" title="第一章 艺术化的图表控制"></a>第一章 艺术化的图表控制</h2><p>一个引人入胜的图表非常重要，赏心悦目的图形不但能让数据探索中一些重要的细节更容易被挖掘，也能更有利于在与观众交流分析结果的过程中吸引观众的注意力并使观众们更容易记住结论。</p>
+<p>Matplotlib无疑是高度可定制的，但快速实施出吸引人的细节就变得有些复杂。Seaborn作为一个带着定制主题和高级界面控制的Matplotlib扩展包，能让绘图变得更轻松，本部分主要介绍seaborn是如何对matplotlib输出的外观进行控制的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">%matplotlib inline</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib <span class="keyword">as</span> mpl</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">np.random.seed(sum(map(ord,<span class="string">"aesthetics"</span>)))  <span class="comment"># 定义种子</span></span><br></pre></td></tr></table></figure>
+<p>定义一个含偏移的正弦图像，来比较传统的matplotlib和seaborn的不同：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sinplot</span><span class="params">(flip=<span class="number">1</span>)</span>:</span></span><br><span class="line">    x = np.linspace(<span class="number">0</span>,<span class="number">14</span>,<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">7</span>):</span><br><span class="line">        plt.plot(x,np.sin(x+i*<span class="number">.5</span>)*(<span class="number">7</span>-i)*flip)</span><br></pre></td></tr></table></figure>
+<p>使用matplotlib默认设置的图形效果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
+<img src="/2017/07/08/introduction-to-seaborn/output_7_0.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
+<img src="/2017/07/08/introduction-to-seaborn/output_8_0.png">
+<p>seaborn默认的灰色网格底色灵感来源于matplotlib却更加柔和。大多数情况下，图应优于表。seaborn的默认灰色网格底色避免了刺目的干扰，对于多个方面的图形尤其有用，是一些更复杂的工具的核心。</p>
+<p>Seaborn将matplotlib参数分成两个独立的组。第一组设定了美学风格，第二组则是不同的度量元素，这样就可以很容易地添加到代码当中了。</p>
+<p>操作这些参数的接口是两对函数。为了控制样式，使用axesstyle()和setstyle()函数。为了扩展绘图，请使用plotting_context()和set_context()函数。在这两种情况下，第一个函数返回一个参数字典，第二个函数则设置matplotlib默认属性。</p>
+          <div class="read-more">
+            <a href="/2017/07/08/introduction-to-seaborn/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/01/23/introduction-to-neo4j/">introduction_to_neo4j</a>
         
       </h1>

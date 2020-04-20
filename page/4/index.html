@@ -216,6 +216,70 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/">深入理解JVM(2)——GC算法与内存分配策略(转载)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-10-22
+        </span>
+        
+        
+        <span class="post-visits" data-url="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/" data-title="深入理解JVM(2)——GC算法与内存分配策略(转载)">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>说起垃圾收集（Garbage Collection, GC），想必大家都不陌生，它是JVM实现里非常重要的一环，JVM成熟的内存动态分配与回收技术使Java（当然还有其他运行在JVM上的语言，如Scala等）程序员在提升开发效率上获得了惊人的便利。理解GC，对于理解JVM和Java语言有着非常重要的作用。并且当我们需要排查各种内存溢出、内存泄漏问题时，当垃圾收集称为系统达到更高并发量的瓶颈时，只有深入理解GC和内存分配，才能对这些“自动化”的技术实施必要的监控和调节。</p>
+<p>在Java的运行时数据区中，程序计数器、虚拟机栈、本地方法栈三个区域都是线程私有的，随线程而生，随线程而灭，在方法结束或线程结束时，内存自然就跟着回收了，不需要过多考虑回收的问题。而Java堆和方法区则不一样，一个接口中的多个实现类需要的内存可能不一样，一个方法中的多个分支需要的内存也可能不一样，我们只有在程序处于运行期间才能知道会创建哪些对象，这部分内存的分配和回收都是动态的，垃圾回收器关注的是这部分内存，后续讨论的“内存”分配回收也是指这一块，尤其需要注意。</p>
+<p>GC主要回答了以下三个问题：</p>
+<ul>
+<li>哪些内存需要回收？</li>
+<li>什么时候回收？</li>
+<li>如何回收？</li>
+</ul>
+<p>这三个问题的具体解决方案，也就是本文接下来要讲解的内容。</p>
+<h1 id="对象存活判定算法"><a href="#对象存活判定算法" class="headerlink" title="对象存活判定算法"></a>对象存活判定算法</h1><p>在堆里存放着Java世界中几乎所有的对象实例，垃圾收集器在对堆进行回收前，首要的就是确定这些对象中哪些还“存活”着，哪些已经“死去”（即不可能再被任何途径使用的对象）。</p>
+<h2 id="引用计数算法"><a href="#引用计数算法" class="headerlink" title="引用计数算法"></a>引用计数算法</h2><p>引用计数算法是在JVM中被摒弃的一种对象存活判定算法，不过它也有一些知名的应用场景（如Python、FlashPlayer），因此在这里也简单介绍一下。</p>
+<p>用引用计数器判断对象是否存活的过程是这样的：给对象中添加一个引用计数器，每当有一个地方引用它时，计数器加1；当引用失效时，计数器减1；任何时刻计数器为0的对象就是不可能再被使用的。</p>
+<p>引用计数算法的实现简单，判定效率也很高，大部分情况下是一个不错的算法。它没有被JVM采用的原因是它很难解决对象之间循环引用的问题。例如以下例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** * testGC()方法执行后，objA和objB会不会被GC呢？ */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReferenceCountingGC</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Object instance = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> _1MB = <span class="number">1024</span> * <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** * 这个成员属性的唯一意义就是占点内存，以便在能在GC日志中看清楚是否有回收过 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] bigSize = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testGC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ReferenceCountingGC objA = <span class="keyword">new</span> ReferenceCountingGC();</span><br><span class="line">        ReferenceCountingGC objB = <span class="keyword">new</span> ReferenceCountingGC();</span><br><span class="line">        objA.instance = objB;</span><br><span class="line">        objB.instance = objA;</span><br><span class="line"></span><br><span class="line">        objA = <span class="keyword">null</span>;</span><br><span class="line">        objB = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 假设在这行发生GC，objA和objB是否能被回收？</span></span><br><span class="line">        System.gc();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面这段代码中，对象objA 和对象objB都有字段instance，赋值令<code>objA.instance = objB;、objB.instance = objA;</code>，除此之外，这两个对象再无引用。如果JVM采用引用计数算法来管理内存，这两个对象不可能再被访问，但是他们互相引用着对方，导致它们引用计数不为0，所以引用计数器无法通知GC收集器回收它们。</p>
+<p>而事实上执行这段代码，objA和objB是可以被回收的，下面一节将介绍JVM实际使用的存活判定算法。</p>
+          <div class="read-more">
+            <a href="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/">深入理解JVM(1)——Java内存区域与Java对象(转载)</a>
         
       </h1>
@@ -848,56 +912,6 @@
 <p>整个网络模型非常清晰简单，最核心的当属消息抽象以及如何定义消息传输和处理，即上图中的Message的定义以及编解码传输等，下面详细介绍spark网络模块的消息抽象以及相关handler的定义。</p>
           <div class="read-more">
             <a href="/2019/04/25/Spark-底层网络模块/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/24/Spark-Streaming状态管理应用优化之路/">Spark-Streaming状态管理应用优化之路(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-24
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2019/04/24/Spark-Streaming状态管理应用优化之路/" data-title="Spark-Streaming状态管理应用优化之路(转)">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>通常来说，使用Spark-Streaming做无状态的流式计算是很方便的，每个batch时间间隔内仅需要计算当前时间间隔的数据即可，不需要关注之前的状态。但是很多时候，我们需要对一些数据做跨周期的统计，例如我们需要统计一个小时内每个用户的行为，我们定义的计算间隔(batch-duration)肯定会比一个小时小，一般是数十秒到几分钟左右，每个batch的计算都要更新最近一小时的用户行为，所以需要在整个计算过程中维护一个状态来保存近一个小时的用户行为。在Spark-1.6以前，可以通过updateStateByKey操作实现有状态的流式计算，从spark-1.6开始，新增了mapWithState操作，引入了一种新的流式状态管理机制。</p>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>为了更形象的介绍Spark-Streaming中的状态管理，我们从一个简单的问题展开：我们需要实时统计近一小时内每个用户的行为(点击、购买等)，为了简单，就把这个行为看成点击列表吧，来一条记录，则加到指定用户的点击列表中，并保证点击列表无重复。计算时间间隔为1分钟，即每1分钟更新近一小时用户行为，并将有状态变化的用户行为输出。</p>
-          <div class="read-more">
-            <a href="/2019/04/24/Spark-Streaming状态管理应用优化之路/" class="read-more-link">阅读更多</a>
           </div>
         
       
