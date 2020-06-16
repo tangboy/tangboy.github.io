@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="SparkSQL内核解析之逻辑计划"/>
+
+
+
+
+  <meta name="keywords" content="SparkSQL, 内核, 逻辑计划, Anthon" />
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Anthon">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
+
+
+
+<link rel="canonical" href="http://code-monkey.top/2020/06/16/SparkSQL内核解析之逻辑计划/"/>
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz",
+      appKey: "bA46NPkYiSG0QaBP2vX2ckzl"
+    });
+  </script>
+
+
+
+
+
+<script>
+  window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
+</script>
+
+    <title> SparkSQL内核解析之逻辑计划 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Anthon</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Anthon</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          SparkSQL内核解析之逻辑计划
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-06-16
+        </span>
+        
+        
+        <span class="post-visits"
+             data-url="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/"
+             data-title="SparkSQL内核解析之逻辑计划">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SparkSQL逻辑计划概述"><span class="toc-text">SparkSQL逻辑计划概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LogicalPlan简介"><span class="toc-text">LogicalPlan简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基本操作和分类"><span class="toc-text">基本操作和分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AstBuilder机制：Unresolved-LogicalPlan生成"><span class="toc-text">AstBuilder机制：Unresolved LogicalPlan生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Analyzed-LogicalPlan生成"><span class="toc-text">Analyzed LogicalPlan生成</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Catalog体系分析"><span class="toc-text">Catalog体系分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Rule体系"><span class="toc-text">Rule体系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Analyzed-LogicalPlan生成过程"><span class="toc-text">Analyzed LogicalPlan生成过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Analyzed-LogicalPlan详细步骤"><span class="toc-text">Analyzed LogicalPlan详细步骤</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优化器Optimizer"><span class="toc-text">优化器Optimizer</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#优化器概述-amp-规则体系"><span class="toc-text">优化器概述&amp;规则体系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Optimized-LogicalPlan的生成过程"><span class="toc-text">Optimized LogicalPlan的生成过程</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="SparkSQL逻辑计划概述"><a href="#SparkSQL逻辑计划概述" class="headerlink" title="SparkSQL逻辑计划概述"></a>SparkSQL逻辑计划概述</h2><img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/1.png" class="">
+<p>逻辑计划阶段被定义为LogicalPlan类，主要有三个阶段：</p>
+<ol>
+<li>由SparkSqlParser中的AstBuilder将语法树的各个节点转换为对应LogicalPlan节点，组成未解析的逻辑算子树，不包含数据信息与列信息</li>
+<li>由Analyzer将一系列规则作用在未解析逻辑算子树上，生成解析后的逻辑算子树</li>
+<li>有Optimizer将一系列优化规则应用在逻辑算子树中，确保结果正确的前提下改进低效结构，生成优化后的逻辑算子树</li>
+</ol>
+<h2 id="LogicalPlan简介"><a href="#LogicalPlan简介" class="headerlink" title="LogicalPlan简介"></a>LogicalPlan简介</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/2.png" class="">
+<p>LogicalPlan的父类QueryPlan主要分为六个模块：</p>
+<ul>
+<li>输入输出 涉及QueryPlan内属性相关的输入输出</li>
+<li>基本属性 QueryPlan内的基本属性</li>
+<li>字符串 主要用于打印QueryPlan的树形结构信息</li>
+<li>规范化 类似Expression中的规范化</li>
+<li>表达式操作</li>
+<li>约束 本质上也是数据过滤条件的一种，同样是表达式类型。通过显式的过滤条件推导约束</li>
+</ul>
+<h3 id="基本操作和分类"><a href="#基本操作和分类" class="headerlink" title="基本操作和分类"></a>基本操作和分类</h3><img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/3.png" class="">
+<a id="more"></a>
+<ul>
+<li>LeafNode 主要对应数据表和命令相关逻辑。<ul>
+<li>RunnableCommand 直接运行的命令 包括相关Database相关，Table相关，View相关，DDL相关，Function和Resource相关命令</li>
+</ul>
+</li>
+<li>UnaryNode 常见与对数据的逻辑转换操作，如过滤等<ul>
+<li>用来重定义分区操作(RedistributeData) 主要针对现有分区和排序的特定不满足的场景</li>
+<li>脚本相关的转换操作(ScriptTransformation) 用特定脚本对输入数据进行转换</li>
+<li>Object相关操作(ObjectConsumer)</li>
+<li>常见操作算子(basicLogicalOperators) 涉及Project，Filter，Sort等各种常见关系算子</li>
+</ul>
+</li>
+<li>BinaryNode 常见于对数据的组合关联操作<ul>
+<li>连接（Join）</li>
+<li>集合</li>
+<li>CoGroup</li>
+</ul>
+</li>
+<li>其他类型<ul>
+<li>Union 是一系列LoginPlan列表</li>
+<li>ObjectProducer 用于产生只包含Object列的行数据</li>
+<li>EventTimeWatermark 针对Spark Streaming中的水印机制</li>
+</ul>
+</li>
+</ul>
+<h3 id="AstBuilder机制：Unresolved-LogicalPlan生成"><a href="#AstBuilder机制：Unresolved-LogicalPlan生成" class="headerlink" title="AstBuilder机制：Unresolved LogicalPlan生成"></a>AstBuilder机制：Unresolved LogicalPlan生成</h3><img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/4.png" class="">
+<p>从visitSingleStatement为入口从根部递归访问整棵树，当访问到某个子节点可以构造LogicalPlan时，然后传递到父节点；执行到QuerySpecificationContext时，首先访问FromClauseContext子树，生成from的LogicalPlan，然后调用withQuerySpecification在from的基础上完成扩展</p>
+<p>从访问QuerySpecificationContext开始，主要分为以下三个步骤</p>
+<img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/5.png" class="">
+<ol>
+<li>生成数据表对应的LogicalPlan：访问FromClauseContext直到匹配TableNameContext节点时，根据其中的数据信息生成UnresolvedRelation，并跳出递归，构造名为from的LogicalPlan</li>
+<li>生成加入了过滤逻辑的LogicalPlan：对BooleanDefaultContext进行递归，生成对应的expression并返回作为过滤条件，然后基于此生成Filter LogicalPlan节点 ，并与(1)中的UnresolvedRelation构造withFilter的LogicalPlan</li>
+<li>生成加入列剪裁后的LogicalPlan：获取QuerySpecificationContext节点所包含的NamedExpressionSeqContext成员，并对其所有子节点表达式进行转换，生成NameExpression列表，然后生成Project LogicalPlan，并与(2)中的withFilter构造withProject的LogicalPlan</li>
+</ol>
+<img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/6.png" class="">
+<h3 id="Analyzed-LogicalPlan生成"><a href="#Analyzed-LogicalPlan生成" class="headerlink" title="Analyzed LogicalPlan生成"></a>Analyzed LogicalPlan生成</h3><p>Sql经过AstBuilder的处理得到的 未解析逻辑算子树 主要由UnresolvedRelation 和UnresolvedAttribute两个对象组成。Analyzer主要作用就是将这两种对象or表达式解析为有类型的对象</p>
+<h4 id="Catalog体系分析"><a href="#Catalog体系分析" class="headerlink" title="Catalog体系分析"></a>Catalog体系分析</h4><p>Catalog通常理解为一个容器或数据库命名空间中的一个层次，在Spark中主要用于各种函数资源和元数据的统一管理。</p>
+<img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/7.png" class="">
+<ul>
+<li>GlobalTempViewManager 是线程安全类，进行跨Session的视图管理，提供对全局视图的增删改查等，主要依赖一个mutable类型的HashMap来对视图名和数据源进行映射</li>
+<li>FunctionResourceLoader 用来加载用户自定义函数和Hive中的各种函数（以Jar包或文件类型提供）</li>
+<li>FunctionRegistry 用来实现函数注册，查找和删除功能。采用Map结构注册</li>
+<li>ExternalCatalog 用来管理数据库，数据表，分区和函数的接口，目标是与外部系统交互并做到上述内容的非临时存储</li>
+<li>Catalog内部还包括一个mutable类型的HashMap来管理临时表信息，以及currentDb成员来指代当前操作对应的数据库名（use db; )</li>
+</ul>
+<h4 id="Rule体系"><a href="#Rule体系" class="headerlink" title="Rule体系"></a>Rule体系</h4><p>对逻辑算子树的操作（绑定，解析，优化等）主要都是基于规则的，通过Scala的语言模式匹配进行树结构转换或节点改写。由RuleExecutor来调用规则，所有涉及树形结构转换过程的都继承自RuleExecutor[TreeType] 抽象类。</p>
+<p>RuleExecutor内部提供一个Seq[Batch]定义了改RuleExecutor的处理步骤，每个Batch代表一套规则；RuleExecutor.apply(TreeType plan)会按照batches和batches内Rule的顺序对传入的plan内的节点进行迭代处理</p>
+<h4 id="Analyzed-LogicalPlan生成过程"><a href="#Analyzed-LogicalPlan生成过程" class="headerlink" title="Analyzed LogicalPlan生成过程"></a>Analyzed LogicalPlan生成过程</h4><p>Analyzer执行过程会调用ReluExecutor实现的run方法，默认定义了6个Batch（Spark2.1）：</p>
+<ul>
+<li>Batch Substitution 节点替换操作<ul>
+<li>CTESubstitution 对应With语句，主要用于SQL子查询模块化，将多个LogicalPlan合并成一个</li>
+<li>WindowsSubstitution 匹配WithWindowDefinition表达式，将未解析的窗口表达式转换成窗口函数表达式</li>
+<li>EliminateUnions 当Union算子节点只有一个子节点时，将Union替换为children.head节点</li>
+<li>SubstituteUnresolvedOrdinals 用于支持Spark2.0开始支持的使用常数来表示列下标的特性，将下标替换为UnresolvedOrdinal表达式</li>
+</ul>
+</li>
+<li>BatchResolution 最常用的解析规则，包含了数据源，数据类型等操作。</li>
+</ul>
+<img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/8.png" class="">
+<ul>
+<li>Batch Nondeterministic =&gt; PullOutNondeterministic<br>将LogicalPlan中非Project和非Filter 的不确定表达式提取出来，然后放到内层或最终的Project算子中</li>
+<li>Batch UDF =&gt; HandleNullInputsForUDF<br>对用户自定义函数进行一定处理，HandleNullInputsForUDF用来处理输入数据为Null的情况，自上而下遍历表达式，匹配到ScalaUDF类型表达式时，会创建IF表达式进行Null的检查</li>
+<li>Batch FixNullability =&gt; FixNullability<br>用来统一设定LogicalPlan中表达式的nullable属性</li>
+<li>Batch Cleanup =&gt; CleanupAliases<br>用来删除LogicalPlan中无用的别名信息</li>
+</ul>
+<h4 id="Analyzed-LogicalPlan详细步骤"><a href="#Analyzed-LogicalPlan详细步骤" class="headerlink" title="Analyzed LogicalPlan详细步骤"></a>Analyzed LogicalPlan详细步骤</h4><img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/9.png" class="">
+<ol>
+<li>匹配ResolveRelations规则，从SessionCatalog中查表，并获取分析后的LogicalPlan，并插入一个别名节点</li>
+<li>分析Filter节点中的age信息，但由于常数18还未经分析，因此Filter节点依旧是未分析状态（以单引号开头）</li>
+<li>对表达式中的数据类型进行隐式转换，将18转换为bigint类型，此时Filter节点依旧是已分析状态</li>
+<li>再次匹配ResolveReferences规则，对Project节点中的进行name解析，此时整个Analyzed LogicalPlan就生成了</li>
+</ol>
+<h3 id="优化器Optimizer"><a href="#优化器Optimizer" class="headerlink" title="优化器Optimizer"></a>优化器Optimizer</h3><p>Analyzed LogicalPlan基本是未解析的逻辑算子树一对一转换来的，存在很多低效的写法，需要进行优化</p>
+<h4 id="优化器概述-amp-规则体系"><a href="#优化器概述-amp-规则体系" class="headerlink" title="优化器概述&amp;规则体系"></a>优化器概述&amp;规则体系</h4><p>与Analyzed类似，Optimizer也主要依赖一系列规则，并在RuleExecutor执行execute方法是利用这些规则Batch。</p>
+<p>SparkOptimizer中共实现了16个Batch（Spark2.1）：</p>
+<ul>
+<li>Batch Finish Analysis 更多是为了得到正确的结果而不是优化<ul>
+<li>EliminateSubqueryAliases 消除子查询别名，对应SubqueryAlias节点</li>
+<li>ReplaceExpression 表达式替换，替换RuntimeReplaceable的表达式，通常用来对其他类型数据库的支持</li>
+<li>ComputeCurrentTime 计算一次时间函数表达式，并将其他相同的函数替换成计算结果</li>
+<li>GetCurrentDatabase 执行CurrentDatabase并获得结果，替换所有获取数据库的表达式</li>
+<li>RewriteDistinctAggregates 重写Distinct聚合，将其转换为两个常规聚合表达式</li>
+</ul>
+</li>
+<li>BatchUnion =&gt; CombineUnions<br>当相邻节点都是Union算子时，合并为一个Union节点</li>
+<li>Batch Subquery =&gt; OptimizeSubqueries<br>当SQL语句包含子查询时，在逻辑算子树上遇到SubqueryExpression表达式会进一步递归调用Optimizer对子查询计划进行优化</li>
+<li>BatchReplaceOperator 主要执行算子（集合类型的操作算子）的替换操作，避免进行重复的逻辑转换<ul>
+<li>ReplaceIntersectWithSemiJoin 将Intersect算子替换为Left-Semi Join算子，两者逻辑上是等价的</li>
+<li>ReplaceIntersectWithSemiJoin 将Intersect算子替换为Left-Semi Join算子，两者逻辑上是等价的</li>
+<li>ReplaceDistinctWithAggregate 将distinct转换为Aggregate语句，将Select distinct转换为Groupby</li>
+</ul>
+</li>
+<li>Batch Aggregate 处理集合算子中的逻辑<ul>
+<li>RemoveLiteralFromGroupExpression 删除GroupBy中的常数，如果全是常数则替换为0</li>
+<li>RemoveRepetitionFromGroupExpression 删除重复的Groupby表达式</li>
+</ul>
+</li>
+<li>Batch Operator Optimizations 包含了最多最常用(31)的各种优化规则，分为以下几类<ul>
+<li>算子下推：将上层的算子下推，减少后续处理的数据量</li>
+<li>算子结合：将能组合的算子尽量组合，避免多次计算</li>
+<li>常量折叠和长度削减：对涉及常量的节点在执行前就完成运算</li>
+</ul>
+</li>
+</ul>
+<img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/10.png" class="">
+<ul>
+<li>BatchCheckCartesianProducts =&gt; CheckCartesianProducts<br>监测算子树中是否有笛卡尔积，如果没有用crossJoin显式使用，则抛出异常（除非’spark.sql.crossJoin.enable’设置为true）</li>
+<li>BatchDecinalOptimizations =&gt; DecimalAggregates<br>用于处理跟Decimal类型相关的问题，如精度固定等</li>
+<li>BatchTypedFilterOptimization =&gt; CombineTypedFilters<br>对特定情况下的过滤条件进行合并</li>
+<li>BatchLocalRelation 优化与LocalRelation相关的逻辑算子树<ul>
+<li>ConvertToLocalRelation 将LocalRelation上的本地操作转换为另一个LocalRelation</li>
+<li>PropagateEmptyRelation 将包含空的LocalRelation进行折叠</li>
+</ul>
+</li>
+<li>BatchOptimizeCodegen =&gt; OptimizeCodegen<br>对生成的代码进行优化，主要针对case when语句<ul>
+<li>BatchRewriteSubquery 主要优化子查询</li>
+<li>RewritePredicateSubquery 将特定子查询为此逻辑转换为left-semi/anti join操作</li>
+<li>CollapseProject 将两个相邻的Project算子结合并进行别名替换</li>
+</ul>
+</li>
+<li>BatchOptimizeMetadataOnlyQuery =&gt; OptimizeMetadataOnlyQuery<br>用来优化只需查找分区级别元数据的语句，要求扫描的所有列都是分区列且包含聚合算子（表达式是分区列or有Distinct算子or有无Distinct算子不影响结果）</li>
+<li>BatchExtractPythonUDFfromAggregate =&gt; ExtractPythonUDFFromAggregate<br>用来提取出聚合操作中的Python UDF函数，在聚合完成后再执行</li>
+<li>BatchPruneFileSourceTablePartitions =&gt; PruneFileSourcePartitions<br>对数据文件中的分区进行剪裁操作，并尽可能把过滤算子下推到存储层</li>
+<li>BatchUserProvidedOptimizers =&gt; ExperimentalMethods.extraOptimizations<br>用于满足用户自定义优化规则</li>
+</ul>
+<h4 id="Optimized-LogicalPlan的生成过程"><a href="#Optimized-LogicalPlan的生成过程" class="headerlink" title="Optimized LogicalPlan的生成过程"></a>Optimized LogicalPlan的生成过程</h4><img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/11.png" class="">
+<ul>
+<li>直接删除无用的SubqueryAlias节点，Filter直接作用于Relation</li>
+<li>对过滤节点进行分析，添加非空约束（来自Filter中的约束信息）</li>
+<li>对可以折叠的表达式直接进行静态计算，并用结果替换表达式(直接执行类型转换)</li>
+</ul>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="http://code-monkey.top">Anthon</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="http://code-monkey.top/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/">http://code-monkey.top/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90%E4%B9%8B%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/SparkSQL/">SparkSQL</a>
+            
+              <a href="/tags/%E5%86%85%E6%A0%B8/">内核</a>
+            
+              <a href="/tags/%E9%80%BB%E8%BE%91%E8%AE%A1%E5%88%92/">逻辑计划</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90-%E6%89%A7%E8%A1%8C%E5%85%A8%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0/">
+        <span class="next-text nav-default">SparkSQL内核解析-执行全过程概述</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:tanghuaidong@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2020
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Anthon</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
