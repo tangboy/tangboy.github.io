@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="数据分片与路由">
+  <meta name="description" content="数据分片与路由"/>
 
 
 
 
-  <meta name="keywords" content="大数据, 数据分片, 路由, Anthon">
+  <meta name="keywords" content="大数据, 数据分片, 路由, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2018/12/03/数据分片与路由/">
+<link rel="canonical" href="http://code-monkey.top/2018/12/03/数据分片与路由/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 数据分片与路由 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 数据分片与路由 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2018/12/03/数据分片与路由/" data-title="数据分片与路由">
+        <span class="post-visits"
+             data-url="/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/"
+             data-title="数据分片与路由">
           阅读次数 0
         </span>
         
@@ -256,25 +258,25 @@
 <p>Couchbase在待存储记录和物理机之间引入虚拟桶层，所有记录先通过哈希函数映射到对应的虚拟桶，记录和虚拟桶是多对一的映射关系。第二层映射是虚拟桶和物理机器之间的映射。这两层映射对应<strong>抽象模型</strong>中的key-partition 以及partition-machine</p>
 <p>相比于Round Robin，该方式具有较好的灵活性</p>
 <h3 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h3><p>一致性Hash算法也是使用取模的方法，只是，刚才描述的Round Robin是对服务器的数量进行取模，而一致性Hash算法是对2^32取模，什么意思呢？简单来说，一致性Hash算法将整个哈希值空间组织成一个虚拟的圆环，如假设某哈希函数H的值空间为0-2^32-1（即哈希值是一个32位无符号整形），整个哈希环如下：</p>
-<img src="/2018/12/03/数据分片与路由/1.jpg">
+<img src="/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/1.jpg" class="">
 <p>整个空间按顺时针方向组织，圆环的正上方的点代表0，0点右侧的第一个点代表1，以此类推，2、3、4、5、6……直到2^32-1，也就是说0点左侧的第一个点代表2^32-1， 0和2^32-1在零点中方向重合，我们把这个由2^32个点组成的圆环称为Hash环。</p>
 <p>下一步将各个服务器使用Hash进行一个哈希，具体可以选择服务器的IP或主机名作为关键字进行哈希，这样每台机器就能确定其在哈希环上的位置，这里假设四台服务器使用IP地址哈希后在环空间的位置如下：</p>
-<img src="/2018/12/03/数据分片与路由/2.jpg">
+<img src="/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/2.jpg" class="">
 <p>接下来使用如下算法定位数据访问到相应服务器：将数据key使用相同的函数Hash计算出哈希值，并确定此数据在环上的位置，从此位置沿环顺时针“行走”，第一台遇到的服务器就是其应该定位到的服务器！</p>
 <p>例如我们有Object A、Object B、Object C、Object D四个数据对象，经过哈希计算后，在环空间上的位置如下：</p>
-<img src="/2018/12/03/数据分片与路由/3.jpg">
+<img src="/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/3.jpg" class="">
 <p>根据一致性Hash算法，数据A会被定为到Node A上，B被定为到Node B上，C被定为到Node C上，D被定为到Node D上。</p>
 <h4 id="一致性Hash算法的容错性和可扩展性"><a href="#一致性Hash算法的容错性和可扩展性" class="headerlink" title="一致性Hash算法的容错性和可扩展性"></a>一致性Hash算法的容错性和可扩展性</h4><p>现假设Node C不幸宕机，可以看到此时对象A、B、D不会受到影响，只有C对象被重定位到Node D。一般的，在一致性Hash算法中，如果一台服务器不可用，则受影响的数据仅仅是此服务器到其环空间中前一台服务器（即沿着逆时针方向行走遇到的第一台服务器）之间数据，其它不会受到影响，如下所示：</p>
-<img src="/2018/12/03/数据分片与路由/4.jpg">
+<img src="/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/4.jpg" class="">
 <p>下面考虑另外一种情况，如果在系统中增加一台服务器Node X，如下图所示：</p>
-<img src="/2018/12/03/数据分片与路由/5.jpg">
+<img src="/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/5.jpg" class="">
 <p>此时对象Object A、B、D不受影响，只有对象C需要重定位到新的Node X ！一般的，在一致性Hash算法中，如果增加一台服务器，则受影响的数据仅仅是新服务器到其环空间中前一台服务器（即沿着逆时针方向行走遇到的第一台服务器）之间数据，其它数据也不会受到影响。</p>
 <p>综上所述，一致性Hash算法对于节点的增减都只需重定位环空间中的一小部分数据，具有较好的容错性和可扩展性。</p>
 <h4 id="Hash环的数据倾斜问题"><a href="#Hash环的数据倾斜问题" class="headerlink" title="Hash环的数据倾斜问题"></a>Hash环的数据倾斜问题</h4><p>一致性Hash算法在服务节点太少时，容易因为节点分部不均匀而造成数据倾斜（被缓存的对象大部分集中缓存在某一台服务器上）问题，例如系统中只有两台服务器，其环分布如下：</p>
-<img src="/2018/12/03/数据分片与路由/6.jpg">
+<img src="/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/6.jpg" class="">
 <p>此时必然造成大量数据集中到Node A上，而只有极少量会定位到Node B上。为了解决这种数据倾斜问题，一致性Hash算法引入了虚拟节点机制，即对每一个服务节点计算多个哈希，每个计算结果位置都放置一个此服务节点，称为虚拟节点。具体做法可以在服务器IP或主机名的后面增加编号来实现。</p>
 <p>例如上面的情况，可以为每台服务器计算三个虚拟节点，于是可以分别计算 “Node A#1”、“Node A#2”、“Node A#3”、“Node B#1”、“Node B#2”、“Node B#3”的哈希值，于是形成六个虚拟节点：</p>
-<img src="/2018/12/03/数据分片与路由/7.jpg">
+<img src="/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/7.jpg" class="">
 <p>同时数据定位算法不变，只是多了一步虚拟节点到实际节点的映射，例如定位到“Node A#1”、“Node A#2”、“Node A#3”三个虚拟节点的数据均定位到Node A上。这样就解决了服务节点少时数据倾斜的问题。在实际应用中，通常将虚拟节点数设置为32甚至更大，因此即使很少的服务节点也能做到相对均匀的数据分布。</p>
 <h2 id="范围分片"><a href="#范围分片" class="headerlink" title="范围分片"></a>范围分片</h2><p>范围分配首先将所有记录的主键进行排序，然后在排好序的主键空间里将记录划分成数据分片，每个数据分片存储有序的主键空间片段内的所有记录。在具体实现存储系统中，往往保持一个数据分片的映射表，记录表每一项记录数据分片的最小主键及其对应的物理机器地址。至于数据分片在物理机器的管理方式往往采用LSM树。<br>当然为了支持更大数据，一般数据分片映射表不是单纯结构，而是组织成类似B+树的层次结构。</p>
 <p>与通用数据分片和路由模型对照，范围分片对应的key-partition映射表是通过记录主键排序分割获得的，而partition-machine映射表则是通过直接保持其对应关系来实现的。</p>
@@ -293,7 +295,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2018/12/03/数据分片与路由/">http://code-monkey.top/2018/12/03/数据分片与路由/</a>
+      <a href="http://code-monkey.top/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/">http://code-monkey.top/2018/12/03/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E4%B8%8E%E8%B7%AF%E7%94%B1/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -313,11 +315,11 @@
         
           <div class="post-tags">
             
-              <a href="/tags/大数据/">大数据</a>
+              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
             
-              <a href="/tags/数据分片/">数据分片</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87/">数据分片</a>
             
-              <a href="/tags/路由/">路由</a>
+              <a href="/tags/%E8%B7%AF%E7%94%B1/">路由</a>
             
           </div>
         
@@ -325,14 +327,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2018/12/07/SQL之Join实现/">
+      <a class="prev" href="/2018/12/07/SQL%E4%B9%8BJoin%E5%AE%9E%E7%8E%B0/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">SQL之Join实现</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2018/12/02/大数据日知录-算法与架构/">
+      <a class="next" href="/2018/12/02/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%97%A5%E7%9F%A5%E5%BD%95-%E7%AE%97%E6%B3%95%E4%B8%8E%E6%9E%B6%E6%9E%84/">
         <span class="next-text nav-default">大数据日知录-算法与架构</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -375,7 +377,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -383,7 +385,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -410,12 +412,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

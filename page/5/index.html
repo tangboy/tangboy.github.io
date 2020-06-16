@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="机器学习，编程，玩">
+  <meta name="description" content="机器学习，编程，玩"/>
 
 
 
@@ -36,24 +36,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/page/5/">
+<link rel="canonical" href="http://code-monkey.top/page/5/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -96,8 +96,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -216,7 +216,63 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/04/24/Spark-Streaming状态管理应用优化之路/">Spark-Streaming状态管理应用优化之路(转)</a>
+          <a class="post-link" href="/2019/04/25/Spark-%E5%BA%95%E5%B1%82%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9D%97/">Spark 底层网络模块(转)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-04-25
+        </span>
+        
+        
+        <span class="post-visits"
+             data-url="/2019/04/25/Spark-%E5%BA%95%E5%B1%82%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9D%97/"
+             data-title="Spark 底层网络模块(转)">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>对于分布式系统来说，网络是最基本的一环，其设计的好坏直接影响到整个分布式系统的稳定性及可用性。为此，Spark专门独立出基础网络模块spark-network，为上层RPC、Shuffle数据传输、RDD Block同步以及资源文件传输等提供可靠的网络服务。在spark-1.6以前，RPC是单独通过akka实现，数据以及文件传输是通过netty实现，然而akka实质上底层也是采用netty实现，对于一个优雅的工程师来说，不会在系统中同时使用具有重复功能的框架，否则会使得系统越来越重，所以自spark-1.6开始，通过netty封装了一套简洁的类似于akka actor模式的RPC接口，逐步抛弃akka这个大框架。从spark-2.0起，所有的网络功能都是通过netty来实现。</p>
+<h2 id="系统抽象"><a href="#系统抽象" class="headerlink" title="系统抽象"></a>系统抽象</h2><p>在介绍spark网络模块前，我们先温习下netty的基本工作流程。无论是服务器还是客户端都会关联一个channel(socket)，channel上会绑定一个pipeline，pipeline绑定若干个handler，用来专门用来处理和业务有关的东西，handler有DownHandler和UpHandler两种，DownHandler用来处理发包，UpHandler用来处理收包，大致过程如下图所示。</p>
+<img src="/2019/04/25/Spark-%E5%BA%95%E5%B1%82%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9D%97/spark-network-netty-overview.png" class="">
+<p>Spark的底层网络实现也是遵循上图所示流程，其总体实现流程如下图所示。客户端发送请求消息，经过Encoder(一种DownHandler)编码，加上包头信息，再通过网络发给服务端，服务端收到消息后，首先经过TransportFrameDecoder(一种UpHandler)处理粘包拆包，得到消息类型和消息体，然后经过Decoder解析消息类型，得到一个个具体的请求消息，最后由TransportChannelHandler处理具体的请求消息，并根据具体的消息类型判断是否返回一个响应。类似地，响应消息传给客户端也是先经过Encoder编码，客户端先通过TransportFrameDecoder、Decoder解包消息，再通过TransportChannelHandler处理具体的响应消息。</p>
+<img src="/2019/04/25/Spark-%E5%BA%95%E5%B1%82%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9D%97/spark-network-basic.png" class="">
+<p>整个网络模型非常清晰简单，最核心的当属消息抽象以及如何定义消息传输和处理，即上图中的Message的定义以及编解码传输等，下面详细介绍spark网络模块的消息抽象以及相关handler的定义。</p>
+          <div class="read-more">
+            <a href="/2019/04/25/Spark-%E5%BA%95%E5%B1%82%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9D%97/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2019/04/24/Spark-Streaming%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%94%E7%94%A8%E4%BC%98%E5%8C%96%E4%B9%8B%E8%B7%AF/">Spark-Streaming状态管理应用优化之路(转)</a>
         
       </h1>
 
@@ -226,7 +282,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/04/24/Spark-Streaming状态管理应用优化之路/" data-title="Spark-Streaming状态管理应用优化之路(转)">
+        <span class="post-visits"
+             data-url="/2019/04/24/Spark-Streaming%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%94%E7%94%A8%E4%BC%98%E5%8C%96%E4%B9%8B%E8%B7%AF/"
+             data-title="Spark-Streaming状态管理应用优化之路(转)">
           阅读次数 0
         </span>
         
@@ -248,7 +306,7 @@
           <p>通常来说，使用Spark-Streaming做无状态的流式计算是很方便的，每个batch时间间隔内仅需要计算当前时间间隔的数据即可，不需要关注之前的状态。但是很多时候，我们需要对一些数据做跨周期的统计，例如我们需要统计一个小时内每个用户的行为，我们定义的计算间隔(batch-duration)肯定会比一个小时小，一般是数十秒到几分钟左右，每个batch的计算都要更新最近一小时的用户行为，所以需要在整个计算过程中维护一个状态来保存近一个小时的用户行为。在Spark-1.6以前，可以通过updateStateByKey操作实现有状态的流式计算，从spark-1.6开始，新增了mapWithState操作，引入了一种新的流式状态管理机制。</p>
 <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>为了更形象的介绍Spark-Streaming中的状态管理，我们从一个简单的问题展开：我们需要实时统计近一小时内每个用户的行为(点击、购买等)，为了简单，就把这个行为看成点击列表吧，来一条记录，则加到指定用户的点击列表中，并保证点击列表无重复。计算时间间隔为1分钟，即每1分钟更新近一小时用户行为，并将有状态变化的用户行为输出。</p>
           <div class="read-more">
-            <a href="/2019/04/24/Spark-Streaming状态管理应用优化之路/" class="read-more-link">阅读更多</a>
+            <a href="/2019/04/24/Spark-Streaming%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%94%E7%94%A8%E4%BC%98%E5%8C%96%E4%B9%8B%E8%B7%AF/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -266,7 +324,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/04/22/Spark-Scheduler内部原理剖析/">Spark Scheduler内部原理剖析(转)</a>
+          <a class="post-link" href="/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/">Spark Scheduler内部原理剖析(转)</a>
         
       </h1>
 
@@ -276,7 +334,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/04/22/Spark-Scheduler内部原理剖析/" data-title="Spark Scheduler内部原理剖析(转)">
+        <span class="post-visits"
+             data-url="/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/"
+             data-title="Spark Scheduler内部原理剖析(转)">
           阅读次数 0
         </span>
         
@@ -297,9 +357,9 @@
         
           <p>通过文章<a href="https://code-monkey.top/2019/04/22/Spark%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5RDD/">“Spark核心概念RDD”</a>我们知道，Spark的核心是根据RDD来实现的，Spark Scheduler则为Spark核心实现的重要一环，其作用就是任务调度。Spark的任务调度就是如何组织任务去处理RDD中每个分区的数据，根据RDD的依赖关系构建DAG，基于DAG划分Stage，将每个Stage中的任务发到指定节点运行。基于Spark的任务调度原理，我们可以合理规划资源利用，做到尽可能用最少的资源高效地完成任务计算。</p>
 <h2 id="分布式运行框架"><a href="#分布式运行框架" class="headerlink" title="分布式运行框架"></a>分布式运行框架</h2><p>Spark可以部署在多种资源管理平台，例如Yarn、Mesos等，Spark本身也实现了一个简易的资源管理机制，称之为Standalone模式。由于工作中接触较多的是Saprk on Yarn，不做特别说明，以下所述均表示Spark-on-Yarn。Spark部署在Yarn上有两种运行模式，分别为yarn-client和yarn-cluster模式，它们的区别仅仅在于Spark Driver是运行在Client端还是ApplicationMaster端。如下图所示为Spark部署在Yarn上，以yarn-cluster模式运行的分布式计算框架。</p>
-<img src="/2019/04/22/Spark-Scheduler内部原理剖析/spark-distribution-framework.png">
+<img src="/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/spark-distribution-framework.png" class="">
 <p>其中蓝色部分是Spark里的概念，包括Client、ApplicationMaster、Driver和Executor，其中Client和ApplicationMaster主要是负责与Yarn进行交互；Driver作为Spark应用程序的总控，负责分发任务以及监控任务运行状态；Executor负责执行任务，并上报状态信息给Driver，从逻辑上来看Executor是进程，运行在其中的任务是线程，所以说Spark的任务是线程级别的。通过下面的时序图可以更清晰地理解一个Spark应用程序从提交到运行的完整流程。</p>
-<img src="/2019/04/22/Spark-Scheduler内部原理剖析/spark-submit-time.png">
+<img src="/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/spark-submit-time.png" class="">
 <p>提交一个Spark应用程序，首先通过Client向ResourceManager请求启动一个Application，同时检查是否有足够的资源满足Application的需求，如果资源条件满足，则准备ApplicationMaster的启动上下文，交给ResourceManager，并循环监控Application状态。</p>
 <p>当提交的资源队列中有资源时，ResourceManager会在某个NodeManager上启动ApplicationMaster进程，ApplicationMaster会单独启动Driver后台线程，当Driver启动后，ApplicationMaster会通过本地的RPC连接Driver，并开始向ResourceManager申请Container资源运行Executor进程（一个Executor对应与一个Container），当ResourceManager返回Container资源，则在对应的Container上启动Executor。</p>
 <p>Driver线程主要是初始化SparkContext对象，准备运行所需的上下文，然后一方面保持与ApplicationMaster的RPC连接，通过ApplicationMaster申请资源，另一方面根据用户业务逻辑开始调度任务，将任务下发到已有的空闲Executor上。</p>
@@ -311,7 +371,7 @@
 </blockquote>
 <p>从上述时序图可知，Client只管提交Application并监控Application的状态。对于Spark的任务调度主要是集中在两个方面: 资源申请和任务分发，其主要是通过ApplicationMaster、Driver以及Executor之间来完成，下面详细剖析Spark任务调度每个细节。</p>
           <div class="read-more">
-            <a href="/2019/04/22/Spark-Scheduler内部原理剖析/" class="read-more-link">阅读更多</a>
+            <a href="/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -329,7 +389,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/04/22/Spark核心概念RDD/">Spark核心概念RDD(转)</a>
+          <a class="post-link" href="/2019/04/22/Spark%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5RDD/">Spark核心概念RDD(转)</a>
         
       </h1>
 
@@ -339,7 +399,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/04/22/Spark核心概念RDD/" data-title="Spark核心概念RDD(转)">
+        <span class="post-visits"
+             data-url="/2019/04/22/Spark%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5RDD/"
+             data-title="Spark核心概念RDD(转)">
           阅读次数 0
         </span>
         
@@ -361,9 +423,9 @@
           <p>RDD全称叫做弹性分布式数据集(Resilient Distributed Datasets)，它是一种分布式的内存抽象，表示一个只读的记录分区的集合，它只能通过其他RDD转换而创建，为此，RDD支持丰富的转换操作(如map, join, filter, groupBy等)，通过这种转换操作，新的RDD则包含了如何从其他RDDs衍生所必需的信息，所以说RDDs之间是有依赖关系的。基于RDDs之间的依赖，RDDs会形成一个有向无环图DAG，该DAG描述了整个流式计算的流程，实际执行的时候，RDD是通过血缘关系(Lineage)一气呵成的，即使出现数据分区丢失，也可以通过血缘关系重建分区，总结起来，基于RDD的流式计算任务可描述为：从稳定的物理存储(如分布式文件系统)中加载记录，记录被传入由一组确定性操作构成的DAG，然后写回稳定存储。另外RDD还可以将数据集缓存到内存中，使得在多个操作之间可以重用数据集，基于这个特点可以很方便地构建迭代型应用(图计算、机器学习等)或者交互式数据分析应用。可以说Spark最初也就是实现RDD的一个分布式系统，后面通过不断发展壮大成为现在较为完善的大数据生态系统，简单来讲，Spark-RDD的关系类似于Hadoop-MapReduce关系。</p>
 <h2 id="RDD特点"><a href="#RDD特点" class="headerlink" title="RDD特点"></a>RDD特点</h2><p>RDD表示只读的分区的数据集，对RDD进行改动，只能通过RDD的转换操作，由一个RDD得到一个新的RDD，新的RDD包含了从其他RDD衍生所必需的信息。RDDs之间存在依赖，RDD的执行是按照血缘关系延时计算的。如果血缘关系较长，可以通过持久化RDD来切断血缘关系。</p>
 <h3 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h3><p>如下图所示，RDD逻辑上是分区的，每个分区的数据是抽象存在的，计算的时候会通过一个compute函数得到每个分区的数据。如果RDD是通过已有的文件系统构建，则compute函数是读取指定文件系统中的数据，如果RDD是通过其他RDD转换而来，则compute函数是执行转换逻辑将其他RDD的数据进行转换。</p>
-<img src="/2019/04/22/Spark核心概念RDD/rdd-partition.png">
+<img src="/2019/04/22/Spark%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5RDD/rdd-partition.png" class="">
           <div class="read-more">
-            <a href="/2019/04/22/Spark核心概念RDD/" class="read-more-link">阅读更多</a>
+            <a href="/2019/04/22/Spark%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5RDD/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -381,7 +443,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/04/18/PySpark-的背后原理/">PySpark 的背后原理(转)</a>
+          <a class="post-link" href="/2019/04/18/PySpark-%E7%9A%84%E8%83%8C%E5%90%8E%E5%8E%9F%E7%90%86/">PySpark 的背后原理(转)</a>
         
       </h1>
 
@@ -391,7 +453,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/04/18/PySpark-的背后原理/" data-title="PySpark 的背后原理(转)">
+        <span class="post-visits"
+             data-url="/2019/04/18/PySpark-%E7%9A%84%E8%83%8C%E5%90%8E%E5%8E%9F%E7%90%86/"
+             data-title="PySpark 的背后原理(转)">
           阅读次数 0
         </span>
         
@@ -412,10 +476,10 @@
         
           <p>Spark主要是由Scala语言开发，为了方便和其他系统集成而不引入scala相关依赖，部分实现使用Java语言开发，例如External Shuffle Service等。总体来说，Spark是由JVM语言实现，会运行在JVM中。然而，Spark除了提供Scala/Java开发接口外，还提供了Python、R等语言的开发接口，为了保证Spark核心实现的独立性，Spark仅在外围做包装，实现对不同语言的开发支持，本文主要介绍Python Spark的实现原理，剖析pyspark应用程序是如何运行起来的。</p>
 <h2 id="Spark运行时架构"><a href="#Spark运行时架构" class="headerlink" title="Spark运行时架构"></a>Spark运行时架构</h2><p>首先我们先回顾下Spark的基本运行时架构，如下图所示，其中橙色部分表示为JVM，Spark应用程序运行时主要分为Driver和Executor，Driver负载总体调度及UI展示，Executor负责Task运行，Spark可以部署在多种资源管理系统中，例如Yarn、Mesos等，同时Spark自身也实现了一种简单的Standalone(独立部署)资源管理系统，可以不用借助其他资源管理系统即可运行。更多细节请参考<a href="https://code-monkey.top/2019/04/22/Spark-Scheduler%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/">Spark Scheduler内部原理剖析</a>。</p>
-<img src="/2019/04/18/PySpark-的背后原理/spark-structure.png">
+<img src="/2019/04/18/PySpark-%E7%9A%84%E8%83%8C%E5%90%8E%E5%8E%9F%E7%90%86/spark-structure.png" class="">
 <p>用户的Spark应用程序运行在Driver上(某种程度上说，用户的程序就是Spark Driver程序)，经过Spark调度封装成一个个Task，再将这些Task信息发给Executor执行，Task信息包括代码逻辑以及数据信息，Executor不直接运行用户的代码。</p>
           <div class="read-more">
-            <a href="/2019/04/18/PySpark-的背后原理/" class="read-more-link">阅读更多</a>
+            <a href="/2019/04/18/PySpark-%E7%9A%84%E8%83%8C%E5%90%8E%E5%8E%9F%E7%90%86/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -433,7 +497,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/04/09/Kafka深度解析/">Kafka深度解析(转)</a>
+          <a class="post-link" href="/2019/04/09/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/">Kafka深度解析(转)</a>
         
       </h1>
 
@@ -443,7 +507,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/04/09/Kafka深度解析/" data-title="Kafka深度解析(转)">
+        <span class="post-visits"
+             data-url="/2019/04/09/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/"
+             data-title="Kafka深度解析(转)">
           阅读次数 0
         </span>
         
@@ -492,7 +558,7 @@
 </li>
 </ul>
           <div class="read-more">
-            <a href="/2019/04/09/Kafka深度解析/" class="read-more-link">阅读更多</a>
+            <a href="/2019/04/09/Kafka%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -510,7 +576,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/">美团DB数据同步到数据仓库的架构与实践(转)</a>
+          <a class="post-link" href="/2019/04/01/%E7%BE%8E%E5%9B%A2DB%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%AE%9E%E8%B7%B5/">美团DB数据同步到数据仓库的架构与实践(转)</a>
         
       </h1>
 
@@ -520,7 +586,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/" data-title="美团DB数据同步到数据仓库的架构与实践(转)">
+        <span class="post-visits"
+             data-url="/2019/04/01/%E7%BE%8E%E5%9B%A2DB%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%AE%9E%E8%B7%B5/"
+             data-title="美团DB数据同步到数据仓库的架构与实践(转)">
           阅读次数 0
         </span>
         
@@ -548,9 +616,9 @@
 </ul>
 <p>为了彻底解决这些问题，我们逐步转向CDC (Change Data Capture) + Merge的技术方案，即实时Binlog采集 + 离线处理Binlog还原业务数据这样一套解决方案。Binlog是MySQL的二进制日志，记录了MySQL中发生的所有数据变更，MySQL集群自身的主从同步就是基于Binlog做的。</p>
 <p>本文主要从Binlog实时采集和离线处理Binlog还原业务数据两个方面，来介绍如何实现DB数据准确、高效地进入数仓。</p>
-<h2 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h2><img src="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/1.png">
+<h2 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h2><img src="/2019/04/01/%E7%BE%8E%E5%9B%A2DB%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%AE%9E%E8%B7%B5/1.png" class="">
           <div class="read-more">
-            <a href="/2019/04/01/美团DB数据同步到数据仓库的架构与实践/" class="read-more-link">阅读更多</a>
+            <a href="/2019/04/01/%E7%BE%8E%E5%9B%A2DB%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%AE%9E%E8%B7%B5/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -568,7 +636,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/">知乎如何基于开源Druid打造下一代数据平台(转)</a>
+          <a class="post-link" href="/2019/02/28/%E7%9F%A5%E4%B9%8E%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8E%E5%BC%80%E6%BA%90Druid%E6%89%93%E9%80%A0%E4%B8%8B%E4%B8%80%E4%BB%A3%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0/">知乎如何基于开源Druid打造下一代数据平台(转)</a>
         
       </h1>
 
@@ -578,7 +646,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/" data-title="知乎如何基于开源Druid打造下一代数据平台(转)">
+        <span class="post-visits"
+             data-url="/2019/02/28/%E7%9F%A5%E4%B9%8E%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8E%E5%BC%80%E6%BA%90Druid%E6%89%93%E9%80%A0%E4%B8%8B%E4%B8%80%E4%BB%A3%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0/"
+             data-title="知乎如何基于开源Druid打造下一代数据平台(转)">
           阅读次数 0
         </span>
         
@@ -597,7 +667,7 @@
         
 
         
-          <img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/1.webp">
+          <img src="/2019/02/28/%E7%9F%A5%E4%B9%8E%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8E%E5%BC%80%E6%BA%90Druid%E6%89%93%E9%80%A0%E4%B8%8B%E4%B8%80%E4%BB%A3%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0/1.webp" class="">
 <h2 id="导读"><a href="#导读" class="headerlink" title="导读"></a>导读</h2><p>本文重点介绍了知乎数据分析平台对 Druid 的查询优化。通过自研的一整套缓存机制和查询改造，该平台目前在较长的时间内，满足了业务固化的指标需求和灵活的分析需求，减少了数据开发者的开发成本。</p>
 <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>知乎作为知名中文知识内容平台，业务增长和产品迭代速度很快，如何满足业务快速扩张中的灵活分析需求，是知乎数据平台组要面临的一大挑战。</p>
 <p>知乎数据平台团队基于开源的 Druid 打造的业务自助式的数据分析平台，经过研发迭代，目前支撑了全业务的数据分析需求，是业务数据分析的重要工具。</p>
@@ -616,9 +686,9 @@
 <li>日请求量 3w+</li>
 <li>为 A/B Testing、渠道管理、APM 、数据邮件等系统提供数据 API</li>
 </ol>
-<h2 id="数据分析平台架构"><a href="#数据分析平台架构" class="headerlink" title="数据分析平台架构"></a>数据分析平台架构</h2><img src="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/2.webp">
+<h2 id="数据分析平台架构"><a href="#数据分析平台架构" class="headerlink" title="数据分析平台架构"></a>数据分析平台架构</h2><img src="/2019/02/28/%E7%9F%A5%E4%B9%8E%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8E%E5%BC%80%E6%BA%90Druid%E6%89%93%E9%80%A0%E4%B8%8B%E4%B8%80%E4%BB%A3%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0/2.webp" class="">
           <div class="read-more">
-            <a href="/2019/02/28/知乎如何基于开源Druid打造下一代数据平台/" class="read-more-link">阅读更多</a>
+            <a href="/2019/02/28/%E7%9F%A5%E4%B9%8E%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8E%E5%BC%80%E6%BA%90Druid%E6%89%93%E9%80%A0%E4%B8%8B%E4%B8%80%E4%BB%A3%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -636,7 +706,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/02/28/埋点数据/">埋点数据(转)</a>
+          <a class="post-link" href="/2019/02/28/%E5%9F%8B%E7%82%B9%E6%95%B0%E6%8D%AE/">埋点数据(转)</a>
         
       </h1>
 
@@ -646,7 +716,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/02/28/埋点数据/" data-title="埋点数据(转)">
+        <span class="post-visits"
+             data-url="/2019/02/28/%E5%9F%8B%E7%82%B9%E6%95%B0%E6%8D%AE/"
+             data-title="埋点数据(转)">
           阅读次数 0
         </span>
         
@@ -665,12 +737,12 @@
         
 
         
-          <img src="/2019/02/28/埋点数据/1.webp">
+          <img src="/2019/02/28/%E5%9F%8B%E7%82%B9%E6%95%B0%E6%8D%AE/1.webp" class="">
 <h2 id="导读"><a href="#导读" class="headerlink" title="导读"></a>导读</h2><p>埋点作为商业智能（BI）和人工智能（AI）体系中重要的一环，是公司提升产品工程质量、实施 AB Testing、个性化推荐服务重要的数据来源。在传统的纯 Web 和 Native 开发的产品中，埋点从技术的角度来说未必多深奥，但从业务的角度来说要做到埋点设计规范、流程高效和保证质量却是很难。本文重点介绍一下知乎客户端的埋点模型、流程和平台技术。</p>
 <h2 id="客户端埋点为什么难？"><a href="#客户端埋点为什么难？" class="headerlink" title="客户端埋点为什么难？"></a>客户端埋点为什么难？</h2><p>Web 端的埋点可以随着新代码上线即时生效，对版本的发车概念相对较弱，即使埋点错漏，修复成本较低。</p>
 <p>对客户端而言，如果使用 Native 技术开发的功能埋点有问题，则需要等下一个版本才能修复，并且还有版本覆盖度的问题。修复埋点的这个时间窗口一般都比较长，会对业务的产品快速迭代产生很负面的影响。从业务的角度来说，客户端在发布功能之前，对于要做的数据分析不见得想得全，无计划收集非常多的埋点，对于埋点设计人员、客户端开发、测试人员来说是很大的工作量。反过来说，真正要用数时才发现重要的埋点没有采集，则会 「点」 到用时方恨少。因此，如何综合规划一个版本要采集的埋点，也是颇有挑战的事情，颇有「养兵千日，用兵一时」的感觉。</p>
           <div class="read-more">
-            <a href="/2019/02/28/埋点数据/" class="read-more-link">阅读更多</a>
+            <a href="/2019/02/28/%E5%9F%8B%E7%82%B9%E6%95%B0%E6%8D%AE/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -698,7 +770,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/" data-title="Chaining Custom PySpark DataFrame Transformations">
+        <span class="post-visits"
+             data-url="/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/"
+             data-title="Chaining Custom PySpark DataFrame Transformations">
           阅读次数 0
         </span>
         
@@ -734,62 +808,6 @@
 <p>接下来，我们进一步探讨transformations的其他定义形式，让整个<code>transform</code>更加清晰明了</p>
           <div class="read-more">
             <a href="/2019/01/19/Chaining-Custom-PySpark-DataFrame-Transformations/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/01/19/Chaining-Custom-DataFrame-Transformations-in-Spark/">Chaining Custom DataFrame Transformations in Spark</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-01-19
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2019/01/19/Chaining-Custom-DataFrame-Transformations-in-Spark/" data-title="Chaining Custom DataFrame Transformations in Spark">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>在Spark中，可以采用<code>implicit classes</code>或者<code>Dataset#transform</code>来连接DataFrame的变换，这篇博客着重描如何连接DataFrame变换操作，并且详细解释说明为啥<code>Dataset#transform</code>方式要比<code>implicit classes</code>更有优势。</p>
-<h2 id="Dataset-Transform方法"><a href="#Dataset-Transform方法" class="headerlink" title="Dataset Transform方法"></a>Dataset Transform方法</h2><p>Dataset transform方法提供了<a href="http://spark.apache.org/docs/latest/api/scala/#org.apache.spark.sql.Dataset" target="_blank" rel="noopener">concise syntax for chaining custom transformations</a></p>
-<p>假如我们有两个方法</p>
-<ol>
-<li><code>withGreeting()</code>方法，该方法在原有的DataFrame基础上增加<code>greeting</code>列</li>
-<li><code>withFarewell()</code>方法，该方法在原有的DataFrame基础上增加<code>farewell</code>列</li>
-</ol>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">withGreeting</span></span>(df: <span class="type">DataFrame</span>): <span class="type">DataFrame</span> = &#123;</span><br><span class="line">    df.withColumn(<span class="string">"greeting"</span>, lit(<span class="string">"hello world"</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">withFarewell</span></span>(df: <span class="type">DataFrame</span>): <span class="type">DataFrame</span> = &#123;</span><br><span class="line">    df.withColumn(<span class="string">"farewell"</span>, lit(<span class="string">"goodbye"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <div class="read-more">
-            <a href="/2019/01/19/Chaining-Custom-DataFrame-Transformations-in-Spark/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -846,7 +864,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -854,7 +872,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -881,12 +899,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="Merge Join vs. Hash Join vs. Nested Loop(转)">
+  <meta name="description" content="Merge Join vs. Hash Join vs. Nested Loop(转)"/>
 
 
 
 
-  <meta name="keywords" content="SQL, Merge Join, Hash Join, Nested Join, Anthon">
+  <meta name="keywords" content="SQL, Merge Join, Hash Join, Nested Join, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/">
+<link rel="canonical" href="http://code-monkey.top/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Merge Join vs. Hash Join vs. Nested Loop(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Merge Join vs. Hash Join vs. Nested Loop(转) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/" data-title="Merge Join vs. Hash Join vs. Nested Loop(转)">
+        <span class="post-visits"
+             data-url="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/"
+             data-title="Merge Join vs. Hash Join vs. Nested Loop(转)">
           阅读次数 0
         </span>
         
@@ -295,26 +297,26 @@
 <h1 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h1><p>本文所做实验均基于PostgreSQL 9.3.5平台</p>
 <h2 id="小于万条记录小表与大表Join"><a href="#小于万条记录小表与大表Join" class="headerlink" title="小于万条记录小表与大表Join"></a>小于万条记录小表与大表Join</h2><p>一张记录数1万以下的小表nbar.mse_test_test，一张大表165万条记录的大表nbar.nbar_test，大表上建有索引</p>
 <h3 id="Query-1-等值Join"><a href="#Query-1-等值Join" class="headerlink" title="Query 1:等值Join"></a>Query 1:等值Join</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> </span><br><span class="line">	<span class="keyword">count</span>(*)</span><br><span class="line"><span class="keyword">from</span> </span><br><span class="line">	mse_test_test, </span><br><span class="line">	nbar_test </span><br><span class="line"><span class="keyword">where</span> </span><br><span class="line">	mse_test_test.client_key = nbar_test.client_key;</span><br></pre></td></tr></table></figure>
-<h4 id="Query-1-Test-1：-查询优化器自动选择Nested-Loop，耗时784-845-ms"><a href="#Query-1-Test-1：-查询优化器自动选择Nested-Loop，耗时784-845-ms" class="headerlink" title="Query 1 Test 1： 查询优化器自动选择Nested Loop，耗时784.845 ms"></a>Query 1 Test 1： 查询优化器自动选择Nested Loop，耗时784.845 ms</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/1.png">
-<p>如下图所示，执行器将小表mse_test_test作为外表（驱动表），对于其中的每条记录，通过大表（nbar_test）上的索引匹配相应记录。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/2.png"></p>
-<h4 id="Query-1-Test-2：强制使用Hash-Join，耗时1731-836ms"><a href="#Query-1-Test-2：强制使用Hash-Join，耗时1731-836ms" class="headerlink" title="Query 1 Test 2：强制使用Hash Join，耗时1731.836ms"></a>Query 1 Test 2：强制使用Hash Join，耗时1731.836ms</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/3.png">
-<p>如下图所示，执行器选择一张表将其映射成散列表，再遍历另外一张表并从散列表中匹配相应记录。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/4.png"></p>
-<h4 id="Query-1-Test-3：强制使用Merge-Join，耗时4956-768-ms"><a href="#Query-1-Test-3：强制使用Merge-Join，耗时4956-768-ms" class="headerlink" title="Query 1 Test 3：强制使用Merge Join，耗时4956.768 ms"></a>Query 1 Test 3：强制使用Merge Join，耗时4956.768 ms</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/5.png">
-<p>　如下图所示，执行器先分别对mse_test_test和nbar_test按client_key排序。其中mse_test_test使用快速排序，而nbar_test使用external merge排序，之后对二者进行Merge Join。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/6.png"></p>
+<h4 id="Query-1-Test-1：-查询优化器自动选择Nested-Loop，耗时784-845-ms"><a href="#Query-1-Test-1：-查询优化器自动选择Nested-Loop，耗时784-845-ms" class="headerlink" title="Query 1 Test 1： 查询优化器自动选择Nested Loop，耗时784.845 ms"></a>Query 1 Test 1： 查询优化器自动选择Nested Loop，耗时784.845 ms</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/1.png" class="">
+<p>如下图所示，执行器将小表mse_test_test作为外表（驱动表），对于其中的每条记录，通过大表（nbar_test）上的索引匹配相应记录。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/2.png" class=""></p>
+<h4 id="Query-1-Test-2：强制使用Hash-Join，耗时1731-836ms"><a href="#Query-1-Test-2：强制使用Hash-Join，耗时1731-836ms" class="headerlink" title="Query 1 Test 2：强制使用Hash Join，耗时1731.836ms"></a>Query 1 Test 2：强制使用Hash Join，耗时1731.836ms</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/3.png" class="">
+<p>如下图所示，执行器选择一张表将其映射成散列表，再遍历另外一张表并从散列表中匹配相应记录。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/4.png" class=""></p>
+<h4 id="Query-1-Test-3：强制使用Merge-Join，耗时4956-768-ms"><a href="#Query-1-Test-3：强制使用Merge-Join，耗时4956-768-ms" class="headerlink" title="Query 1 Test 3：强制使用Merge Join，耗时4956.768 ms"></a>Query 1 Test 3：强制使用Merge Join，耗时4956.768 ms</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/5.png" class="">
+<p>　如下图所示，执行器先分别对mse_test_test和nbar_test按client_key排序。其中mse_test_test使用快速排序，而nbar_test使用external merge排序，之后对二者进行Merge Join。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/6.png" class=""></p>
 <h4 id="Query-1-总结-1"><a href="#Query-1-总结-1" class="headerlink" title="Query 1 总结 1"></a>Query 1 总结 1</h4><p>通过对比Query 1 Test 1，Query 1 Test 2，Query 1 Test 3可以看出Nested Loop适用于结果集很小（一般要求小于一万条），并且内表在Join字段上建有索引（这点非常非常非常重要）。<br><strong>在大表上创建聚簇索引</strong></p>
-<h4 id="Query-1-Test-4：强制使用Merge-Join，耗时1660-228-ms66"><a href="#Query-1-Test-4：强制使用Merge-Join，耗时1660-228-ms66" class="headerlink" title="Query 1 Test 4：强制使用Merge Join，耗时1660.228 ms66"></a>Query 1 Test 4：强制使用Merge Join，耗时1660.228 ms66</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/7.png">
-<p>如下图所示，执行器通过聚簇索引对大表（nbar_test）排序，直接通过快排对无索引的小表（mse_test_test）排序，之后对二才进行Merge Join。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/8.png"></p>
+<h4 id="Query-1-Test-4：强制使用Merge-Join，耗时1660-228-ms66"><a href="#Query-1-Test-4：强制使用Merge-Join，耗时1660-228-ms66" class="headerlink" title="Query 1 Test 4：强制使用Merge Join，耗时1660.228 ms66"></a>Query 1 Test 4：强制使用Merge Join，耗时1660.228 ms66</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/7.png" class="">
+<p>如下图所示，执行器通过聚簇索引对大表（nbar_test）排序，直接通过快排对无索引的小表（mse_test_test）排序，之后对二才进行Merge Join。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/8.png" class=""></p>
 <h4 id="Query-1-总结-2："><a href="#Query-1-总结-2：" class="headerlink" title="Query 1 总结 2："></a>Query 1 总结 2：</h4><p>通过对比Query 1 Test 3和Query 1 Test 4可以看出，Merge Join的主要开销是排序开销，如果能通过建立聚簇索引（如果Query必须显示排序），可以极大提高Merge Join的性能。从这两个实验可以看出，创建聚簇索引后，查询时间从4956.768 ms缩减到了1815.238 ms。</p>
 <p><strong>在两表上同时创建聚簇索引</strong></p>
-<h4 id="Query-1-Test-5：强制使用Merge-Join，耗时2575-498-ms。"><a href="#Query-1-Test-5：强制使用Merge-Join，耗时2575-498-ms。" class="headerlink" title="Query 1 Test 5：强制使用Merge Join，耗时2575.498 ms。"></a>Query 1 Test 5：强制使用Merge Join，耗时2575.498 ms。</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/9.png">
-<p>如下图所示，执行器通过聚簇索引对大表（nbar_test）和小表（mse_test_test）排序，之后才进行Merge Join。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/10.png"></p>
+<h4 id="Query-1-Test-5：强制使用Merge-Join，耗时2575-498-ms。"><a href="#Query-1-Test-5：强制使用Merge-Join，耗时2575-498-ms。" class="headerlink" title="Query 1 Test 5：强制使用Merge Join，耗时2575.498 ms。"></a>Query 1 Test 5：强制使用Merge Join，耗时2575.498 ms。</h4><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/9.png" class="">
+<p>如下图所示，执行器通过聚簇索引对大表（nbar_test）和小表（mse_test_test）排序，之后才进行Merge Join。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/10.png" class=""></p>
 <h4 id="Query-1-总结-3："><a href="#Query-1-总结-3：" class="headerlink" title="Query 1 总结 3："></a>Query 1 总结 3：</h4><p>对比Query 1 Test 4和Query 1 Test 5，可以看出二者唯一的不同在于对小表（mse_test_test）的访问方式不同，前者使用快排，后者因为聚簇索引的存在而使用Index Only Scan，在表数据量比较小的情况下前者比后者效率更高。由此可看出如果通过索引排序再查找相应的记录比直接在原记录上排序效率还低，则直接在原记录上排序后Merge Join效率更高。</p>
 <p><strong>删除nbar_test上的索引</strong></p>
-<h4 id="Query-1-Test-6：强制使用Hash-Join，耗时1815-238-ms"><a href="#Query-1-Test-6：强制使用Hash-Join，耗时1815-238-ms" class="headerlink" title="Query 1 Test 6：强制使用Hash Join，耗时1815.238 ms"></a>Query 1 Test 6：强制使用Hash Join，耗时1815.238 ms</h4><p>时间与Query 1 Test 2几乎相等。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/11.png"><br>如下图所示，与Query 1 Test 2相同，执行器选择一张表将其映射成散列表，再遍历另外一张表并从散列表中匹配相应记录。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/12.png"></p>
+<h4 id="Query-1-Test-6：强制使用Hash-Join，耗时1815-238-ms"><a href="#Query-1-Test-6：强制使用Hash-Join，耗时1815-238-ms" class="headerlink" title="Query 1 Test 6：强制使用Hash Join，耗时1815.238 ms"></a>Query 1 Test 6：强制使用Hash Join，耗时1815.238 ms</h4><p>时间与Query 1 Test 2几乎相等。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/11.png" class=""><br>如下图所示，与Query 1 Test 2相同，执行器选择一张表将其映射成散列表，再遍历另外一张表并从散列表中匹配相应记录。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/12.png" class=""></p>
 <h4 id="Query-1-总结-4-："><a href="#Query-1-总结-4-：" class="headerlink" title="Query 1 总结 4 ："></a>Query 1 总结 4 ：</h4><p>通过对比Query 1 Test 2，Query 1 Test 6可以看出Hash Join不要求表在Join字段上建立索引。</p>
 <h3 id="两大表Join"><a href="#两大表Join" class="headerlink" title="两大表Join"></a>两大表Join</h3><p>mse_test约100万条记录，nbar_test约165万条记录</p>
 <h4 id="Query-2-不等值Join"><a href="#Query-2-不等值Join" class="headerlink" title="Query 2:不等值Join"></a>Query 2:不等值Join</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">select</span> </span><br><span class="line">   	<span class="keyword">count</span>(*)</span><br><span class="line">   <span class="keyword">from</span> </span><br><span class="line">   	mse_test, </span><br><span class="line">   	nbar_test </span><br><span class="line">   <span class="keyword">where</span> </span><br><span class="line">   	mse_test.client_key = nbar_test.client_key</span><br><span class="line"><span class="keyword">and</span></span><br><span class="line">	mse_test.client_key <span class="keyword">between</span> <span class="number">100000</span> <span class="keyword">and</span> <span class="number">300000</span>;</span><br></pre></td></tr></table></figure>
-<h4 id="Query-2-Test-1：强制使用Hash-Join，失败"><a href="#Query-2-Test-1：强制使用Hash-Join，失败" class="headerlink" title="Query 2 Test 1：强制使用Hash Join，失败"></a>Query 2 Test 1：强制使用Hash Join，失败</h4><p>本次实验通过设置enable_hashjoin=true，enable_nestloop=false，enable_mergejoin=false来试图强制使用Hash Join，但是失败了。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/13.png"></p>
+<h4 id="Query-2-Test-1：强制使用Hash-Join，失败"><a href="#Query-2-Test-1：强制使用Hash-Join，失败" class="headerlink" title="Query 2 Test 1：强制使用Hash Join，失败"></a>Query 2 Test 1：强制使用Hash Join，失败</h4><p>本次实验通过设置enable_hashjoin=true，enable_nestloop=false，enable_mergejoin=false来试图强制使用Hash Join，但是失败了。<br><img src="/2017/12/24/Merge-Join-vs-Hash-Join-vs-Nested-Loop/13.png" class=""></p>
 
       
     </div>
@@ -364,14 +366,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2017/12/24/快速计算Distinct-Count/">
+      <a class="prev" href="/2017/12/24/%E5%BF%AB%E9%80%9F%E8%AE%A1%E7%AE%97Distinct-Count/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">快速计算Distinct Count(转)</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2017/12/24/评分卡模型WOE-IV-ROC/">
+      <a class="next" href="/2017/12/24/%E8%AF%84%E5%88%86%E5%8D%A1%E6%A8%A1%E5%9E%8BWOE-IV-ROC/">
         <span class="next-text nav-default">评分卡模型WOE+IV+ROC</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -414,7 +416,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -422,7 +424,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -449,12 +451,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

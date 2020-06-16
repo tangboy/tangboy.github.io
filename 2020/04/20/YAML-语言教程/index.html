@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="YAML 语言教程">
+  <meta name="description" content="YAML 语言教程"/>
 
 
 
 
-  <meta name="keywords" content="YAML, Anthon">
+  <meta name="keywords" content="YAML, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2020/04/20/YAML-语言教程/">
+<link rel="canonical" href="http://code-monkey.top/2020/04/20/YAML-语言教程/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> YAML 语言教程 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> YAML 语言教程 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/04/20/YAML-语言教程/" data-title="YAML 语言教程">
+        <span class="post-visits"
+             data-url="/2020/04/20/YAML-%E8%AF%AD%E8%A8%80%E6%95%99%E7%A8%8B/"
+             data-title="YAML 语言教程">
           阅读次数 0
         </span>
         
@@ -236,7 +238,7 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对象"><span class="toc-text">对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组"><span class="toc-text">数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#复合结构"><span class="toc-text">复合结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#纯量"><span class="toc-text">纯量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串"><span class="toc-text">字符串</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对象"><span class="toc-text">对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组"><span class="toc-text">数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#复合结构"><span class="toc-text">复合结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#纯量"><span class="toc-text">纯量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串"><span class="toc-text">字符串</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引用"><span class="toc-text">引用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数和正则表达式的转换"><span class="toc-text">函数和正则表达式的转换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考链接"><span class="toc-text">参考链接</span></a></li></ol>
     </div>
   </div>
 
@@ -335,6 +337,44 @@
 <p>转为 JavaScript 如下。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">s1</span>: <span class="string">'内容\\n字符串'</span>, <span class="attr">s2</span>: <span class="string">'内容\n字符串'</span> &#125;</span><br></pre></td></tr></table></figure>
 <p>单引号之中如果还有单引号，必须连续使用两个单引号转义。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">str:</span> <span class="string">'labor'</span><span class="string">'s day'</span></span><br></pre></td></tr></table></figure>
+<p>转为 JavaScript 如下。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">str</span>: <span class="string">'labor\'s day'</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>字符串可以写成多行，从第二行开始，必须有一个单空格缩进。换行符会被转为空格。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">str:</span> <span class="string">这是一段</span></span><br><span class="line">  <span class="string">多行</span></span><br><span class="line">  <span class="string">字符串</span></span><br></pre></td></tr></table></figure>
+<p>转为 JavaScript 如下。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">str</span>: <span class="string">'这是一段 多行 字符串'</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>多行字符串可以使用|保留换行符，也可以使用&gt;折叠换行。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">this:</span> <span class="string">|</span></span><br><span class="line"><span class="string">  Foo</span></span><br><span class="line"><span class="string">  Bar</span></span><br><span class="line"><span class="string"></span><span class="attr">that:</span> <span class="string">&gt;</span></span><br><span class="line"><span class="string">  Foo</span></span><br><span class="line"><span class="string">  Bar</span></span><br></pre></td></tr></table></figure>
+<p>转为 JavaScript 代码如下。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">this</span>: <span class="string">'Foo\nBar\n'</span>, <span class="attr">that</span>: <span class="string">'Foo Bar\n'</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>+表示保留文字块末尾的换行，-表示删除字符串末尾的换行。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">s1:</span> <span class="string">|</span></span><br><span class="line"><span class="string">  Foo</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span><span class="attr">s2:</span> <span class="string">|+</span></span><br><span class="line">  <span class="string">Foo</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="attr">s3:</span> <span class="string">|-</span></span><br><span class="line">  <span class="string">Foo</span></span><br></pre></td></tr></table></figure>
+<p>转为 JavaScript 代码如下。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">s1</span>: <span class="string">'Foo\n'</span>, <span class="attr">s2</span>: <span class="string">'Foo\n\n\n'</span>, <span class="attr">s3</span>: <span class="string">'Foo'</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>字符串之中可以插入 HTML 标记。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">message:</span> <span class="string">|</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  &lt;p style="color: red"&gt;</span></span><br><span class="line"><span class="string">    段落</span></span><br><span class="line"><span class="string">  &lt;/p&gt;</span></span><br></pre></td></tr></table></figure>
+<p>转为 JavaScript 如下。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">message</span>: <span class="string">'\n&lt;p style="color: red"&gt;\n  段落\n&lt;/p&gt;\n'</span> &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>锚点&amp;和别名*，可以用来引用。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">defaults:</span> <span class="meta">&amp;defaults</span></span><br><span class="line"><span class="attr">  adapter:</span>  <span class="string">postgres</span></span><br><span class="line"><span class="attr">  host:</span>     <span class="string">localhost</span></span><br><span class="line"></span><br><span class="line"><span class="attr">development:</span></span><br><span class="line"><span class="attr">  database:</span> <span class="string">myapp_development</span></span><br><span class="line">  <span class="string">&lt;&lt;:</span> <span class="meta">*defaults</span></span><br><span class="line"></span><br><span class="line"><span class="attr">test:</span></span><br><span class="line"><span class="attr">  database:</span> <span class="string">myapp_test</span></span><br><span class="line">  <span class="string">&lt;&lt;:</span> <span class="meta">*defaults</span></span><br></pre></td></tr></table></figure>
+<p>等同于下面的代码。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">defaults:</span></span><br><span class="line"><span class="attr">  adapter:</span>  <span class="string">postgres</span></span><br><span class="line"><span class="attr">  host:</span>     <span class="string">localhost</span></span><br><span class="line"></span><br><span class="line"><span class="attr">development:</span></span><br><span class="line"><span class="attr">  database:</span> <span class="string">myapp_development</span></span><br><span class="line"><span class="attr">  adapter:</span>  <span class="string">postgres</span></span><br><span class="line"><span class="attr">  host:</span>     <span class="string">localhost</span></span><br><span class="line"></span><br><span class="line"><span class="attr">test:</span></span><br><span class="line"><span class="attr">  database:</span> <span class="string">myapp_test</span></span><br><span class="line"><span class="attr">  adapter:</span>  <span class="string">postgres</span></span><br><span class="line"><span class="attr">  host:</span>     <span class="string">localhost</span></span><br></pre></td></tr></table></figure>
+<p>&amp;用来建立锚点（defaults），&lt;&lt;表示合并到当前数据，*用来引用锚点。</p>
+<p>下面是另一个例子。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="meta">&amp;showell</span> <span class="string">Steve</span> </span><br><span class="line"><span class="bullet">-</span> <span class="string">Clark</span> </span><br><span class="line"><span class="bullet">-</span> <span class="string">Brian</span> </span><br><span class="line"><span class="bullet">-</span> <span class="string">Oren</span> </span><br><span class="line"><span class="bullet">-</span> <span class="meta">*showell</span></span><br></pre></td></tr></table></figure>
+<p>转为 JavaScript 代码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ <span class="string">'Steve'</span>, <span class="string">'Clark'</span>, <span class="string">'Brian'</span>, <span class="string">'Oren'</span>, <span class="string">'Steve'</span> ]</span><br></pre></td></tr></table></figure>
+<h2 id="函数和正则表达式的转换"><a href="#函数和正则表达式的转换" class="headerlink" title="函数和正则表达式的转换"></a>函数和正则表达式的转换</h2><p>这是<a href="https://github.com/nodeca/js-yaml" target="_blank" rel="noopener">JS-YAML</a>库特有的功能，可以把函数和正则表达式转为字符串。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># example.yml</span></span><br><span class="line"><span class="attr">fn:</span> <span class="string">function</span> <span class="string">()</span> <span class="string">&#123;</span> <span class="string">return</span> <span class="number">1</span> <span class="string">&#125;</span></span><br><span class="line"><span class="attr">reg:</span> <span class="string">/test/</span></span><br></pre></td></tr></table></figure>
+<p>解析上面的 yml 文件的代码如下。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> yaml = <span class="built_in">require</span>(<span class="string">'js-yaml'</span>);</span><br><span class="line"><span class="keyword">var</span> fs   = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="keyword">var</span> doc = yaml.load(</span><br><span class="line">    fs.readFileSync(<span class="string">'./example.yml'</span>, <span class="string">'utf8'</span>)</span><br><span class="line">  );</span><br><span class="line">  <span class="built_in">console</span>.log(doc);</span><br><span class="line">&#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从 JavaScript 对象还原到 yaml 文件的代码如下。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> yaml = <span class="built_in">require</span>(<span class="string">'js-yaml'</span>);</span><br><span class="line"><span class="keyword">var</span> fs   = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">  fn: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="keyword">return</span> <span class="number">1</span> &#125;,</span><br><span class="line">  reg: <span class="regexp">/test/</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  fs.writeFileSync(</span><br><span class="line">    <span class="string">'./example.yml'</span>,</span><br><span class="line">    yaml.dump(obj),</span><br><span class="line">    <span class="string">'utf8'</span></span><br><span class="line">  );</span><br><span class="line">&#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="http://www.yaml.org/spec/1.2/spec.html" target="_blank" rel="noopener">YAML 1.2 规格</a></li>
+<li><a href="https://en.wikipedia.org/wiki/YAML" target="_blank" rel="noopener">YAML from Wikipedia</a></li>
+</ol>
 
       
     </div>
@@ -350,7 +390,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2020/04/20/YAML-语言教程/">http://code-monkey.top/2020/04/20/YAML-语言教程/</a>
+      <a href="http://code-monkey.top/2020/04/20/YAML-%E8%AF%AD%E8%A8%80%E6%95%99%E7%A8%8B/">http://code-monkey.top/2020/04/20/YAML-%E8%AF%AD%E8%A8%80%E6%95%99%E7%A8%8B/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -378,8 +418,14 @@
         
   <nav class="post-nav">
     
+      <a class="prev" href="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90-%E6%89%A7%E8%A1%8C%E5%85%A8%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">SparkSQL内核解析-执行全过程概述</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
     
-      <a class="next" href="/2020/03/10/Kafka-Connect简介与部署/">
+    
+      <a class="next" href="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/">
         <span class="next-text nav-default">Kafka Connect简介与部署</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -422,7 +468,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -430,7 +476,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -457,12 +503,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

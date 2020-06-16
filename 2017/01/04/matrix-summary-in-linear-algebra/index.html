@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="线性代数之各种各样的矩阵">
+  <meta name="description" content="线性代数之各种各样的矩阵"/>
 
 
 
 
-  <meta name="keywords" content="matrix, linear algebra, Anthon">
+  <meta name="keywords" content="matrix, linear algebra, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2017/01/04/matrix-summary-in-linear-algebra/">
+<link rel="canonical" href="http://code-monkey.top/2017/01/04/matrix-summary-in-linear-algebra/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 线性代数之各种各样的矩阵 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 线性代数之各种各样的矩阵 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/01/04/matrix-summary-in-linear-algebra/" data-title="线性代数之各种各样的矩阵">
+        <span class="post-visits"
+             data-url="/2017/01/04/matrix-summary-in-linear-algebra/"
+             data-title="线性代数之各种各样的矩阵">
           阅读次数 0
         </span>
         
@@ -285,7 +287,7 @@ U^{*}U = I</script><p>即：如果矩阵的共轭乘以矩阵自身等于单位�
 <p>一个对称的n阶实数矩阵M，设元素不全为0的列向量为z，当所有这样的z满足z$z^{T}Mz &gt; 0$时，M是正定矩阵。</p>
 </blockquote>
 <p>根据定义，可以知道单位矩阵I是正定的；</p>
-<p>贴上wiki的例子来帮助理解：<br><img src="/2017/01/04/matrix-summary-in-linear-algebra/matrix_1.png"><br>设M的z为(a,b,c)，则有：<br><img src="/2017/01/04/matrix-summary-in-linear-algebra/matrix_2.png"></p>
+<p>贴上wiki的例子来帮助理解：<br><img src="/2017/01/04/matrix-summary-in-linear-algebra/matrix_1.png" class=""><br>设M的z为(a,b,c)，则有：<br><img src="/2017/01/04/matrix-summary-in-linear-algebra/matrix_2.png" class=""></p>
 <p>这个式子的结果显然是非负的，且当a=b=c=0时，这个式子才等于0，所以满足正定矩阵的条件。</p>
 <p>此外，正定矩阵还有另外一个“间接”的定义：<strong>如果一个矩阵的所有特征值都是正数，那么这个矩阵是正定矩阵。</strong> 要通过这个定义判断一个矩阵是不是正定矩阵，需要先知道这个矩阵的所有特征值。</p>
 <h2 id="半正定矩阵-Positive-Semi-Definite"><a href="#半正定矩阵-Positive-Semi-Definite" class="headerlink" title="半正定矩阵 Positive Semi-Definite"></a>半正定矩阵 Positive Semi-Definite</h2><p>参考正定矩阵，半正定矩阵的定义公式是: $z^{T}Mz &gt;= 0$</p>
@@ -295,7 +297,7 @@ U^{*}U = I</script><p>即：如果矩阵的共轭乘以矩阵自身等于单位�
 <h2 id="规范化矩阵-Normal-Matrix"><a href="#规范化矩阵-Normal-Matrix" class="headerlink" title="规范化矩阵 Normal Matrix"></a>规范化矩阵 Normal Matrix</h2><p>又名：正规矩阵、正规阵、规范矩阵。<br><a href="https://en.wikipedia.org/wiki/Normal_matrix" target="_blank" rel="noopener">wiki</a><br>当矩阵A满足下面的等式时，A是规范化矩阵:</p>
 <script type="math/tex; mode=display">
 A^{\*}A = AA^{\*}</script><p>$A^{*}$代表A的共轭转置矩阵</p>
-<h2 id="双对角矩阵-Bidiagonal-matrix"><a href="#双对角矩阵-Bidiagonal-matrix" class="headerlink" title="双对角矩阵 Bidiagonal matrix"></a>双对角矩阵 Bidiagonal matrix</h2><p>一图以言之:<br><img src="/2017/01/04/matrix-summary-in-linear-algebra/matrix_3.png"><br>(from <a href="https://en.wikipedia.org/wiki/Bidiagonal_matrix" target="_blank" rel="noopener">wiki</a>)</p>
+<h2 id="双对角矩阵-Bidiagonal-matrix"><a href="#双对角矩阵-Bidiagonal-matrix" class="headerlink" title="双对角矩阵 Bidiagonal matrix"></a>双对角矩阵 Bidiagonal matrix</h2><p>一图以言之:<br><img src="/2017/01/04/matrix-summary-in-linear-algebra/matrix_3.png" class=""><br>(from <a href="https://en.wikipedia.org/wiki/Bidiagonal_matrix" target="_blank" rel="noopener">wiki</a>)</p>
 <h2 id="格拉姆矩阵-Gramian-matrix"><a href="#格拉姆矩阵-Gramian-matrix" class="headerlink" title="格拉姆矩阵 Gramian matrix"></a>格拉姆矩阵 Gramian matrix</h2><p>设矩阵X：</p>
 <script type="math/tex; mode=display">
  X =  \left[ 
@@ -313,7 +315,7 @@ G = X^{T}X</script><p>性质：</p>
 <script type="math/tex; mode=display">
 cov(X,Y) = \frac { \sum ^{n}\_{i=1}(X\_{i} - \overline {X})(Y\_{i} - \overline {Y}) }{n-1} = E[(X - E[X])(Y - E[Y])]</script><p>协方差是一个测量2个变量关联性程度的方法。当变量数目多于2时，任意2个变量之间的协方差的集合就构成了协方差矩阵C：</p>
 <script type="math/tex; mode=display">
-C = \Sigma\_{ij} = cov(X\_{i},X\_{j}) = E[(X\_{i} - E[X\_{i}])(X\_{j} - E[X\_{j}])]</script><img src="/2017/01/04/matrix-summary-in-linear-algebra/matrix_4.png">
+C = \Sigma\_{ij} = cov(X\_{i},X\_{j}) = E[(X\_{i} - E[X\_{i}])(X\_{j} - E[X\_{j}])]</script><img src="/2017/01/04/matrix-summary-in-linear-algebra/matrix_4.png" class="">
 
       
     </div>
@@ -409,7 +411,7 @@ C = \Sigma\_{ij} = cov(X\_{i},X\_{j}) = E[(X\_{i} - E[X\_{i}])(X\_{j} - E[X\_{j}
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -417,7 +419,7 @@ C = \Sigma\_{ij} = cov(X\_{i},X\_{j}) = E[(X\_{i} - E[X\_{i}])(X\_{j} - E[X\_{j}
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -444,12 +446,12 @@ C = \Sigma\_{ij} = cov(X\_{i},X\_{j}) = E[(X\_{i} - E[X\_{i}])(X\_{j} - E[X\_{j}
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

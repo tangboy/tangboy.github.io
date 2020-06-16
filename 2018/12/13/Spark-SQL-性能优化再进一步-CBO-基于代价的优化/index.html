@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)">
+  <meta name="description" content="Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)"/>
 
 
 
 
-  <meta name="keywords" content="spark, 分布式, big data, sql, CBO, Anthon">
+  <meta name="keywords" content="分布式, spark, big data, sql, CBO, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/">
+<link rel="canonical" href="http://code-monkey.top/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Spark SQL 性能优化再进一步 CBO 基于代价的优化(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Spark SQL 性能优化再进一步 CBO 基于代价的优化(转) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/" data-title="Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)">
+        <span class="post-visits"
+             data-url="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/"
+             data-title="Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)">
           阅读次数 0
         </span>
         
@@ -248,7 +250,7 @@
 <p>本文将介绍 CBO，它充分考虑了数据本身的特点（如大小、分布）以及操作算子的特点（中间结果集的分布及大小）及代价，从而更好的选择执行代价最小的物理执行计划，即 SparkPlan。</p>
 <h2 id="Spark-CBO-原理"><a href="#Spark-CBO-原理" class="headerlink" title="Spark CBO 原理"></a>Spark CBO 原理</h2><p>CBO 原理是计算所有可能的物理计划的代价，并挑选出代价最小的物理执行计划。其核心在于评估一个给定的物理执行计划的代价。</p>
 <p>物理执行计划是一个树状结构，其代价等于每个执行节点的代价总合，如下图所示。</p>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_sql_cost_model.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_sql_cost_model.png" class="">
 <p>而每个执行节点的代价，分为两个部分</p>
 <ul>
 <li>该执行节点对数据集的影响，或者说该节点输出数据集的大小与分布</li>
@@ -280,7 +282,7 @@
 <li>这两个 bin 总共的 distinct count，而无须从重新计算，且合并结果的误差可控</li>
 </ul>
 <h3 id="算子对数据集影响估计"><a href="#算子对数据集影响估计" class="headerlink" title="算子对数据集影响估计"></a>算子对数据集影响估计</h3><p>对于中间算子，可以根据输入数据集的统计信息以及算子的特性，可以估算出输出数据集的统计结果。</p>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_cbo_operator_estimation.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_cbo_operator_estimation.png" class="">
 <p>本节以 Filter 为例说明算子对数据集的影响。</p>
 <p>对于常见的 <code>Column A &lt; value B Filter</code>，可通过如下方式估算输出中间结果的统计信息</p>
 <ul>
@@ -288,9 +290,9 @@
 <li>若 B &gt; A.max，则全部数据被选中，输出结果与 A 相同，且统计信息不变</li>
 <li>若 A.min &lt; B &lt; A.max，则被选中的数据占比为 (B.value - A.min) / (A.max - A.min)，A.min 不变，A.max 更新为 B.value，A.ndv = A.ndv * (B.value - A.min) / (A.max - A.min)</li>
 </ul>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_cbo_filter_estimation.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_cbo_filter_estimation.png" class="">
 <p>上述估算的前提是，字段 A 数据均匀分布。但很多时候，数据分布并不均匀，且当数据倾斜严重是，上述估算误差较大。此时，可充分利用 histogram 进行更精确的估算</p>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_cbo_equal_height_histogram.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_cbo_equal_height_histogram.png" class="">
 <p>启用 Historgram 后，Filter <code>Column A &lt; value B</code>的估算方法为</p>
 <ul>
 <li>若 B &lt; A.min，则无数据被选中，输出结果为空</li>
@@ -303,23 +305,23 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Cost = rows * weight + size * (1 - weight)</span><br><span class="line">Cost = CostCPU * weight + CostIO * (1 - weight)</span><br></pre></td></tr></table></figure>
 <p>其中 rows 即记录行数代表了 CPU 代价，size 代表了 IO 代价。weight 由 spark.sql.cbo.joinReorder.card.weight 决定，其默认值为 0.7。</p>
 <h2 id="Build侧选择"><a href="#Build侧选择" class="headerlink" title="Build侧选择"></a>Build侧选择</h2><p>对于两表Hash Join，一般选择小表作为build size，构建哈希表，另一边作为 probe side。未开启 CBO 时，根据表原始数据大小选择 t2 作为build side</p>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_cbo_build_side.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_cbo_build_side.png" class="">
 <p>而开启 CBO 后，基于估计的代价选择 t1 作为 build side。更适合本例</p>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_cbo_build_side_selection.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_cbo_build_side_selection.png" class="">
 <h2 id="优化-Join-类型"><a href="#优化-Join-类型" class="headerlink" title="优化 Join 类型"></a>优化 Join 类型</h2><p>在 Spark SQL 中，Join 可分为 Shuffle based Join 和 BroadcastJoin。Shuffle based Join 需要引入 Shuffle，代价相对较高。BroadcastJoin 无须 Join，但要求至少有一张表足够小，能通过 Spark 的 Broadcast 机制广播到每个 Executor 中。</p>
 <p>在不开启 CBO 中，Spark SQL 通过 spark.sql.autoBroadcastJoinThreshold 判断是否启用 BroadcastJoin。其默认值为 10485760 即 10 MB。</p>
 <p>并且该判断基于参与 Join 的表的原始大小。</p>
 <p>在下图示例中，Table 1 大小为 1 TB，Table 2 大小为 20 GB，因此在对二者进行 join 时，由于二者都远大于自动 BroatcastJoin 的阈值，因此 Spark SQL 在未开启 CBO 时选用 SortMergeJoin 对二者进行 Join。</p>
 <p>而开启 CBO 后，由于 Table 1 经过 Filter 1 后结果集大小为 500 GB，Table 2 经过 Filter 2 后结果集大小为 10 MB 低于自动 BroatcastJoin 阈值，因此 Spark SQL 选用 BroadcastJoin。</p>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_cbo_join_type.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_cbo_join_type.png" class="">
 <h2 id="优化多表-Join-顺序"><a href="#优化多表-Join-顺序" class="headerlink" title="优化多表 Join 顺序"></a>优化多表 Join 顺序</h2><p>未开启 CBO 时，Spark SQL 按 SQL 中 join 顺序进行 Join。极端情况下，整个 Join 可能是 left-deep tree。在下图所示 TPC-DS Q25 中，多路 Join 存在如下问题，因此耗时 241 秒。</p>
 <ul>
 <li>left-deep tree，因此所有后续 Join 都依赖于前面的 Join 结果，各 Join 间无法并行进行</li>
 <li>前面的两次 Join 输入输出数据量均非常大，属于大 Join，执行时间较长</li>
 </ul>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_cbo_linear_join.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_cbo_linear_join.png" class="">
 <p>开启 CBO 后， Spark SQL 将执行计划优化如下</p>
-<img src="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/spark_cbo_join_reorder.png">
+<img src="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/spark_cbo_join_reorder.png" class="">
 <p>优化后的 Join 有如下优势，因此执行时间降至 71 秒</p>
 <ul>
 <li>Join 树不再是 left-deep tree，因此 Join 3 与 Join 4 可并行进行，Join 5 与 Join 6 可并行进行</li>
@@ -340,7 +342,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/">http://code-monkey.top/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/</a>
+      <a href="http://code-monkey.top/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/">http://code-monkey.top/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -360,9 +362,9 @@
         
           <div class="post-tags">
             
-              <a href="/tags/spark/">spark</a>
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
             
-              <a href="/tags/分布式/">分布式</a>
+              <a href="/tags/spark/">spark</a>
             
               <a href="/tags/big-data/">big data</a>
             
@@ -376,14 +378,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2018/12/21/Adaptive-Execution-让-Spark-SQL-更高效更智能/">
+      <a class="prev" href="/2018/12/21/Adaptive-Execution-%E8%AE%A9-Spark-SQL-%E6%9B%B4%E9%AB%98%E6%95%88%E6%9B%B4%E6%99%BA%E8%83%BD/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Adaptive Execution 让 Spark SQL 更高效更智能</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">
+      <a class="next" href="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">
         <span class="next-text nav-default">Spark SQL / Catalyst 内部原理 与 RBO(转)</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -426,7 +428,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -434,7 +436,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -461,12 +463,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

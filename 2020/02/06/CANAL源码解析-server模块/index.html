@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="CANAL源码解析-server模块">
+  <meta name="description" content="CANAL源码解析-server模块"/>
 
 
 
 
-  <meta name="keywords" content="canal, Anthon">
+  <meta name="keywords" content="canal, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2020/02/06/CANAL源码解析-server模块/">
+<link rel="canonical" href="http://code-monkey.top/2020/02/06/CANAL源码解析-server模块/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> CANAL源码解析-server模块 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> CANAL源码解析-server模块 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/06/CANAL源码解析-server模块/" data-title="CANAL源码解析-server模块">
+        <span class="post-visits"
+             data-url="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-server%E6%A8%A1%E5%9D%97/"
+             data-title="CANAL源码解析-server模块">
           阅读次数 0
         </span>
         
@@ -245,16 +247,16 @@
     <div class="post-content">
       
         <p>server模块的核心接口是CanalServer，其有2个实现类CanalServerWithNetty、CanalServerWithEmbeded。关于CanalServer，官方文档中有有以下描述：</p>
-<img src="/2020/02/06/CANAL源码解析-server模块/1.png">
+<img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-server%E6%A8%A1%E5%9D%97/1.png" class="">
 <p>下图是笔者对官方文档的进一步描述：</p>
-<img src="/2020/02/06/CANAL源码解析-server模块/2.png">
+<img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-server%E6%A8%A1%E5%9D%97/2.png" class="">
 <a id="more"></a>
 <p><strong>左边的图</strong></p>
 <p>表示的是Canal独立部署。不同的应用通过canal client与canal server进行通信，所有的canal client的请求统一由CanalServerWithNetty接受，之后CanalServerWithNetty会将客户端请求派给CanalServerWithEmbeded 进行真正的处理。CannalServerWithEmbeded内部维护了多个canal instance，每个canal instance伪装成不同的mysql实例的slave，而CanalServerWithEmbeded会根据客户端请求携带的destination参数确定要由哪一个canal instance为其提供服务。</p>
 <p><strong>右边的图</strong></p>
 <p>是直接在应用中嵌入CanalServerWithEmbeded，不需要独立部署canal。很明显，网络通信环节少了，同步binlog信息的效率肯定更高。但是对于使用者的技术要求比较高。在应用中，我们可以通过CanalServerWithEmbeded.instance()方法来获得CanalServerWithEmbeded实例，这一个单例。</p>
 <p>整个server模块源码目录结构如下所示：</p>
-<img src="/2020/02/06/CANAL源码解析-server模块/3.png">
+<img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-server%E6%A8%A1%E5%9D%97/3.png" class="">
 <p>其中上面的红色框就是嵌入式实现，而下面的绿色框是基于Netty的实现。</p>
 <p>看起来基于netty的实现代码虽然多一点，这其实只是幻觉，CanalServerWithNetty会将所有的请求委派给CanalServerWithEmbedded处理。</p>
 <p>而内嵌的方式只有CanalServerWithEmbedded一个类， 是因为CanalServerWithEmbedded又要根据destination选择某个具体的CanalInstance来处理客户端请求，而CanalInstance的实现位于instance模块，我们将在之后分析。因此从canal server的角度来说，CanalServerWithEmbedded才是server模块真正的核心。</p>
@@ -301,7 +303,7 @@
 <p>unsubscribe方法主要用于取消订阅关系。在下面的代码中，我们可以看到，其实就是找到CanalInstance对应的CanalMetaManager，调用其unsubscribe取消这个订阅记录。需要注意的是，取消订阅并不意味着停止CanalInstance。当某个客户端取消了订阅，还会有新的client来订阅这个CanalInstance，所以不能停。 </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 取消订阅</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unsubscribe</span><span class="params">(ClientIdentity clientIdentity)</span> <span class="keyword">throws</span> CanalServerException </span>&#123;</span><br><span class="line">    CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());</span><br><span class="line">    canalInstance.getMetaManager().unsubscribe(clientIdentity); <span class="comment">// 执行一下meta订阅</span></span><br><span class="line">    logger.info(<span class="string">"unsubscribe successfully, &#123;&#125;"</span>, clientIdentity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>listAllSubscribe方法：</strong>  </p>
-<p>这一个管理方法，其作用是列出订阅某个destination的所有client。这里返回的是一个List<clientidentity>，不过我们已经多次提到，目前一个destination只能由一个client订阅。这里之所以返回一个list，是canal原先计划要支持多个client订阅同一个destination。不过，这个功能一直没有实现。所以List中，实际上只会包含一个ClientIdentity。 </clientidentity></p>
+<p>这一个管理方法，其作用是列出订阅某个destination的所有client。这里返回的是一个List<ClientIdentity>，不过我们已经多次提到，目前一个destination只能由一个client订阅。这里之所以返回一个list，是canal原先计划要支持多个client订阅同一个destination。不过，这个功能一直没有实现。所以List中，实际上只会包含一个ClientIdentity。 </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 查询所有的订阅信息</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;ClientIdentity&gt; <span class="title">listAllSubscribe</span><span class="params">(String destination)</span> <span class="keyword">throws</span> CanalServerException </span>&#123;</span><br><span class="line">    CanalInstance canalInstance = canalInstances.get(destination);</span><br><span class="line">    <span class="keyword">return</span> canalInstance.getMetaManager().listAllSubscribeInfo(destination);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>listBatchIds方法:</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 查询当前未被ack的batch列表，batchId会按照从小到大进行返回</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Long&gt; <span class="title">listBatchIds</span><span class="params">(ClientIdentity clientIdentity)</span> <span class="keyword">throws</span> CanalServerException </span>&#123;</span><br><span class="line">    checkStart(clientIdentity.getDestination());</span><br><span class="line">    checkSubscribe(clientIdentity);</span><br><span class="line">    CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());</span><br><span class="line">    Map&lt;Long, PositionRange&gt; batchs = canalInstance.getMetaManager().listAllBatchs(clientIdentity);</span><br><span class="line">    List&lt;Long&gt; result = <span class="keyword">new</span> ArrayList&lt;Long&gt;(batchs.keySet());</span><br><span class="line">    Collections.sort(result);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -343,7 +345,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2020/02/06/CANAL源码解析-server模块/">http://code-monkey.top/2020/02/06/CANAL源码解析-server模块/</a>
+      <a href="http://code-monkey.top/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-server%E6%A8%A1%E5%9D%97/">http://code-monkey.top/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-server%E6%A8%A1%E5%9D%97/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -371,14 +373,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2020/02/06/CANAL源码解析-instance模块/">
+      <a class="prev" href="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-instance%E6%A8%A1%E5%9D%97/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">CANAL源码解析-instance模块</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2020/02/06/CANAL源码解析-deployer模块/">
+      <a class="next" href="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-deployer%E6%A8%A1%E5%9D%97/">
         <span class="next-text nav-default">CANAL源码解析-deployer模块</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -421,7 +423,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -429,7 +431,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -456,12 +458,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

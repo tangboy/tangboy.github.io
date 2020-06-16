@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="机器学习，编程，玩">
+  <meta name="description" content="机器学习，编程，玩"/>
 
 
 
@@ -36,24 +36,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/">
+<link rel="canonical" href="http://code-monkey.top/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -96,8 +96,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -216,7 +216,79 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2020/04/20/YAML-语言教程/">YAML 语言教程</a>
+          <a class="post-link" href="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90-%E6%89%A7%E8%A1%8C%E5%85%A8%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0/">SparkSQL内核解析-执行全过程概述</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2020-06-16
+        </span>
+        
+        
+        <span class="post-visits"
+             data-url="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90-%E6%89%A7%E8%A1%8C%E5%85%A8%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0/"
+             data-title="SparkSQL内核解析-执行全过程概述">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="从SQL到RDD"><a href="#从SQL到RDD" class="headerlink" title="从SQL到RDD"></a>从SQL到RDD</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 创建SparkSession类。从2.0开始逐步替代SparkContext称为Spark应用入口</span></span><br><span class="line"><span class="keyword">var</span> spark = <span class="type">SparkSession</span>.builder().appName(<span class="string">"appName"</span>).master(<span class="string">"local"</span>).getOrCreate()</span><br><span class="line"><span class="comment">//创建数据表并读取数据</span></span><br><span class="line">spark.read.json(<span class="string">"./test.json"</span>).createOrReplaceTempView(<span class="string">"test_table"</span>)</span><br><span class="line"><span class="comment">//通过SQL进行数据分析。可输入任何满足语法的语句</span></span><br><span class="line">spark.sql(<span class="string">"select name from test_table where a &gt; 1"</span>).show()</span><br></pre></td></tr></table></figure>
+<h3 id="SQL转换步骤"><a href="#SQL转换步骤" class="headerlink" title="SQL转换步骤"></a>SQL转换步骤</h3><img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90-%E6%89%A7%E8%A1%8C%E5%85%A8%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0/1.png" class="">
+<h3 id="实际转换过程"><a href="#实际转换过程" class="headerlink" title="实际转换过程"></a>实际转换过程</h3><img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90-%E6%89%A7%E8%A1%8C%E5%85%A8%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0/2.png" class="">
+<h3 id="InternalRow体系"><a href="#InternalRow体系" class="headerlink" title="InternalRow体系"></a>InternalRow体系</h3><p>用来表示一行数据的类，根据下标来访问和操作元素，其中每一列都是Catalyst内部定义的数据类型；物理算子树产生和转换的RDD类型为RDD[InternalRow]；</p>
+<p>{3.png}</p>
+<ul>
+<li>BaseGenericInternalRow 实现了InternalRow中所有定义的<code>get</code>类型方法，通过调用此类定义的<code>genericGet</code>虚函数进行，实现在下级子类中<ul>
+<li>GenericInternalRow 构造参数是Array[Any],采用对象数据进行底层存储，不允许通过set进行改变</li>
+<li>SpecificInternalRow 构造函数是Array[MutableValue] ,运行通过set进行修改</li>
+<li>MutableUnsafeRow 用来支持对特定列数据进行修改</li>
+</ul>
+</li>
+<li>JoinedRow 用户Join操作，将两个InternalRow放在一起形成新的InternalRow</li>
+<li>UnsafeRow 不采用Java对象存储方式，避免GC的开销。同时对行数据进行特殊编码使得更高效（Tungsten计划）。</li>
+</ul>
+<h3 id="TreeNode体系"><a href="#TreeNode体系" class="headerlink" title="TreeNode体系"></a>TreeNode体系</h3><p>TreeNode是SparkSQL中所有树节点的基类，定义了通用集合操作和树遍历接口</p>
+<img src="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90-%E6%89%A7%E8%A1%8C%E5%85%A8%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0/4.png" class="">
+<ul>
+<li>Expression是Catalyst的表达式体系</li>
+<li>QueryPlan下包含逻辑算子树和物理执行算子树两个子类</li>
+</ul>
+<p>Catalyst还提供了节点位置功能，根据TreeNode定位到对应SQL字串中的位置，方便Debug</p>
+          <div class="read-more">
+            <a href="/2020/06/16/SparkSQL%E5%86%85%E6%A0%B8%E8%A7%A3%E6%9E%90-%E6%89%A7%E8%A1%8C%E5%85%A8%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2020/04/20/YAML-%E8%AF%AD%E8%A8%80%E6%95%99%E7%A8%8B/">YAML 语言教程</a>
         
       </h1>
 
@@ -226,7 +298,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/04/20/YAML-语言教程/" data-title="YAML 语言教程">
+        <span class="post-visits"
+             data-url="/2020/04/20/YAML-%E8%AF%AD%E8%A8%80%E6%95%99%E7%A8%8B/"
+             data-title="YAML 语言教程">
           阅读次数 0
         </span>
         
@@ -284,7 +358,7 @@
 <p>转为 JavaScript 如下。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">animal</span>: [ <span class="string">'Cat'</span>, <span class="string">'Dog'</span> ] &#125;</span><br></pre></td></tr></table></figure>
           <div class="read-more">
-            <a href="/2020/04/20/YAML-语言教程/" class="read-more-link">阅读更多</a>
+            <a href="/2020/04/20/YAML-%E8%AF%AD%E8%A8%80%E6%95%99%E7%A8%8B/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -302,7 +376,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2020/03/10/Kafka-Connect简介与部署/">Kafka Connect简介与部署</a>
+          <a class="post-link" href="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/">Kafka Connect简介与部署</a>
         
       </h1>
 
@@ -312,7 +386,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/03/10/Kafka-Connect简介与部署/" data-title="Kafka Connect简介与部署">
+        <span class="post-visits"
+             data-url="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/"
+             data-title="Kafka Connect简介与部署">
           阅读次数 0
         </span>
         
@@ -342,9 +418,9 @@
 <li>流/批处理集成</li>
 </ul>
 <p>KafkaCnnect有两个核心概念：Source和Sink。 Source负责导入数据到Kafka，Sink负责从Kafka导出数据，它们都被称为Connector。</p>
-<img src="/2020/03/10/Kafka-Connect简介与部署/Kafka_and_the_age_of_streaming_data_integration_image_sources_sinks.png">
+<img src="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/Kafka_and_the_age_of_streaming_data_integration_image_sources_sinks.png" class="">
           <div class="read-more">
-            <a href="/2020/03/10/Kafka-Connect简介与部署/" class="read-more-link">阅读更多</a>
+            <a href="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -372,7 +448,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/03/10/Log-Compacted-Topics-in-Apache-Kafka/" data-title="Log Compacted Topics in Apache Kafka">
+        <span class="post-visits"
+             data-url="/2020/03/10/Log-Compacted-Topics-in-Apache-Kafka/"
+             data-title="Log Compacted Topics in Apache Kafka">
           阅读次数 0
         </span>
         
@@ -422,7 +500,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/25/Flink-Table-SQL-LookableTableSource/" data-title="Flink Table & SQL LookableTableSource">
+        <span class="post-visits"
+             data-url="/2020/02/25/Flink-Table-SQL-LookableTableSource/"
+             data-title="Flink Table & SQL LookableTableSource">
           阅读次数 0
         </span>
         
@@ -474,7 +554,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/">Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF</a>
+          <a class="post-link" href="/2020/02/25/Flink-Table-SQL-%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0-UDF%E3%80%81UDAF%E3%80%81UDTF/">Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF</a>
         
       </h1>
 
@@ -484,7 +564,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/" data-title="Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF">
+        <span class="post-visits"
+             data-url="/2020/02/25/Flink-Table-SQL-%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0-UDF%E3%80%81UDAF%E3%80%81UDTF/"
+             data-title="Flink Table & SQL 用户自定义函数: UDF、UDAF、UDTF">
           阅读次数 0
         </span>
         
@@ -511,7 +593,7 @@
 </ul>
 <h2 id="测试数据"><a href="#测试数据" class="headerlink" title="测试数据"></a>测试数据</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 某个用户在某个时刻浏览了某个商品，以及商品的价值</span><br><span class="line">// eventTime: 北京时间，方便测试。如下，乱序数据:</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:00"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:02"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:10"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:12"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:15"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2019-12-01 10:02:16"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br></pre></td></tr></table></figure>
           <div class="read-more">
-            <a href="/2020/02/25/Flink-Table-SQL-用户自定义函数-UDF、UDAF、UDTF/" class="read-more-link">阅读更多</a>
+            <a href="/2020/02/25/Flink-Table-SQL-%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0-UDF%E3%80%81UDAF%E3%80%81UDTF/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -529,7 +611,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/">Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink</a>
+          <a class="post-link" href="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink%E3%80%81RetractStreamTableSink%E3%80%81UpsertStreamTableSink/">Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink</a>
         
       </h1>
 
@@ -539,7 +621,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/" data-title="Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink">
+        <span class="post-visits"
+             data-url="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink%E3%80%81RetractStreamTableSink%E3%80%81UpsertStreamTableSink/"
+             data-title="Flink Table & SQL AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink">
           阅读次数 0
         </span>
         
@@ -574,7 +658,7 @@
 <p>本文主要想总结在Update场景下，RetractStreamTableSink和UpsertStreamTableSink的消息编码。</p>
 <h2 id="测试数据"><a href="#测试数据" class="headerlink" title="测试数据"></a>测试数据</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 自己造的测试数据</span><br><span class="line">// 某个用户在某个时刻浏览了某个商品，以及商品的价值</span><br><span class="line">// eventTime: 北京时间，方便测试。如下，乱序数据:</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:00"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:02"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_2"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:10"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_2"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_3"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_3"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:12"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_4"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_5"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:06"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:15"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br><span class="line">&#123;<span class="attr">"userID"</span>: <span class="string">"user_1"</span>, <span class="attr">"eventTime"</span>: <span class="string">"2016-01-01 10:02:16"</span>, <span class="attr">"eventType"</span>: <span class="string">"browse"</span>, <span class="attr">"productID"</span>: <span class="string">"product_5"</span>, <span class="attr">"productPrice"</span>: <span class="number">20</span>&#125;</span><br></pre></td></tr></table></figure>
           <div class="read-more">
-            <a href="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink、RetractStreamTableSink、UpsertStreamTableSink/" class="read-more-link">阅读更多</a>
+            <a href="/2020/02/25/Flink-Table-SQL-AppendStreamTableSink%E3%80%81RetractStreamTableSink%E3%80%81UpsertStreamTableSink/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -592,7 +676,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/">Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction</a>
+          <a class="post-link" href="/2020/02/25/Flink-DataStream-Window-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0-ReduceFunction%E3%80%81AggregateFunction%E3%80%81ProcessWindowFunction/">Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction</a>
         
       </h1>
 
@@ -602,7 +686,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/" data-title="Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction">
+        <span class="post-visits"
+             data-url="/2020/02/25/Flink-DataStream-Window-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0-ReduceFunction%E3%80%81AggregateFunction%E3%80%81ProcessWindowFunction/"
+             data-title="Flink DataStream Window 窗口函数 ReduceFunction、AggregateFunction、ProcessWindowFunction">
           阅读次数 0
         </span>
         
@@ -635,7 +721,7 @@
 <h2 id="增量聚合"><a href="#增量聚合" class="headerlink" title="增量聚合"></a>增量聚合</h2><h3 id="ReduceFunction"><a href="#ReduceFunction" class="headerlink" title="ReduceFunction"></a>ReduceFunction</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试数据: 某个用户在某个时刻浏览了某个商品，以及商品的价值</span></span><br><span class="line"><span class="comment">// &#123;"userID": "user_4", "eventTime": "2019-11-09 10:41:32", "eventType": "browse", "productID": "product_1", "productPrice": 10&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// API</span></span><br><span class="line"><span class="comment">// T: 输入输出元素类型</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ReduceFunction</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Function</span>, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">	<span class="function">T <span class="title">reduce</span><span class="params">(T value1, T value2)</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例: 获取一段时间内(Window Size)每个用户(KeyBy)浏览的商品的最大价值的那条记录(ReduceFunction)</span></span><br><span class="line">kafkaStream</span><br><span class="line">    <span class="comment">// 将从Kafka获取的JSON数据解析成Java Bean</span></span><br><span class="line">    .process(<span class="keyword">new</span> KafkaProcessFunction())</span><br><span class="line">    <span class="comment">// 提取时间戳生成水印</span></span><br><span class="line">    .assignTimestampsAndWatermarks(<span class="keyword">new</span> MyCustomBoundedOutOfOrdernessTimestampExtractor(Time.seconds(maxOutOfOrdernessSeconds)))</span><br><span class="line">    <span class="comment">// 按用户分组</span></span><br><span class="line">    .keyBy((KeySelector&lt;UserActionLog, String&gt;) UserActionLog::getUserID)</span><br><span class="line">    <span class="comment">// 构造TimeWindow</span></span><br><span class="line">    .timeWindow(Time.seconds(windowLengthSeconds))</span><br><span class="line">    <span class="comment">// 窗口函数: 获取这段窗口时间内每个用户浏览的商品的最大价值对应的那条记录</span></span><br><span class="line">    .reduce(<span class="keyword">new</span> ReduceFunction&lt;UserActionLog&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> UserActionLog <span class="title">reduce</span><span class="params">(UserActionLog value1, UserActionLog value2)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> value1.getProductPrice() &gt; value2.getProductPrice() ? value1 : value2;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    .print();</span><br><span class="line">     </span><br><span class="line"># 结果</span><br><span class="line">UserActionLog&#123;userID=<span class="string">'user_4'</span>, eventTime=<span class="string">'2019-11-09 12:51:25'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_3'</span>, productPrice=<span class="number">30</span>&#125;</span><br><span class="line">UserActionLog&#123;userID=<span class="string">'user_2'</span>, eventTime=<span class="string">'2019-11-09 12:51:29'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_2'</span>, productPrice=<span class="number">20</span>&#125;</span><br><span class="line">UserActionLog&#123;userID=<span class="string">'user_1'</span>, eventTime=<span class="string">'2019-11-09 12:51:22'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_3'</span>, productPrice=<span class="number">30</span>&#125;</span><br><span class="line">UserActionLog&#123;userID=<span class="string">'user_5'</span>, eventTime=<span class="string">'2019-11-09 12:51:21'</span>, eventType=<span class="string">'browse'</span>, productID=<span class="string">'product_3'</span>, productPrice=<span class="number">30</span>&#125;</span><br></pre></td></tr></table></figure>
 <p>注意: <code>ReduceFunction</code>输入输出元素类型相同。</p>
           <div class="read-more">
-            <a href="/2020/02/25/Flink-DataStream-Window-窗口函数-ReduceFunction、AggregateFunction、ProcessWindowFunction/" class="read-more-link">阅读更多</a>
+            <a href="/2020/02/25/Flink-DataStream-Window-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0-ReduceFunction%E3%80%81AggregateFunction%E3%80%81ProcessWindowFunction/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -653,7 +739,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2020/02/25/Flink-DataStream-提取Timestamp与生成Watermark/">Flink DataStream 提取Timestamp与生成Watermark</a>
+          <a class="post-link" href="/2020/02/25/Flink-DataStream-%E6%8F%90%E5%8F%96Timestamp%E4%B8%8E%E7%94%9F%E6%88%90Watermark/">Flink DataStream 提取Timestamp与生成Watermark</a>
         
       </h1>
 
@@ -663,7 +749,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/25/Flink-DataStream-提取Timestamp与生成Watermark/" data-title="Flink DataStream 提取Timestamp与生成Watermark">
+        <span class="post-visits"
+             data-url="/2020/02/25/Flink-DataStream-%E6%8F%90%E5%8F%96Timestamp%E4%B8%8E%E7%94%9F%E6%88%90Watermark/"
+             data-title="Flink DataStream 提取Timestamp与生成Watermark">
           阅读次数 0
         </span>
         
@@ -687,7 +775,7 @@
 <h2 id="在Source-Function中直接指定Timestamp和生成Watermark"><a href="#在Source-Function中直接指定Timestamp和生成Watermark" class="headerlink" title="在Source Function中直接指定Timestamp和生成Watermark"></a>在Source Function中直接指定Timestamp和生成Watermark</h2><p>在源端(即SourceFunction)中直接指定Timestamp和生成Watermark。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bigdata.flink.dataStreamExtractTimestampAndGenerateWatermark;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple4;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.TimeCharacteristic;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSource;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.source.SourceFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.watermark.Watermark;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Summary:</span></span><br><span class="line"><span class="comment"> *    在Source Function中直接指定Timestamp和生成Watermark</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExtractTimestampAndGenerateWatermark</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设定时间特征为EventTime</span></span><br><span class="line">        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 在源端(即SourceFunction)中直接指定Timestamp和生成Watermark</span></span><br><span class="line">        DataStreamSource&lt;Tuple4&lt;String, Long, String, Integer&gt;&gt; source = env.addSource(<span class="keyword">new</span> ExampleSourceFunction());</span><br><span class="line"></span><br><span class="line">        env.execute();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleSourceFunction</span> <span class="keyword">implements</span> <span class="title">SourceFunction</span>&lt;<span class="title">Tuple4</span>&lt;<span class="title">String</span>,<span class="title">Long</span>,<span class="title">String</span>,<span class="title">Integer</span>&gt;&gt;</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> isRunning = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> maxOutOfOrderness = <span class="number">10</span> * <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String[] userIDSample=&#123;<span class="string">"user_1"</span>,<span class="string">"user_2"</span>,<span class="string">"user_3"</span>&#125;;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String[] eventTypeSample=&#123;<span class="string">"click"</span>,<span class="string">"browse"</span>&#125;;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span>[] productIDSample=&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(SourceContext&lt;Tuple4&lt;String,Long,String,Integer&gt;&gt; ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">while</span> (isRunning)&#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 构造测试数据</span></span><br><span class="line">                String userID=userIDSample[(<span class="keyword">new</span> Random()).nextInt(userIDSample.length)];</span><br><span class="line">                <span class="keyword">long</span> eventTime = System.currentTimeMillis();</span><br><span class="line">                String eventType=eventTypeSample[(<span class="keyword">new</span> Random()).nextInt(eventTypeSample.length)];</span><br><span class="line">                <span class="keyword">int</span> productID=productIDSample[(<span class="keyword">new</span> Random()).nextInt(productIDSample.length)];</span><br><span class="line"></span><br><span class="line">                Tuple4&lt;String, Long, String, Integer&gt; record = Tuple4.of(userID, eventTime, eventType, productID);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 发出一条数据以及数据对应的Timestamp</span></span><br><span class="line">                ctx.collectWithTimestamp(record,eventTime);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 发出一条Watermark</span></span><br><span class="line">                ctx.emitWatermark(<span class="keyword">new</span> Watermark(eventTime - maxOutOfOrderness));</span><br><span class="line"></span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            isRunning = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <div class="read-more">
-            <a href="/2020/02/25/Flink-DataStream-提取Timestamp与生成Watermark/" class="read-more-link">阅读更多</a>
+            <a href="/2020/02/25/Flink-DataStream-%E6%8F%90%E5%8F%96Timestamp%E4%B8%8E%E7%94%9F%E6%88%90Watermark/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -705,7 +793,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2020/02/25/Flink-DataStream-Checkpoint和Savepoint/">Flink DataStream Checkpoint和Savepoint</a>
+          <a class="post-link" href="/2020/02/25/Flink-DataStream-Checkpoint%E5%92%8CSavepoint/">Flink DataStream Checkpoint和Savepoint</a>
         
       </h1>
 
@@ -715,7 +803,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/25/Flink-DataStream-Checkpoint和Savepoint/" data-title="Flink DataStream Checkpoint和Savepoint">
+        <span class="post-visits"
+             data-url="/2020/02/25/Flink-DataStream-Checkpoint%E5%92%8CSavepoint/"
+             data-title="Flink DataStream Checkpoint和Savepoint">
           阅读次数 0
         </span>
         
@@ -739,69 +829,7 @@
 <h2 id="Checkpoint"><a href="#Checkpoint" class="headerlink" title="Checkpoint"></a>Checkpoint</h2><p>Checkpoint存储状态数据，由Flink自己定期触发和清除，轻量快速，主要应用于作业生命周期内的故障恢复。</p>
 <h3 id="Checkpoint配置"><a href="#Checkpoint配置" class="headerlink" title="Checkpoint配置"></a>Checkpoint配置</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">CheckpointConfig checkpointConfig = env.getCheckpointConfig();</span><br><span class="line"></span><br><span class="line"># 1、开启Checkpoint</span><br><span class="line"># 默认情况下，不开启Checkpoint</span><br><span class="line"># 设置Checkpoint间隔(单位毫秒)大于0，即开启Checkpoint</span><br><span class="line"># 如果State比较大，建议增大该值</span><br><span class="line">checkpointConfig.setCheckpointInterval(<span class="number">10L</span> * <span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"># 2、设置Checkpoint状态管理器</span><br><span class="line"># 默认MemoryStateBackend 支持MemoryStateBackend、FsStateBackend、RocksDBStateBackend三种</span><br><span class="line"># MemoryStateBackend: 基于内存的状态管理器，状态存储在JVM堆内存中。一般不应用于生产。</span><br><span class="line"># FsStateBackend: 基于文件系统的状态管理器，文件系统可以是本地文件系统，或者是HDFS分布式文件系统。</span><br><span class="line"># RocksDBStateBackend: 基于RocksDB的状态管理器，需要引入相关依赖才可使用。</span><br><span class="line"># true: 是否异步</span><br><span class="line">env.setStateBackend((StateBackend) <span class="keyword">new</span> FsStateBackend(<span class="string">"CheckpointDir"</span>, <span class="keyword">true</span>));</span><br><span class="line"></span><br><span class="line"># 3、设置Checkpoint语义</span><br><span class="line"># EXACTLY_ONCE: 准确一次，结果不丢不重</span><br><span class="line"># AT_LEAST_ONCE: 至少一次，结果可能会重复</span><br><span class="line"># 注意: 如果要实现端到端的准确一次性语义(End-To-End EXACTLY_ONCE)，除了这里设置EXACTLY_ONCE语义外，也需要Source和Sink支持EXACTLY_ONCE</span><br><span class="line">checkpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);</span><br><span class="line"></span><br><span class="line"># 4、任务取消后保留Checkpoint目录</span><br><span class="line">checkpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);</span><br><span class="line"></span><br><span class="line"># 5、设置要保留的Checkpoint数量</span><br><span class="line"># 在conf/flink-conf.yaml中设置</span><br><span class="line"># 默认是1，只保留最新的一份Checkpoint</span><br><span class="line"># 如果需要从历史某个时刻恢复，这个参数很有用，可以根据Checkpoint间隔，设置成多个</span><br><span class="line">state.checkpoints.num-retained=<span class="number">20</span></span><br><span class="line"></span><br><span class="line"># 6、设置Checkpoint超时时间</span><br><span class="line"># Checkpoint超时时间,默认10分钟。当Checkpoint执行时间超过该值，Flink会丢弃此次Checkpoint并标记为失败，可从Flink WebUI Checkpoints上看到</span><br><span class="line">checkpointConfig.setCheckpointTimeout(<span class="keyword">long</span> checkpointTimeout);</span><br><span class="line"></span><br><span class="line"># 7、设置Checkpoint之间的最小间隔</span><br><span class="line"># 两次Checkpoint之间的最小间隔，默认是0，单位毫秒。State太大，Checkpoint时间太长，而间隔又很短，则会导致大量Checkpoint任务积压，占用大量计算资源，进而影响任务性能</span><br><span class="line">checkpointConfig.setMinPauseBetweenCheckpoints(<span class="number">30000</span>);</span><br><span class="line"></span><br><span class="line"># 8、设置同一时间点最多进行Checkpoint的数量，默认是1个</span><br><span class="line">checkpointConfig.setMaxConcurrentCheckpoints(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
           <div class="read-more">
-            <a href="/2020/02/25/Flink-DataStream-Checkpoint和Savepoint/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2020/02/25/Flink-DataStream基于Broadcast-State动态更新配置以实现实时过滤数据并增加字段/">Flink DataStream基于Broadcast State动态更新配置以实现实时过滤数据并增加字段</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2020-02-25
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2020/02/25/Flink-DataStream基于Broadcast-State动态更新配置以实现实时过滤数据并增加字段/" data-title="Flink DataStream基于Broadcast State动态更新配置以实现实时过滤数据并增加字段">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>Flink从1.5.0开始支持广播状态(<code>Broadcast State</code>)。广播状态可以用来解决如下问题:<br>一条流需要根据规则或配置处理数据，而规则或配置又是随时变化的。此时，就可将规则或配置作为广播流广播出去，并以<code>Broadcast State</code>的形式存储在下游Task中。下游Task根据<code>Broadcast State</code>中的规则或配置来处理常规流中的数据。</p>
-<p>场景举例:</p>
-<ol>
-<li>动态更新计算规则: 如事件流需要根据最新的规则进行计算，则可将规则作为广播状态广播到下游Task中。</li>
-<li>实时增加额外字段: 如事件流需要实时增加用户的基础信息，则可将用户的基础信息作为广播状态广播到下游Task中。</li>
-</ol>
-<p>注意:</p>
-<ol>
-<li><code>Broadcast State</code>是Map类型，即K-V类型。</li>
-<li><code>Broadcast State</code>只有在广播的一侧,即在<code>BroadcastProcessFunction</code>或<code>KeyedBroadcastProcessFunction</code>的<code>processBroadcastElement</code>方法中可以修改。在非广播的一侧，即在<code>BroadcastProcessFunction</code>或<code>KeyedBroadcastProcessFunction</code>的<code>processElement</code>方法中只读。</li>
-<li><code>Broadcast State</code>中元素的顺序，在各Task中可能不同。基于顺序的处理，需要注意。</li>
-<li><code>Broadcast State</code>在<code>Checkpoint</code>时，每个Task都会<code>Checkpoint</code>广播状态。</li>
-<li><code>Broadcast State</code>在运行时保存在内存中，目前还不能保存在RocksDB State Backend中。</li>
-</ol>
-          <div class="read-more">
-            <a href="/2020/02/25/Flink-DataStream基于Broadcast-State动态更新配置以实现实时过滤数据并增加字段/" class="read-more-link">阅读更多</a>
+            <a href="/2020/02/25/Flink-DataStream-Checkpoint%E5%92%8CSavepoint/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -853,7 +881,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -861,7 +889,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -888,12 +916,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

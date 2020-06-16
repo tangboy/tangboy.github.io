@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="CANAL源码解析-简介">
+  <meta name="description" content="CANAL源码解析-简介"/>
 
 
 
 
-  <meta name="keywords" content="canal, Anthon">
+  <meta name="keywords" content="canal, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2020/02/06/CANAL源码解析-简介/">
+<link rel="canonical" href="http://code-monkey.top/2020/02/06/CANAL源码解析-简介/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> CANAL源码解析-简介 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> CANAL源码解析-简介 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/06/CANAL源码解析-简介/" data-title="CANAL源码解析-简介">
+        <span class="post-visits"
+             data-url="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E7%AE%80%E4%BB%8B/"
+             data-title="CANAL源码解析-简介">
           阅读次数 0
         </span>
         
@@ -246,7 +248,7 @@
       
         <p>canal是阿里巴巴开源的mysql数据库binlog的增量订阅&amp;消费组件。项目github地址为：<a href="https://github.com/alibaba/canal。" target="_blank" rel="noopener">https://github.com/alibaba/canal。</a></p>
 <h1 id="源码模块划分"><a href="#源码模块划分" class="headerlink" title="源码模块划分"></a>源码模块划分</h1><p>canal是基于maven构建的，总共分成了14个模块，如下所示：</p>
-<img src="/2020/02/06/CANAL源码解析-简介/1.png">
+<img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E7%AE%80%E4%BB%8B/1.png" class="">
 <a id="more"></a>
 <p>模块虽多，但是每个模块的代码都很少。各个模块的作用如下所示：</p>
 <ul>
@@ -263,7 +265,7 @@
 <li><strong>store模块</strong>：数据存储。核心接口为CanalEventStore</li>
 <li><strong>meta模块</strong>：增量订阅&amp;消费信息管理器，核心接口为CanalMetaManager，主要用于记录canal消费到的mysql binlog的位置，</li>
 </ul>
-<p>下面再通过一张图来说明各个模块之间的依赖关系：<br><img src="/2020/02/06/CANAL源码解析-简介/2.png"></p>
+<p>下面再通过一张图来说明各个模块之间的依赖关系：<br><img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E7%AE%80%E4%BB%8B/2.png" class=""></p>
 <p>通过deployer模块，启动一个canal-server，一个cannal-server内部包含多个instance，每个instance都会伪装成一个mysql实例的slave。client与server之间的通信协议由protocol模块定义。client在订阅binlog信息时，需要传递一个destination参数，server会根据这个destination确定由哪一个instance为其提供服务。</p>
 
       
@@ -280,7 +282,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2020/02/06/CANAL源码解析-简介/">http://code-monkey.top/2020/02/06/CANAL源码解析-简介/</a>
+      <a href="http://code-monkey.top/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E7%AE%80%E4%BB%8B/">http://code-monkey.top/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E7%AE%80%E4%BB%8B/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -308,14 +310,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2020/02/06/CANAL源码解析-启动流程/">
+      <a class="prev" href="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">CANAL源码解析-启动流程</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2019/11/19/Spark-SQL在100TB上的自适应执行实践（转载）/">
+      <a class="next" href="/2019/11/19/Spark-SQL%E5%9C%A8100TB%E4%B8%8A%E7%9A%84%E8%87%AA%E9%80%82%E5%BA%94%E6%89%A7%E8%A1%8C%E5%AE%9E%E8%B7%B5%EF%BC%88%E8%BD%AC%E8%BD%BD%EF%BC%89/">
         <span class="next-text nav-default">Spark SQL在100TB上的自适应执行实践（转载）</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -358,7 +360,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -366,7 +368,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -393,12 +395,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

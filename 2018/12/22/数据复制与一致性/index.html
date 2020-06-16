@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="数据复制与一致性">
+  <meta name="description" content="数据复制与一致性"/>
 
 
 
 
-  <meta name="keywords" content="大数据, 一致性, Raft, Paxos, CAP, BASE, ACID, Anthon">
+  <meta name="keywords" content="大数据, 一致性, Raft, Paxos, CAP, BASE, ACID, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2018/12/22/数据复制与一致性/">
+<link rel="canonical" href="http://code-monkey.top/2018/12/22/数据复制与一致性/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 数据复制与一致性 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 数据复制与一致性 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2018/12/22/数据复制与一致性/" data-title="数据复制与一致性">
+        <span class="post-visits"
+             data-url="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/"
+             data-title="数据复制与一致性">
           阅读次数 0
         </span>
         
@@ -264,7 +266,7 @@
 <li><strong>最终一致性(Eventual Consistency)</strong></li>
 </ol>
 <a id="more"></a>
-<h2 id="一致性模型分类"><a href="#一致性模型分类" class="headerlink" title="一致性模型分类"></a>一致性模型分类</h2><img src="/2018/12/22/数据复制与一致性/1.jpg">
+<h2 id="一致性模型分类"><a href="#一致性模型分类" class="headerlink" title="一致性模型分类"></a>一致性模型分类</h2><img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/1.jpg" class="">
 <ol>
 <li><strong>强一致性</strong>：</li>
 <li><strong>最终一致性</strong>：</li>
@@ -274,7 +276,7 @@
 <li><strong>单调读一致性</strong>：</li>
 <li><strong>单调写一致性</strong>：</li>
 </ol>
-<h2 id="一致性协议"><a href="#一致性协议" class="headerlink" title="一致性协议"></a>一致性协议</h2><h3 id="两阶段提交协议-Two-Phrase-Commit-2PC"><a href="#两阶段提交协议-Two-Phrase-Commit-2PC" class="headerlink" title="两阶段提交协议(Two-Phrase Commit, 2PC)"></a>两阶段提交协议(Two-Phrase Commit, 2PC)</h3><img src="/2018/12/22/数据复制与一致性/2.jpg">
+<h2 id="一致性协议"><a href="#一致性协议" class="headerlink" title="一致性协议"></a>一致性协议</h2><h3 id="两阶段提交协议-Two-Phrase-Commit-2PC"><a href="#两阶段提交协议-Two-Phrase-Commit-2PC" class="headerlink" title="两阶段提交协议(Two-Phrase Commit, 2PC)"></a>两阶段提交协议(Two-Phrase Commit, 2PC)</h3><img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/2.jpg" class="">
 <h4 id="阶段一：-表决阶段"><a href="#阶段一：-表决阶段" class="headerlink" title="阶段一： 表决阶段"></a>阶段一： 表决阶段</h4><ol>
 <li>[协调者视角] 协调者向所有参与这发送一个VOTE-REQUEST消息</li>
 <li>[参与者视角] 当参与者接收到VOTE-REQUEST消息，向协调者发送VOTE-COMMIT消息作为回应，告知协调者自己已经做好了提交准备，否则就返回一个VOTE-ABORT消息，告知协调者目前尚无提交事务的可能。</li>
@@ -283,8 +285,8 @@
 <li>[协调者视角] 协调者收集来自各个参与者的表决信息。如果所有参与者一致认为可以提交事务，那么协调者决定事务最终可提交，在此情形下协调者向所有参与者发送一个GLOBAL_COMMIT消息，通知参与者进行本地提交；如果所有参与者中有任意一个返回的消息是VOTE-ABORT，协调者决定取消事务，则向所有参与者多播一条GLOBAL_ABORT消息通知其取消事务。</li>
 <li>[参与者视角] 每个提交了表决信息的参与者等候协调者行为，如果参与者接收到一个GLOBAL_COMMIT消息，那么参与者提交本地事务，否则如果接收到GLOBAL_ABORT消息，则参与者于本地取消事务。</li>
 </ol>
-<p><strong>协调者的有限状态机</strong><br><img src="/2018/12/22/数据复制与一致性/3.jpg"></p>
-<p><strong>参与者的有限状态机</strong><br><img src="/2018/12/22/数据复制与一致性/4.jpg"></p>
+<p><strong>协调者的有限状态机</strong><br><img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/3.jpg" class=""></p>
+<p><strong>参与者的有限状态机</strong><br><img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/4.jpg" class=""></p>
 <h3 id="向量时钟"><a href="#向量时钟" class="headerlink" title="向量时钟"></a>向量时钟</h3><p>向量时钟是在分布式环境下生成事件之间偏序关系的算法，偏序关系代表事件发生先后顺序导致的事件因果依赖关系语义，通过将时间戳和事件绑定可以用来判定事件之间的因果相关性。</p>
 <p>假设分布式系统里有n个独立进程，每个进程$p_i(1 \le i \le n)$记载初始值都是0的整数向量时钟$VC_i[1\dots n]$，其中第j位数值代表进程$p_i$看到的进程$p_j$的逻辑时钟(Logic Clock)。向量时钟系统通过如下3个规则更新每个进程对应的向量时钟值。</p>
 <ul>
@@ -312,9 +314,9 @@
 <li>最终少数服从多数</li>
 </ol>
 <h4 id="算法内容"><a href="#算法内容" class="headerlink" title="算法内容"></a>算法内容</h4><p>Paxos在原作者的《Paxos Made Simple》中内容是比较精简的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Phase 1</span><br><span class="line"></span><br><span class="line">(a) A proposer selects a proposal number n and sends a prepare request with number n to a majority of acceptors.</span><br><span class="line"></span><br><span class="line">(b) If an acceptor receives a prepare request with number n greater than that of any prepare request to which it has already responded, then it responds to the request with a promise not to accept any more proposals numbered less than n and with the highest-numbered pro-posal (if any) that it has accepted.</span><br><span class="line"></span><br><span class="line">Phase 2</span><br><span class="line"></span><br><span class="line">(a) If the proposer receives a response to its prepare requests (numbered n) from a majority of acceptors, then it sends an accept request to each of those acceptors for a proposal numbered n with a value v , where v is the value of the highest-numbered proposal among the responses, or is any value if the responses reported no proposals.</span><br><span class="line"></span><br><span class="line">(b) If an acceptor receives an accept request for a proposal numbered n, it accepts the proposal unless it has already responded to a prepare request having a number greater than n.</span><br></pre></td></tr></table></figure></p>
-<p>参考下图<br><img src="/2018/12/22/数据复制与一致性/paxos-flow.png"></p>
+<p>参考下图<br><img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/paxos-flow.png" class=""></p>
 <h4 id="实例及详解"><a href="#实例及详解" class="headerlink" title="实例及详解"></a>实例及详解</h4><p>Paxos中有三类角色<code>Proposer</code>、<code>Acceptor</code>及<code>Learner</code>，主要交互过程在<code>Proposer</code>和<code>Acceptor</code>之间。</p>
-<p><code>Proposer</code>与<code>Acceptor</code>之间的交互主要有4类消息通信，如下图：<br><img src="/2018/12/22/数据复制与一致性/paxos-messages.png"></p>
+<p><code>Proposer</code>与<code>Acceptor</code>之间的交互主要有4类消息通信，如下图：<br><img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/paxos-messages.png" class=""></p>
 <p>这4类消息对应于paxos算法的两个阶段4个过程：</p>
 <ul>
 <li>phase 1<ul>
@@ -331,7 +333,7 @@
 <p>因为在整个过程中可能有其他proposer针对同一件事情发出以上请求，所以在每个过程中都会有些特殊情况处理，这也是为了达成一致性所做的事情。如果在整个过程中没有其他proposer来竞争，那么这个操作的结果就是确定无异议的。但是如果有其他proposer的话，情况就不一样了。</p>
 <p>以<a href="http://zh.wikipedia.org/zh-cn/Paxos%E7%AE%97%E6%B3%95#.E5.AE.9E.E4.BE.8B" target="_blank" rel="noopener">paxos中文wiki上的例子</a>为例。简单来说该例子以若干个议员提议税收，确定最终通过的法案税收比例。</p>
 <p>以下图中基本只画出proposer与一个acceptor的交互。时间标志T2总是在T1后面。propose number简称N。</p>
-<p>情况之一如下图：<br><img src="/2018/12/22/数据复制与一致性/paxos-e1.png"></p>
+<p>情况之一如下图：<br><img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/paxos-e1.png" class=""></p>
 <p>A3在T1发出accepted给A1，然后在T2收到A5的prepare，在T3的时候A1才通知A5最终结果(税率10%)。这里会有两种情况：</p>
 <ul>
 <li>A5发来的N5小于A1发出去的N1，那么A3直接拒绝(reject)A5</li>
@@ -341,9 +343,9 @@
 <p>A5在收到promise后，后续的流程可以顺利进行。但是发出accept时，因为收到了(AcceptN, AcceptV)，所以会取最大的AcceptN对应的AcceptV，例子中也就是A1的10%作为AcceptV。如果在收到promise时没有发现有其他已记录的AcceptV，则其值可以由自己决定。</p>
 <p>针对以上A1和A5冲突的情况，最终A1和A5都会广播接受的值为10%。</p>
 <p>其实4个过程中对于acceptor而言，在回复promise和accepted时由于都可能因为其他proposer的介入而导致特殊处理。所以基本上看在这两个时间点收到其他proposer的请求时就可以了解整个算法了。例如在回复promise时则可能因为proposer发来的N不够大而reject：</p>
-<img src="/2018/12/22/数据复制与一致性/paxos-e2.png">
+<img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/paxos-e2.png" class="">
 <p>如果在发accepted消息时，对其他更大N的proposer发出过promise，那么也会reject该proposer发出的accept，如图：</p>
-<img src="/2018/12/22/数据复制与一致性/paxos-e3.png">
+<img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/paxos-e3.png" class="">
 <p>这个对应于Phase 2 b)：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">it accepts the proposal unless it has already responded to a prepare request having a number greater than n.</span><br></pre></td></tr></table></figure></p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>Leslie Lamport没有用数学描述Paxos，但是他用英文阐述得很清晰。将Paxos的两个Phase的内容理解清楚，整个算法过程还是不复杂的。</p>
 <p>至于Paxos中一直提到的一个全局唯一且递增的proposer number，其如何实现，引用如下：</p>
@@ -355,7 +357,7 @@
 <li>成员变化（Membership Change）：Raft 为了调整集群中成员关系使用了新的联合一致性（joint consensus）的方法，这种方法中大多数不同配置的机器在转换关系的时候会交迭（overlap）。这使得在配置改变的时候，集群能够继续操作。</li>
 </ul>
 <h4 id="复制状态机"><a href="#复制状态机" class="headerlink" title="复制状态机"></a>复制状态机</h4><p>分布式一致性的解决方案就是<strong>复制状态机</strong>, 在一组服务器的状态机产生同样的状态的副本因此即使有一些服务器崩溃了这组服务器也还能继续执行。<strong>但是集群中有一个Leader节点，Leader选举是使用一个单独的复制状态机,并存储配置信息，防止leader崩溃</strong>。</p>
-<img src="/2018/12/22/数据复制与一致性/copy_state_machine.jpg">
+<img src="/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/copy_state_machine.jpg" class="">
 <p>从图上我们可以发现共识模块是处理分布式一致性的，Log模块记录操作的记录（这个操作很重要），最后是每台机器的状态机。<strong>复制状态机是通过复制日志实现的，每台服务器都保存一份日志，日志中包含一系列的命令，状态机会按照顺序执行这些命令</strong>。</p>
 <p>应用于实际系统的一致性算法一般有以下特性：</p>
 <ul>
@@ -654,7 +656,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2018/12/22/数据复制与一致性/">http://code-monkey.top/2018/12/22/数据复制与一致性/</a>
+      <a href="http://code-monkey.top/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/">http://code-monkey.top/2018/12/22/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -674,9 +676,9 @@
         
           <div class="post-tags">
             
-              <a href="/tags/大数据/">大数据</a>
+              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
             
-              <a href="/tags/一致性/">一致性</a>
+              <a href="/tags/%E4%B8%80%E8%87%B4%E6%80%A7/">一致性</a>
             
               <a href="/tags/Raft/">Raft</a>
             
@@ -694,14 +696,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2019/01/10/共识算法概述/">
+      <a class="prev" href="/2019/01/10/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95%E6%A6%82%E8%BF%B0/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">共识算法概述</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2018/12/22/LeetCode-算法题目解答/">
+      <a class="next" href="/2018/12/22/LeetCode-%E7%AE%97%E6%B3%95%E9%A2%98%E7%9B%AE%E8%A7%A3%E7%AD%94/">
         <span class="next-text nav-default">LeetCode 算法题目解答</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -744,7 +746,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -752,7 +754,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -779,12 +781,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

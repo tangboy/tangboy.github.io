@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="深入理解JVM(2)——GC算法与内存分配策略(转载)">
+  <meta name="description" content="深入理解JVM(2)——GC算法与内存分配策略(转载)"/>
 
 
 
 
-  <meta name="keywords" content="Java, JVM, GC, CMS, Anthon">
+  <meta name="keywords" content="Java, JVM, GC, CMS, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/">
+<link rel="canonical" href="http://code-monkey.top/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 深入理解JVM(2)——GC算法与内存分配策略(转载) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 深入理解JVM(2)——GC算法与内存分配策略(转载) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/" data-title="深入理解JVM(2)——GC算法与内存分配策略(转载)">
+        <span class="post-visits"
+             data-url="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/"
+             data-title="深入理解JVM(2)——GC算法与内存分配策略(转载)">
           阅读次数 0
         </span>
         
@@ -262,7 +264,7 @@
 <p>而事实上执行这段代码，objA和objB是可以被回收的，下面一节将介绍JVM实际使用的存活判定算法。</p>
 <a id="more"></a>
 <h2 id="可达性分析算法"><a href="#可达性分析算法" class="headerlink" title="可达性分析算法"></a>可达性分析算法</h2><p>在主流商用程序语言的实现中，都是通过可达性分析（tracing GC）来判定对象是否存活的。此算法的基本思路是：通过一系列的称为“GC Roots”的对象作为起点，从这些节点向下搜索，搜索所走过的路径称为引用链（Reference Chain），当一个对象到GC Roots没有任何引用链相连（用图论的话来说，就是GC Roots 到这个对象不可达）时，则证明此对象时不可用的。用下图来加以说明：</p>
-<img src="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/1.png">
+<img src="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/1.png" class="">
 <p>上图中，对象object 5、object 6、object 7虽然互有关联，但是它们到GC Roots是不可达的，所以它们将会被判定为是可回收的对象。</p>
 <p>可以看到，GC Roots在对象图之外，是特别定义的“起点”，不可能被对象图内的对象所引用。</p>
 <p>准确地说，GC Roots其实不是一组对象，而通常是一组特别管理的指向引用类型对象的指针，这些指针是tracing GC的trace的起点。它们不是对象图里的对象，对象也不可能引用到这些“外部”的指针，这也是tracing GC算法不会出现循环引用问题的基本保证。因此也容易得出，只有引用类型的变量才被认为是Roots，值类型的变量永远不被认为是Roots。只有深刻理解引用类型和值类型的内存分配和管理的不同，才能知道为什么root只能是引用类型。</p>
@@ -292,17 +294,17 @@
 <li>效率问题，因为内存碎片的存在，操作会变得更加费时，因为查找下一个可用空闲块已不再是一个简单操作。</li>
 </ul>
 <p>标记－清除算法的执行过程如下图所示：</p>
-<img src="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/2.jpeg">
+<img src="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/2.jpeg" class="">
 <h2 id="复制（Copying）算法"><a href="#复制（Copying）算法" class="headerlink" title="复制（Copying）算法"></a>复制（Copying）算法</h2><p>为了解决标记-清除算法的效率问题，一种称为“复制”（Copying）的收集算法出现了，思想为：它将可用内存按容量分成大小相等的两块，每次只使用其中的一块。当这一块内存用完，就将还存活着的对象复制到另一块上面，然后再把已使用过的内存空间一次清理掉。</p>
 <p>这样做使得每次都是对整个半区进行内存回收，内存分配时也就不用考虑内存碎片等复杂情况，只要移动堆顶指针，按顺序分配内存即可，实现简单，运行高效。只是这种算法的代价是将内存缩小为原来的一半，代价可能过高了。复制算法的执行过程如下图所示：</p>
-<img src="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/3.jpeg">
+<img src="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/3.jpeg" class="">
 <h3 id="Minor-GC与复制算法"><a href="#Minor-GC与复制算法" class="headerlink" title="Minor GC与复制算法"></a>Minor GC与复制算法</h3><p>现在的商业虚拟机都使用复制算法来回收新生代。新生代的GC又叫“Minor GC”，IBM公司的专门研究表明：新生代中的对象98%是“朝生夕死”的，所以Minor GC非常频繁，一般回收速度也比较快，同时“朝生夕死”的特性也使得Minor GC使用复制算法时不需要按照1:1的比例来划分新生代内存空间。</p>
 <h3 id="Minor-GC过程"><a href="#Minor-GC过程" class="headerlink" title="Minor GC过程"></a>Minor GC过程</h3><p>事实上，新生代将内存分为一块较大的Eden空间和两块较小的Survivor空间（From Survivor和To Survivor），每次Minor GC都使用Eden和From Survivor，当回收时，将Eden和From Survivor中还存活着的对象都一次性地复制到另外一块To Survivor空间上，最后清理掉Eden和刚使用的Survivor空间。一次Minor GC结束的时候，Eden空间和From Survivor空间都是空的，而To Survivor空间里面存储着存活的对象。在下次MinorGC的时候，两个Survivor空间交换他们的标签，现在是空的“From” Survivor标记成为“To”，“To” Survivor标记为“From”。因此，在MinorGC结束的时候，Eden空间是空的，两个Survivor空间中的一个是空的，而另一个存储着存活的对象。</p>
 <p>HotSpot虚拟机默认的Eden : Survivor的比例是8 : 1，由于一共有两块Survivor，所以每次新生代中可用内存空间为整个新生代容量的90%（80%＋10%），只有10%的容量会被“浪费”。</p>
 <h3 id="分配担保"><a href="#分配担保" class="headerlink" title="分配担保"></a>分配担保</h3><p>上文说的98%的对象可回收只是一般场景下的数据，我们没有办法保证每次回收都只有不多于10%的对象存活，当Survivor空间不够用时，需要依赖老年代内存进行分配担保（Handle Promotion）。如果另外一块Survivor上没有足够空间存放上一次新生代收集下来的存活对象，这些对象将直接通过分配担保机制进入老年代。</p>
 <h2 id="标记－整理（Mark-Compact）算法"><a href="#标记－整理（Mark-Compact）算法" class="headerlink" title="标记－整理（Mark-Compact）算法"></a>标记－整理（Mark-Compact）算法</h2><p>复制算法在对象存活率较高时要进行较多的复制操作，效率将会变低。更关键的是：如果不想浪费50%的空间，就需要有额外的空间进行分配担保，以应对被使用的内存中所有对象都100%存活的极端情况，所以在老年代一般不能直接选用复制算法。</p>
 <p>根据老年代的特点，标记－整理（Mark-Compact）算法被提出来，主要思想为：此算法的标记过程与标记－清除算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉边界以外的内存。具体示意图如下所示：</p>
-<img src="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/4.jpeg">
+<img src="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/4.jpeg" class="">
 <h2 id="分代收集（Generational-Collection）算法"><a href="#分代收集（Generational-Collection）算法" class="headerlink" title="分代收集（Generational Collection）算法"></a>分代收集（Generational Collection）算法</h2><p>当前商业虚拟机的垃圾收集都采用分代收集（Generational Collection）算法，此算法相较于前几种没有什么新的特征，主要思想为：根据对象存活周期的不同将内存划分为几块，一般是把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适合的收集算法：</p>
 <ul>
 <li>新生代 在新生代中，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就选用复制算法，只需要付出少量存活对象的复制成本就可以完成收集。</li>
@@ -360,7 +362,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/">http://code-monkey.top/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/</a>
+      <a href="http://code-monkey.top/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/">http://code-monkey.top/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -394,14 +396,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/">
+      <a class="prev" href="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">深入理解JVM(3)——7种垃圾收集器(转载)</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/">
+      <a class="next" href="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/">
         <span class="next-text nav-default">深入理解JVM(1)——Java内存区域与Java对象(转载)</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -444,7 +446,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -452,7 +454,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -479,12 +481,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

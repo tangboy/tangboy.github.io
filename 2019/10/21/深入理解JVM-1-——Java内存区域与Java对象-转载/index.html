@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="深入理解JVM(1)——Java内存区域与Java对象(转载)">
+  <meta name="description" content="深入理解JVM(1)——Java内存区域与Java对象(转载)"/>
 
 
 
 
-  <meta name="keywords" content="Java, JVM, GC, Anthon">
+  <meta name="keywords" content="Java, JVM, GC, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/">
+<link rel="canonical" href="http://code-monkey.top/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 深入理解JVM(1)——Java内存区域与Java对象(转载) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 深入理解JVM(1)——Java内存区域与Java对象(转载) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/" data-title="深入理解JVM(1)——Java内存区域与Java对象(转载)">
+        <span class="post-visits"
+             data-url="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/"
+             data-title="深入理解JVM(1)——Java内存区域与Java对象(转载)">
           阅读次数 0
         </span>
         
@@ -245,7 +247,7 @@
     <div class="post-content">
       
         <h1 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h1><p>JVM载执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则是依赖用户线程的启动和结束而建立和销毁。具体如下图所示：</p>
-<img src="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/jvm.jpeg">
+<img src="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/jvm.jpeg" class="">
 <h2 id="程序计数器（Program-Counter-Register）"><a href="#程序计数器（Program-Counter-Register）" class="headerlink" title="程序计数器（Program Counter Register）"></a>程序计数器（Program Counter Register）</h2><p><strong>程序计数器（Program Counter Register）</strong>是一块较小的内存空间，可以看作是当前线程所执行的字节码的<strong>行号指示器</strong>。在虚拟机概念模型中，<strong>字节码解释器</strong>工作时就是通过改变计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
 <p>程序计数器是一块<strong>线程私有</strong>的内存，如上文的图所示，每条线程都有一个独立的程序计数器，各条线程之间的计数器互不影响，独立存储。这样设计使得在多线程环境下，线程切换后能恢复到正确的执行位置。</p>
 <p>如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的<strong>虚拟机字节码指令的地址</strong>；若执行的是<strong>Native方法</strong>，则<strong>计数器为空（Undefined）</strong>（因为对于Native方法而言，它的方法体并不是由Java字节码构成的，自然无法应用上述的“字节码指令的地址”的概念）。程序计数器也是唯一一个在Java虚拟机规范中没有规定任何<strong>OutOfMemoryError</strong>情况的内存区域。</p>
@@ -269,7 +271,7 @@
 <h2 id="Java堆（Heap）"><a href="#Java堆（Heap）" class="headerlink" title="Java堆（Heap）"></a>Java堆（Heap）</h2><p>对于大多数应用而言，Java堆（Heap）是Java虚拟机所管理的内存中最大的一块，它被所有线程共享的，在虚拟机启动时创建。此内存区域唯一的目的是存放对象实例，几乎所有的对象实例都在这里分配内存，且每次分配的空间是不定长的。在Heap 中分配一定的内存来保存对象实例，实际上只是保存对象实例的属性值，属性的类型和对象本身的类型标记等，并不保存对象的方法（方法是指令，保存在Stack中）,在Heap 中分配一定的内存保存对象实例和对象的序列化比较类似。对象实例在Heap 中分配好以后，需要在Stack中保存一个4字节的Heap 内存地址，用来定位该对象实例在Heap 中的位置，便于找到该对象实例。</p>
 <p>Java虚拟机规范中描述道：所有的对象实例以及数组都要在堆上分配，但是随着JIT编译器的发展和逃逸分析技术逐渐成熟，栈上分配、标量替换优化技术将会导致一些微妙的变化发生，所有的对象都在堆上分配的定论也并不“绝对”了。</p>
 <p>Java堆是垃圾收集器管理的主要区域，因此也被称为“GC堆（Garbage Collected Heap）”。从内存回收的角度看内存空间可如下划分：</p>
-<img src="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/gc_heap.jpeg">
+<img src="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/gc_heap.jpeg" class="">
 <ul>
 <li><strong>新生代（Young）：</strong> 新生成的对象优先存放在新生代中，新生代对象朝生夕死，存活率很低。在新生代中，常规应用进行一次垃圾收集一般可以回收70% ~ 95% 的空间，回收效率很高。新生代又可细分为Eden空间、From Survivor空间、To Survivor空间，默认比例为8:1:1。它们的具体作用将在下一篇文章讲解GC时介绍。</li>
 <li><strong>老年代（Tenured/Old）：</strong>在新生代中经历了多次（具体看虚拟机配置的阀值）GC后仍然存活下来的对象会进入老年代中。老年代中的对象生命周期较长，存活率比较高，在老年代中进行GC的频率相对而言较低，而且回收的速度也比较慢。</li>
@@ -290,7 +292,7 @@
 <p>元空间的内存管理由元空间虚拟机来完成。先前，对于类的元数据我们需要不同的垃圾回收器进行处理，现在只需要执行元空间虚拟机的C++代码即可完成。在元空间中，类和其元数据的生命周期和其对应的类加载器是相同的。话句话说，只要类加载器存活，其加载的类的元数据也是存活的，因而不会被回收掉。</p>
 <p>我们从行文到现在提到的元空间稍微有点不严谨。准确的来说，每一个类加载器的存储区域都称作一个元空间，所有的元空间合在一起就是我们一直说的元空间。当一个类加载器被垃圾回收器标记为不再存活，其对应的元空间会被回收。在元空间的回收过程中没有重定位和压缩等操作。但是元空间内的元数据会进行扫描来确定Java引用。</p>
 <p>元空间虚拟机负责元空间的分配，其采用的形式为组块分配。组块的大小因类加载器的类型而异。在元空间虚拟机中存在一个全局的空闲组块列表。当一个类加载器需要组块时，它就会从这个全局的组块列表中获取并维持一个自己的组块列表。当一个类加载器不再存活，那么其持有的组块将会被释放，并返回给全局组块列表。类加载器持有的组块又会被分成多个块，每一个块存储一个单元的元信息。组块中的块是线性分配（指针碰撞分配形式）。组块分配自内存映射区域。这些全局的虚拟内存映射区域以链表形式连接，一旦某个虚拟内存映射区域清空，这部分内存就会返回给操作系统。</p>
-<img src="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/meta_data.jpeg">
+<img src="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/meta_data.jpeg" class="">
 <p>上图展示的是虚拟内存映射区域如何进行元组块的分配。类加载器1和3表明使用了反射或者为匿名类加载器，他们使用了特定大小组块。 而类加载器2和4根据其内部条目的数量使用小型或者中型的组块。</p>
 <h3 id="运行时常量池（Runtime-Constant-Pool）"><a href="#运行时常量池（Runtime-Constant-Pool）" class="headerlink" title="运行时常量池（Runtime Constant Pool）"></a>运行时常量池（Runtime Constant Pool）</h3><p>运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池（Constant Pool Table），用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池存放。</p>
 <p>Java虚拟机对Class文件每一部分（自然包括常量池）的格式有严格规定，每一个字节用于存储那种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。但对于运行时常量池，Java虚拟机规范没有做任何有关细节的要求，不同的提供商实现的虚拟机可以按照自己的需求来实现此内存区域。不过一般而言，除了保存Class文件中的描述符号引用外，还会把翻译出的直接引用也存储在运行时常量池中。</p>
@@ -320,7 +322,7 @@
 </ul>
 <h3 id="3-初始化"><a href="#3-初始化" class="headerlink" title="3. 初始化"></a>3. 初始化</h3><p>内存分配完成之后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头），如果使用TLAB的话，这一个工作也可以提前至TLAB分配时进行。这步操作保证了对象的实例字段在Java代码中可以不赋初始值就直接使用。</p>
 <h3 id="4-设置对象头"><a href="#4-设置对象头" class="headerlink" title="4. 设置对象头"></a>4. 设置对象头</h3><p>接下来，虚拟机要设置对象的信息（如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄等信息）并存放在对象的对象头（Object Header）中。根据虚拟机当前的运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。关于对象头的具体内容，在下一节再详细介绍。</p>
-<h3 id="5-执行方法"><a href="#5-执行方法" class="headerlink" title="5. 执行方法"></a>5. 执行<init>方法</init></h3><p>在上面工作都完成之后，在虚拟机的视角来看，一个新的对象已经产生了。但是在Java程序的视角看来，对象创建才刚刚开始——<init>方法还没有执行，所有的字段都还为零值。所以一般来说（由字节码中是否跟随有invokespecial指令所决定），new指令之后会接着执行<init>方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</init></init></p>
+<h3 id="5-执行方法"><a href="#5-执行方法" class="headerlink" title="5. 执行方法"></a>5. 执行<init>方法</h3><p>在上面工作都完成之后，在虚拟机的视角来看，一个新的对象已经产生了。但是在Java程序的视角看来，对象创建才刚刚开始——<init>方法还没有执行，所有的字段都还为零值。所以一般来说（由字节码中是否跟随有invokespecial指令所决定），new指令之后会接着执行<init>方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
 <h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><p>HotSpot虚拟机中，对象在内存中存储的布局可以分为三块区域：对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）。</p>
 <h3 id="1-对象头"><a href="#1-对象头" class="headerlink" title="1. 对象头"></a>1. 对象头</h3><p>HotSpot虚拟机的对象头包括两部分信息：</p>
 <ul>
@@ -334,9 +336,9 @@
 <h3 id="3-对齐填充"><a href="#3-对齐填充" class="headerlink" title="3. 对齐填充"></a>3. 对齐填充</h3><p>对齐填充并不是必然存在的，也没有特别的含义，它仅仅起着占位符的作用。由于HotSpot VM的自动内存管理系统要求对象起始地址必须是8字节的整数倍，换句话说就是对象的大小必须是8字节的整数倍。对象头部分正好似8字节的倍数（1倍或者2倍），因此当对象实例数据部分没有对齐的话，就需要通过对齐填充来补全。</p>
 <h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2><p>我们的Java程序需要通过栈上的对象引用（reference）数据（存储在栈上的局部变量表中）来操作堆上的具体对象。由于reference类型在Java虚拟机规范里面也只规定了是一个指向对象的引用，并没有定义这个引用的具体实现，对象访问方式也是取决于虚拟机实现而定的。主流的访问方式有使用句柄和直接指针两种。</p>
 <h3 id="1-使用句柄访问"><a href="#1-使用句柄访问" class="headerlink" title="1. 使用句柄访问"></a>1. 使用句柄访问</h3><p>如果使用句柄访问的话，Java堆中将会划分出一块内存来作为句柄池，reference中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与类型数据的各自的具体地址信息。如下图所示：</p>
-<img src="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/reference.jpeg">
+<img src="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/reference.jpeg" class="">
 <h3 id="2-使用直接指针访问"><a href="#2-使用直接指针访问" class="headerlink" title="2. 使用直接指针访问"></a>2. 使用直接指针访问</h3><p>如果使用直接指针访问的话，Java堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，reference中存储的直接就是对象地址，如下图所示：</p>
-<img src="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/pointer.jpeg"> 
+<img src="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/pointer.jpeg" class=""> 
 <p>这两种对象访问方式各有优势，下面分别来谈一谈：</p>
 <ul>
 <li>句柄 使用句柄访问的最大好处就是reference中存储的是稳定的句柄地址，在对象被移动（垃圾收集时移动对象是非常普遍的行为）时只会改变句柄中的实例数据指针，而reference本身不需要被修改。</li>
@@ -357,7 +359,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/">http://code-monkey.top/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/</a>
+      <a href="http://code-monkey.top/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/">http://code-monkey.top/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -389,14 +391,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/">
+      <a class="prev" href="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">深入理解JVM(2)——GC算法与内存分配策略(转载)</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2019/06/13/MapReduce之Shuffle过程详述/">
+      <a class="next" href="/2019/06/13/MapReduce%E4%B9%8BShuffle%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%BF%B0/">
         <span class="next-text nav-default">MapReduce之Shuffle过程详述</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -439,7 +441,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -447,7 +449,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -474,12 +476,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="深入理解JVM(6)--G1(转载)">
+  <meta name="description" content="深入理解JVM(6)--G1(转载)"/>
 
 
 
 
-  <meta name="keywords" content="Java, JVM, GC, G1, Anthon">
+  <meta name="keywords" content="Java, JVM, GC, G1, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2019/10/24/深入理解JVM-6-G1-转载/">
+<link rel="canonical" href="http://code-monkey.top/2019/10/24/深入理解JVM-6-G1-转载/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 深入理解JVM(6)--G1(转载) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 深入理解JVM(6)--G1(转载) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/10/24/深入理解JVM-6-G1-转载/" data-title="深入理解JVM(6)--G1(转载)">
+        <span class="post-visits"
+             data-url="/2019/10/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-6-G1-%E8%BD%AC%E8%BD%BD/"
+             data-title="深入理解JVM(6)--G1(转载)">
           阅读次数 0
         </span>
         
@@ -236,7 +238,7 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#G1-总览"><span class="toc-text">G1 总览</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#G1-内存占用"><span class="toc-text">G1 内存占用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#G1-工作流程"><span class="toc-text">G1 工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#年轻代收集"><span class="toc-text">年轻代收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Old-GC-并发标记周期"><span class="toc-text">Old GC / 并发标记周期</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#混合垃圾回收周期"><span class="toc-text">混合垃圾回收周期</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Full-GC"><span class="toc-text">Full GC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#简单小结"><span class="toc-text">简单小结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#G1-参数配置和最佳实践"><span class="toc-text">G1 参数配置和最佳实践</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#G1-总览"><span class="toc-text">G1 总览</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#G1-内存占用"><span class="toc-text">G1 内存占用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#G1-工作流程"><span class="toc-text">G1 工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#年轻代收集"><span class="toc-text">年轻代收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Old-GC-并发标记周期"><span class="toc-text">Old GC &#x2F; 并发标记周期</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#混合垃圾回收周期"><span class="toc-text">混合垃圾回收周期</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Full-GC"><span class="toc-text">Full GC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#简单小结"><span class="toc-text">简单小结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#G1-参数配置和最佳实践"><span class="toc-text">G1 参数配置和最佳实践</span></a></li></ol>
     </div>
   </div>
 
@@ -250,7 +252,7 @@
 <p>如果你的应用使用了较大的堆（如 6GB 及以上）而且还要求有较低的垃圾收集停顿时间（如 0.5 秒），那么 G1 是你绝佳的选择，是时候放弃 CMS 了。</p>
 <h1 id="G1-总览"><a href="#G1-总览" class="headerlink" title="G1 总览"></a>G1 总览</h1><p>首先是内存划分上，之前介绍的分代收集器将整个堆分为年轻代、老年代和永久代，每个代的空间是确定的。</p>
 <p>而 G1 将整个堆划分为一个个大小相等的小块（每一块称为一个 region），每一块的内存是连续的。和分代算法一样，G1 中每个块也会充当 Eden、Survivor、Old 三种角色，但是它们不是固定的，这使得内存使用更加地灵活。</p>
-<img src="/2019/10/24/深入理解JVM-6-G1-转载/1.png">
+<img src="/2019/10/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-6-G1-%E8%BD%AC%E8%BD%BD/1.png" class="">
 <p>执行垃圾收集时，和 CMS 一样，G1 收集线程在标记阶段和应用程序线程并发执行，标记结束后，G1 也就知道哪些区块基本上是垃圾，存活对象极少，G1 会先从这些区块下手，因为从这些区块能很快释放得到很大的可用空间，这也是为什么 G1 被取名为 Garbage-First 的原因。</p>
 <p>在 G1 中，目标停顿时间非常非常重要，用 -XX:MaxGCPauseMillis=200 指定期望的停顿时间。</p>
 <p>G1 使用了停顿预测模型来满足用户指定的停顿时间目标，并基于目标来选择进行垃圾回收的区块数量。G1 采用增量回收的方式，每次回收一些区块，而不是整堆回收。</p>
@@ -272,9 +274,9 @@
 </ol>
 <p>接下来，我们进行一一介绍。</p>
 <h2 id="年轻代收集"><a href="#年轻代收集" class="headerlink" title="年轻代收集"></a>年轻代收集</h2><p>首先，我们来看下 G1 的堆结构：</p>
-<img src="/2019/10/24/深入理解JVM-6-G1-转载/2.png">
+<img src="/2019/10/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-6-G1-%E8%BD%AC%E8%BD%BD/2.png" class="">
 <p>年轻代中的垃圾收集流程（Young GC）：</p>
-<img src="/2019/10/24/深入理解JVM-6-G1-转载/3.png">
+<img src="/2019/10/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-6-G1-%E8%BD%AC%E8%BD%BD/3.png" class="">
 <p>我们可以看到，年轻代收集概念上和之前介绍的其他分代收集器大差不差的，但是它的年轻代会动态调整。</p>
 <h2 id="Old-GC-并发标记周期"><a href="#Old-GC-并发标记周期" class="headerlink" title="Old GC / 并发标记周期"></a>Old GC / 并发标记周期</h2><p>接下来是 Old GC 的流程（含 Young GC 阶段），其实把 Old GC 理解为并发周期是比较合理的，不要单纯地认为是清理老年代的区块，因为这一步和年轻代收集也是相关的。下面我们介绍主要流程：</p>
 <ol>
@@ -444,7 +446,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2019/10/24/深入理解JVM-6-G1-转载/">http://code-monkey.top/2019/10/24/深入理解JVM-6-G1-转载/</a>
+      <a href="http://code-monkey.top/2019/10/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-6-G1-%E8%BD%AC%E8%BD%BD/">http://code-monkey.top/2019/10/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-6-G1-%E8%BD%AC%E8%BD%BD/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -478,14 +480,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2019/11/19/Spark-SQL在100TB上的自适应执行实践（转载）/">
+      <a class="prev" href="/2019/11/19/Spark-SQL%E5%9C%A8100TB%E4%B8%8A%E7%9A%84%E8%87%AA%E9%80%82%E5%BA%94%E6%89%A7%E8%A1%8C%E5%AE%9E%E8%B7%B5%EF%BC%88%E8%BD%AC%E8%BD%BD%EF%BC%89/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Spark SQL在100TB上的自适应执行实践（转载）</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2019/10/24/深入理解JVM-5-——类加载器-转载/">
+      <a class="next" href="/2019/10/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-5-%E2%80%94%E2%80%94%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8-%E8%BD%AC%E8%BD%BD/">
         <span class="next-text nav-default">深入理解JVM(5)——类加载器(转载)</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -528,7 +530,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -536,7 +538,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -563,12 +565,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

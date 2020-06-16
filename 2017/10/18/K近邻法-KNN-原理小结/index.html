@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="K近邻法(KNN)原理小结">
+  <meta name="description" content="K近邻法(KNN)原理小结"/>
 
 
 
 
-  <meta name="keywords" content="KNN, Anthon">
+  <meta name="keywords" content="KNN, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2017/10/18/K近邻法-KNN-原理小结/">
+<link rel="canonical" href="http://code-monkey.top/2017/10/18/K近邻法-KNN-原理小结/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> K近邻法(KNN)原理小结 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> K近邻法(KNN)原理小结 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/10/18/K近邻法-KNN-原理小结/" data-title="K近邻法(KNN)原理小结">
+        <span class="post-visits"
+             data-url="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/"
+             data-title="K近邻法(KNN)原理小结">
           阅读次数 0
         </span>
         
@@ -262,7 +264,7 @@
 <p>既然蛮力实现在特征多，样本多的时候很有局限性，那么我们有没有其他的好办法呢？有！这里我们讲解两种办法，一个是KD树实现，一个是球树实现。</p>
 <h2 id="KNN算法之KD树实现原理"><a href="#KNN算法之KD树实现原理" class="headerlink" title="KNN算法之KD树实现原理"></a>KNN算法之KD树实现原理</h2><p>KD树算法没有一开始就尝试对测试样本分类，而是先对训练集建模，建立的模型就是KD树，建好了模型再对测试集做预测。所谓的KD树就是K个特征维度的树，注意这里的K和KNN中的K的意思不同。KNN中的K代表特征输出类别，KD树中的K代表样本特征的维数。为了防止混淆，后面我们称特征维数为n。</p>
 <p>KD树算法包括三步，第一步是建树，第二部是搜索最近邻，最后一步是预测。</p>
-<h3 id="KD树的建立"><a href="#KD树的建立" class="headerlink" title="KD树的建立"></a>KD树的建立</h3><p>我们首先来看建树的方法。KD树建树采用的是从m个样本的n维特征中，分别计算n个特征的取值的方差，用方差最大的第k维特征$n_k$来作为根节点。对于这个特征，我们选择特征$n_k$的取值的中位数$n_{kv}$对应的样本作为划分点，对于所有第k维特征的取值小于$n_{kv}$的样本，我们划入左子树，对于第k维特征的取值大于等于$n_{kv}$的样本，我们划入右子树，对于左子树和右子树，我们采用和刚才同样的办法来找方差最大的特征来做更节点，递归的生成KD树。<br>具体流程如下图：<br><img src="/2017/10/18/K近邻法-KNN-原理小结/knn_1.jpg"></p>
+<h3 id="KD树的建立"><a href="#KD树的建立" class="headerlink" title="KD树的建立"></a>KD树的建立</h3><p>我们首先来看建树的方法。KD树建树采用的是从m个样本的n维特征中，分别计算n个特征的取值的方差，用方差最大的第k维特征$n_k$来作为根节点。对于这个特征，我们选择特征$n_k$的取值的中位数$n_{kv}$对应的样本作为划分点，对于所有第k维特征的取值小于$n_{kv}$的样本，我们划入左子树，对于第k维特征的取值大于等于$n_{kv}$的样本，我们划入右子树，对于左子树和右子树，我们采用和刚才同样的办法来找方差最大的特征来做更节点，递归的生成KD树。<br>具体流程如下图：<br><img src="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/knn_1.jpg" class=""></p>
 <p>比如我们有二维样本6个，{(2,3)，(5,4)，(9,6)，(4,7)，(8,1)，(7,2)}，构建kd树的具体步骤为：</p>
 <ol>
 <li><p>找到划分的特征。6个数据点在x，y维度上的数据方差分别为6.97，5.37，所以在x轴上方差更大，用第1维特征建树。</p>
@@ -274,16 +276,16 @@
 <li><p>用同样的办法划分左子树的节点{(2,3),(5,4),(4,7)}和右子树的节点{(9,6)，(8,1)}。最终得到KD树。</p>
 </li>
 </ol>
-<p>最后得到的KD树如下：<br><img src="/2017/10/18/K近邻法-KNN-原理小结/knn_2.jpg"></p>
+<p>最后得到的KD树如下：<br><img src="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/knn_2.jpg" class=""></p>
 <h3 id="KD树搜索最近邻"><a href="#KD树搜索最近邻" class="headerlink" title="KD树搜索最近邻"></a>KD树搜索最近邻</h3><p>当我们生成KD树以后，就可以去预测测试集里面的样本目标点了。对于一个目标点，我们首先在KD树里面找到包含目标点的叶子节点。以目标点为圆心，以目标点到叶子节点样本实例的距离为半径，得到一个超球体，最近邻的点一定在这个超球体内部。然后返回叶子节点的父节点，检查另一个子节点包含的超矩形体是否和超球体相交，如果相交就到这个子节点寻找是否有更加近的近邻,有的话就更新最近邻。如果不相交那就简单了，我们直接返回父节点的父节点，在另一个子树继续搜索最近邻。当回溯到根节点时，算法结束，此时保存的最近邻节点就是最终的最近邻。<br>从上面的描述可以看出，KD树划分后可以大大减少无效的最近邻搜索，很多样本点由于所在的超矩形体和超球体不相交，根本不需要计算距离。大大节省了计算时间。</p>
 <p>我们用3.1建立的KD树，来看对点(2,4.5)找最近邻的过程。<br>先进行二叉查找，先从（7,2）查找到（5,4）节点，在进行查找时是由y = 4为分割超平面的，由于查找点为y值为4.5，因此进入右子空间查找到（4,7），形成搜索路径&lt;(7,2)，(5,4)，(4,7)&gt;，但 （4,7）与目标查找点的距离为3.202，而（5,4）与查找点之间的距离为3.041，所以（5,4）为查询点的最近点； 以（2，4.5）为圆心，以3.041为半径作圆，如下图所示。可见该圆和y = 4超平面交割，所以需要进入（5,4）左子空间进行查找，也就是将（2,3）节点加入搜索路径中得&lt;(7,2)，(2,3)&gt;；于是接着搜索至（2,3）叶子节点，（2,3）距离（2,4.5）比（5,4）要近，所以最近邻点更新为（2，3），最近距离更新为1.5；回溯查找至（5,4），直到最后回溯到根结点（7,2）的时候，以（2,4.5）为圆心1.5为半径作圆，并不和x = 7分割超平面交割，如下图所示。至此，搜索路径回溯完，返回最近邻点（2,3），最近距离1.5。</p>
-<p>对应的图如下：<br><img src="/2017/10/18/K近邻法-KNN-原理小结/knn_3.jpg"></p>
+<p>对应的图如下：<br><img src="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/knn_3.jpg" class=""></p>
 <h3 id="KD树预测"><a href="#KD树预测" class="headerlink" title="KD树预测　"></a>KD树预测　</h3><p>有了KD树搜索最近邻的办法，KD树的预测就很简单了，在KD树搜索最近邻的基础上，我们选择到了第一个最近邻样本，就把它置为已选。在第二轮中，我们忽略置为已选的样本，重新选择最近邻，这样跑k次，就得到了目标的K个最近邻，然后根据多数表决法，如果是KNN分类，预测为K个最近邻里面有最多类别数的类别。如果是KNN回归，用K个最近邻样本输出的平均值作为回归预测值。</p>
-<h2 id="KNN算法之球树实现原理"><a href="#KNN算法之球树实现原理" class="headerlink" title="KNN算法之球树实现原理"></a>KNN算法之球树实现原理</h2><p>KD树算法虽然提高了KNN搜索的效率，但是在某些时候效率并不高，比如当处理不均匀分布的数据集时,不管是近似方形，还是矩形，甚至正方形，都不是最好的使用形状，因为他们都有角。一个例子如下图：<br><img src="/2017/10/18/K近邻法-KNN-原理小结/knn_4.jpg"></p>
+<h2 id="KNN算法之球树实现原理"><a href="#KNN算法之球树实现原理" class="headerlink" title="KNN算法之球树实现原理"></a>KNN算法之球树实现原理</h2><p>KD树算法虽然提高了KNN搜索的效率，但是在某些时候效率并不高，比如当处理不均匀分布的数据集时,不管是近似方形，还是矩形，甚至正方形，都不是最好的使用形状，因为他们都有角。一个例子如下图：<br><img src="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/knn_4.jpg" class=""></p>
 <p>如果黑色的实例点离目标点星点再远一点，那么虚线圆会如红线所示那样扩大，导致与左上方矩形的右下角相交，既然相 交了，那么就要检查这个左上方矩形，而实际上，最近的点离星点的距离很近，检查左上方矩形区域已是多余。于此我们看见，KD树把二维平面划分成一个一个矩形，但矩形区域的角却是个难以处理的问题。</p>
 <p>为了优化超矩形体导致的搜索效率的问题，牛人们引入了球树，这种结构可以优化上面的这种问题。</p>
 <p>我们现在来看看球树建树和搜索最近邻的算法。</p>
-<h3 id="球树的建立"><a href="#球树的建立" class="headerlink" title="球树的建立"></a>球树的建立</h3><p>球树，顾名思义，就是每个分割块都是超球体，而不是KD树里面的超矩形体。<br><img src="/2017/10/18/K近邻法-KNN-原理小结/knn_5.jpg"></p>
+<h3 id="球树的建立"><a href="#球树的建立" class="headerlink" title="球树的建立"></a>球树的建立</h3><p>球树，顾名思义，就是每个分割块都是超球体，而不是KD树里面的超矩形体。<br><img src="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/knn_5.jpg" class=""></p>
 <p>我们看看具体的建树流程：</p>
 <ol>
 <li><p>先构建一个超球体，这个超球体是可以包含所有样本的最小球体。</p>
@@ -330,7 +332,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2017/10/18/K近邻法-KNN-原理小结/">http://code-monkey.top/2017/10/18/K近邻法-KNN-原理小结/</a>
+      <a href="http://code-monkey.top/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/">http://code-monkey.top/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -358,14 +360,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2017/11/06/SimPy-简化了复杂模型/">
+      <a class="prev" href="/2017/11/06/SimPy-%E7%AE%80%E5%8C%96%E4%BA%86%E5%A4%8D%E6%9D%82%E6%A8%A1%E5%9E%8B/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">SimPy 简化了复杂模型</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2017/10/14/聚类算法/">
+      <a class="next" href="/2017/10/14/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/">
         <span class="next-text nav-default">聚类算法</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -408,7 +410,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -416,7 +418,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -443,12 +445,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="CANAL源码解析-store模块">
+  <meta name="description" content="CANAL源码解析-store模块"/>
 
 
 
 
-  <meta name="keywords" content="canal, Anthon">
+  <meta name="keywords" content="canal, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2020/02/06/CANAL源码解析-store模块/">
+<link rel="canonical" href="http://code-monkey.top/2020/02/06/CANAL源码解析-store模块/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> CANAL源码解析-store模块 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> CANAL源码解析-store模块 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/06/CANAL源码解析-store模块/" data-title="CANAL源码解析-store模块">
+        <span class="post-visits"
+             data-url="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-store%E6%A8%A1%E5%9D%97/"
+             data-title="CANAL源码解析-store模块">
           阅读次数 0
         </span>
         
@@ -246,13 +248,13 @@
       
         <h2 id="store模块简介"><a href="#store模块简介" class="headerlink" title="store模块简介"></a>store模块简介</h2><p>store模块用于binlog事件的存储 ，目前开源的版本中仅实现了Memory内存模式。官方文档中提到”后续计划增加本地file存储，mixed混合模式”，这句话大家不必当真，从笔者最开始接触canal到现在已经几年了，依然没有动静，好在Memory内存模式已经可以满足绝大部分场景。</p>
 <p>store模块目录结构如下，该模块的核心接口为CanalEventStore：</p>
-<img src="/2020/02/06/CANAL源码解析-store模块/1.png">
+<img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-store%E6%A8%A1%E5%9D%97/1.png" class="">
 <p>以下是相关类图：</p>
-<img src="/2020/02/06/CANAL源码解析-store模块/2.png">
+<img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-store%E6%A8%A1%E5%9D%97/2.png" class="">
 <p>其中MemoryEventStoreWithBuffer就是内存模式的实现，是我们分析的重点，其实现了CanalEventStore接口，并继承了AbstractCanalStoreScavenge抽象类。需要注意的是，AbstractCanalStoreScavenge这个类中定义的字段和方法在开源版本中并没有任何地方使用到，因此我们不会对其进行分析。</p>
 <a id="more"></a>
 <p>MemoryEventStoreWithBuffer的实现借鉴了Disruptor的RingBuffer。简而言之，你可以把其当做一个环形队列，如下： </p>
-<img src="/2020/02/06/CANAL源码解析-store模块/3.jpg">
+<img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-store%E6%A8%A1%E5%9D%97/3.jpg" class="">
 <p>针对这个环形队列，canal定义了3类操作：Put、Get、Ack，其中：</p>
 <ul>
 <li><strong>Put 操作：</strong> 添加数据。event parser模块拉取到binlog后，并经过event sink模块过滤，最终就通过Put操作存储到了队列中。</li>
@@ -268,7 +270,7 @@
 <p>另外，putSequence、getSequence、ackSequence这3个变量初始值都是-1，且都是递增的，均用long型表示。由于数据只有被Put进来后，才能进行Get；Get之后才能进行Ack。 所以，这三个变量满足以下关系：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ackSequence &lt;= getSequence &lt;= putSequence</span><br></pre></td></tr></table></figure>
 <p>如果将RingBuffer拉直来看，将会变得更加直观：</p>
-<img src="/2020/02/06/CANAL源码解析-store模块/4.jpg">
+<img src="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-store%E6%A8%A1%E5%9D%97/4.jpg" class="">
 <p>通过对这3个位置进行运算，我们可以得到一些有用的信息，如：</p>
 <p><strong>计算当前可消费的event数量：</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当前可消费的event数量 = putSequence - getSequence</span><br></pre></td></tr></table></figure>
@@ -349,15 +351,13 @@
 </ul>
 <p>事实上，这些方法只是超时机制不同，底层都是通过调用doPut方法来完成真正的数据放入。因此在后面的分析中，笔者只选择其中一种进行讲解。<br>所有的put操作，在放入数据之前，都需要进行一些前置检查工作，主要检查2点：</p>
 <ol>
-<li>检查是否足够的slot<br> 默认的bufferSize设置大小为16384，即有16384个slot，每个slot可以存储一个event，因此canal默认最多缓存16384个event。从来另一个角度出发，这意味着putSequence最多比ackSequence可以大16384，不能超过这个值。如果超过了，就意味着尚未没有被消费的数据被覆盖了，相当于丢失了数据。因此，如果Put操作满足以下条件时，是不能新加入数据的  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(putSequence + need_put_events_size)- ackSequence &gt; bufferSize</span><br></pre></td></tr></table></figure>
+<li><p>检查是否足够的slot<br> 默认的bufferSize设置大小为16384，即有16384个slot，每个slot可以存储一个event，因此canal默认最多缓存16384个event。从来另一个角度出发，这意味着putSequence最多比ackSequence可以大16384，不能超过这个值。如果超过了，就意味着尚未没有被消费的数据被覆盖了，相当于丢失了数据。因此，如果Put操作满足以下条件时，是不能新加入数据的 </p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(putSequence + need_put_events_size)- ackSequence &gt; bufferSize</span><br></pre></td></tr></table></figure>
+<p> “putSequence + need_put_events_size”的结果为添加数据后的putSequence的最终位置值，要把这个作为预判断条件，其减去ackSequence，如果大于bufferSize，则不能插入数据。需要等待有足够的空间，或者抛出异常。</p>
 </li>
-</ol>
-<pre><code>&quot;putSequence + need_put_events_size&quot;的结果为添加数据后的putSequence的最终位置值，要把这个作为预判断条件，其减去ackSequence，如果大于bufferSize，则不能插入数据。需要等待有足够的空间，或者抛出异常。
-</code></pre><ol>
 <li>检测是否超出了内存限制<br> 前面我们已经看到了，为了控制队列中event占用的总内存大小，可以指定batchMode为MEMSIZE。在这种情况下，buffer.size  * buffer.memunit(默认为16M)就表示环形队列存储的event总共可以占用的内存大小。因此当出现以下情况下， 不能加入新的event：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(putMemSize - ackMemSize) &gt; buffer.size  * buffer.memunit</span><br></pre></td></tr></table></figure>
-</li>
+关于putMemSize和ackMemSize前面已经介绍过，二者的差值，实际上就是”队列当前包含的event占用的总内存”。 </li>
 </ol>
-<p>关于putMemSize和ackMemSize前面已经介绍过，二者的差值，实际上就是”队列当前包含的event占用的总内存”。 </p>
 <p>下面我们选择可以指定timeout超时时间的put方法进行讲解，如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">put</span><span class="params">(List&lt;Event&gt; data, <span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException, </span></span><br><span class="line"><span class="function"> CanalStoreException </span>&#123;</span><br><span class="line">    <span class="comment">//1 如果需要插入的List为空，直接返回true</span></span><br><span class="line">    <span class="keyword">if</span> (data == <span class="keyword">null</span> || data.isEmpty()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//2 获得超时时间，并通过加锁进行put操作</span></span><br><span class="line">    <span class="keyword">long</span> nanos = unit.toNanos(timeout);</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;<span class="comment">//这是一个死循环，执行到下面任意一个return或者抛出异常是时才会停止</span></span><br><span class="line">            <span class="comment">//3 检查是否满足插入条件，如果满足，进入到3.1，否则进入到3.2</span></span><br><span class="line">            <span class="keyword">if</span> (checkFreeSlotAt(putSequence.get() + data.size())) &#123;</span><br><span class="line">                <span class="comment">//3.1 如果满足条件，调用doPut方法进行真正的插入</span></span><br><span class="line">                doPut(data);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//3.2 判断是否已经超时，如果超时，则不执行插入操作，直接返回false</span></span><br><span class="line">            <span class="keyword">if</span> (nanos &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//3.3 如果还没有超时，调用notFull.awaitNanos进行等待，需要其他线程调用notFull.signal()方法唤醒。</span></span><br><span class="line">            <span class="comment">//唤醒是在ack操作中进行的，ack操作会删除已经消费成功的event，此时队列有了空间，因此可以唤醒，详见ack方法分析</span></span><br><span class="line">            <span class="comment">//当被唤醒后，因为这是一个死循环，所以循环中的代码会重复执行。当插入条件满足时，调用doPut方法插入，然后返回</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                nanos = notFull.awaitNanos(nanos);</span><br><span class="line">                <span class="comment">//3.4 如果一直等待到超时，都没有可用空间可以插入，notFull.awaitNanos会抛出InterruptedException</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">                notFull.signal(); <span class="comment">//3.5 超时之后，唤醒一个其他执行put操作且未被中断的线程(不明白是为了干啥)</span></span><br><span class="line">                <span class="keyword">throw</span> ie;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>上述方法的第3步，通过调用checkFreeSlotAt方法来执行插入数据前的检查工作，所做的事情就是我们前面提到的2点：1、检查是否足够的slot 2、检测是否超出了内存限制，源码如下所示：</p>
 <p>MemoryEventStoreWithBuffer#checkFreeSlotAt </p>
@@ -464,7 +464,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2020/02/06/CANAL源码解析-store模块/">http://code-monkey.top/2020/02/06/CANAL源码解析-store模块/</a>
+      <a href="http://code-monkey.top/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-store%E6%A8%A1%E5%9D%97/">http://code-monkey.top/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-store%E6%A8%A1%E5%9D%97/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -492,14 +492,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2020/02/07/CANAL源码解析-filter模块/">
+      <a class="prev" href="/2020/02/07/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-filter%E6%A8%A1%E5%9D%97/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">CANAL源码解析-filter模块</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2020/02/06/CANAL源码解析-instance模块/">
+      <a class="next" href="/2020/02/06/CANAL%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-instance%E6%A8%A1%E5%9D%97/">
         <span class="next-text nav-default">CANAL源码解析-instance模块</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -542,7 +542,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -550,7 +550,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -577,12 +577,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

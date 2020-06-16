@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="机器学习模型评测指标">
+  <meta name="description" content="机器学习模型评测指标"/>
 
 
 
 
-  <meta name="keywords" content="machine learning, AUC, PR, Precision, Recall, F1, ROC, TPR, FPR, Anthon">
+  <meta name="keywords" content="machine learning, AUC, PR, Precision, Recall, F1, ROC, TPR, FPR, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2017/07/30/model-evaluation/">
+<link rel="canonical" href="http://code-monkey.top/2017/07/30/model-evaluation/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 机器学习模型评测指标 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 机器学习模型评测指标 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/07/30/model-evaluation/" data-title="机器学习模型评测指标">
+        <span class="post-visits"
+             data-url="/2017/07/30/model-evaluation/"
+             data-title="机器学习模型评测指标">
           阅读次数 0
         </span>
         
@@ -244,19 +246,19 @@
 
     <div class="post-content">
       
-        <p>假定有一个二分类问题，比如判定商品是否是假货。给系统一个样本，系统将会判断该样本为“真”（Predicted positive），或“假”（Predicted Negative）。但是当然，系统的判断与真实判断（actual positive/negative）是有误差的，将原本是真的判为真，就是TP（True Positive），原本真的判为假，就是FN（False Negative），原本假的判为真，就是FP（False Positive），原本假的判为假，就是TN（True Negative）。<br><img src="/2017/07/30/model-evaluation/metric.png"></p>
+        <p>假定有一个二分类问题，比如判定商品是否是假货。给系统一个样本，系统将会判断该样本为“真”（Predicted positive），或“假”（Predicted Negative）。但是当然，系统的判断与真实判断（actual positive/negative）是有误差的，将原本是真的判为真，就是TP（True Positive），原本真的判为假，就是FN（False Negative），原本假的判为真，就是FP（False Positive），原本假的判为假，就是TN（True Negative）。<br><img src="/2017/07/30/model-evaluation/metric.png" class=""></p>
 <p><strong>精确率(Precision)</strong>是指在所有系统判定的“真”的样本中，确实是真的占比，就是<strong>TP/(TP+FP)</strong></p>
 <p><strong>召回率(Recall)</strong>是指在所有确实为真的样本中，被判为“真”的占比，就是<strong>TP/(TP + FN)</strong></p>
 <p><strong>TPR(True Positive Rate)</strong>的定义和Recall定义一样</p>
 <p><strong>FPR(False Positive Rate)</strong>, 又被称为”Probability of False Alarm”, <strong>就是所有确实为“假”的样本中，被误判为真的样本，或者FP/(TN + FP)</strong></p>
 <p><strong>F1</strong> 是为了综合考量精确率和召回率而设计的一个指标，一般公式为取P和R的 <strong>harmonic mean:2<em>Precision</em>Recall/(Precision+Recall)</strong>。</p>
 <p><strong>ROC=Receiver Operating Characteristic</strong>，是TPR vs FPR的曲线；与之对应的是Precision-Recall Curve，展示的是Precision vs Recall的曲线。</p>
-<img src="/2017/07/30/model-evaluation/metric2.png">
+<img src="/2017/07/30/model-evaluation/metric2.png" class="">
 <a id="more"></a>
 <p>显而易见的，当TN=FN=0的时候，也就是我们将100%的样本都认为是“真”的，TPR=FPR=1：这就是我们“完全放水”的情形；反之，当TP=FP=0的时候，也就是我们将100%的样本都认为是“假”的时候，TPR=FPR=0，这就是“宁可错杀一万，不可放过一个”的情形。</p>
 <p>我们在下图观察几个点。首先，FPR=0, TPR=1的那个点，可以推测FN=0, FP=0:一个错误都没有，所以是Perfect Classification。中间这条红线，我们观察TPR=FPR，所以TP(FP+TN)=FP(TP+FN)，所以TP/FN = FP/TN：换言之，无论样本是真是假，我们将它们判为“真”或“假”的概率都相当，或者说，我们的猜测是完全随机的。</p>
 <p>在红线上方，偏Perfect Classification的区域，我们认为是优于随机猜测。因为，在红线上的任意一点垂直向上的点，都有同样的FPR，但总是得到更高的TPR：在错误不变的情况下，我们的Recall变高了。反之，在红线下方的点，都认为是劣于随机猜测。</p>
-<img src="/2017/07/30/model-evaluation/metric3.png">
+<img src="/2017/07/30/model-evaluation/metric3.png" class="">
 <p>那么聪明的你一定想得到，ROC曲线下方所包围的面积越大，那么分类器的性能越优越。这个曲线下的面积，就叫做AUC（Area Under the Curve）。因为整个正方形的面积为1，所以0&lt;=AUC&lt;=1。同理，Precision与Recall的关系也可以画成一条曲线，就是上面的PR curve，其中，Precision随着Recall的提高而降低。</p>
 <p><strong>二分类问题</strong></p>
 <p>指标的好坏主要取决于分类器的目标。比方说，电子邮件的垃圾过滤，你是希望它更全面（查出所有的垃圾，但是会有大量有用信息也被判为垃圾）呢，还是希望它尽量精准（不要老是将有用的邮件判为垃圾）呢？在这个例子里，显然，我们认为False Positive的伤害要大于False Negative：重要邮件要是被判成垃圾所造成的损失，远大于收件箱里还有一部分的垃圾邮件——前者可能会让你错过重要的工作，后者仅仅是让你在阅读的时候皱皱眉头。在这种情况下，我们会认为Precision的指标会比较重要，或者反应在ROC图上，FPR尽量的小——自然，在保证FPR的基础上，Recall依然还是重要的——毕竟用户购买的是垃圾过滤，如果只是过滤了1条垃圾但是Precision＝100%，这样的东西看起来也没什么用——那么综合起来，我们也可以通过ROC的AUC来进行比较，面积较大的代表同样的FPR下面，recall比较高。</p>
@@ -265,7 +267,7 @@
 <p>搜索问题其实是一个排序问题，但我们往往会定义Precision@Top K这样的指标，即正确的答案有没有被排在Top K中，如果是的话，就相当于判断为“真”，反之则为“否”。这样搜索问题就转化为了一个二分类问题，唯一的问题是，这是一个典型的数据不均衡的case。很显然，所有的候选集的数量是非常巨大的，但是K的数量不会很大（比如Top 10, Top 20）。</p>
 <p>所以，在这个问题中，我们会主要看Precision-Recall curve。</p>
 <p>更重要的是，一般而言，人们看搜索结果都不会太有耐心，所以希望Top K中的有用信息尽量多，换言之，Precision@Top K的指标，是最核心的。我们再考虑一个任务，机器阅读理解（Machine Reading Comprehension, MRC），机器阅读一篇文章以后人类向它提问，由机器回答。这时候，所谓的Precision，是指机器回答的答案中，正确的比例。但是在这个任务中，Recall同样重要：机器也有可能回答不出来问题，但是“回答不出”，其实和“回答错误”是没有差别的。在这样的任务中，我们希望能够公平的Balance Precision和Recall的一个数字，所以我们认为F1 Score是一个好的衡量指标。</p>
-<p>然而如果我们的问题是多分类的问题，实际上这些指标就不适合了，我们需要看的是Confusion Matri:<br><img src="/2017/07/30/model-evaluation/metric4.png"></p>
+<p>然而如果我们的问题是多分类的问题，实际上这些指标就不适合了，我们需要看的是Confusion Matri:<br><img src="/2017/07/30/model-evaluation/metric4.png" class=""></p>
 <p>在上图中，对于某一类别（比如猫）而言，错误会分为被误判成狗或误判成兔子两种情形，共记9种不同的类别，其中三类（对角线上的元素）是分类正确的。显然，仅仅用TP/TN/FP/FN这四类已经不足以分析这样的问题了。当然，指标也不仅限题主所列这几种，这里就不展开了。需要提一下的是，很多时候，能否有效的分析实验结果，比单纯算法上几个点的差异，对结果的影响来的大得多。在没有指定具体情况的时候谈指标，是没有任何意义的。</p>
 <h2 id="需要注意的几点"><a href="#需要注意的几点" class="headerlink" title="需要注意的几点"></a>需要注意的几点</h2><ol>
 <li>在正负样本分布得极不均匀(highly skewed datasets)的情况下，PRC比ROC能更有效地反应分类器的好坏。<br>具体分析图2.</li>
@@ -335,7 +337,7 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2017/08/05/Python中的进程和线程/">
+      <a class="prev" href="/2017/08/05/Python%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Python中的进程和线程</span>
         <span class="prev-text nav-mobile">上一篇</span>
@@ -385,7 +387,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -393,7 +395,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -420,12 +422,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

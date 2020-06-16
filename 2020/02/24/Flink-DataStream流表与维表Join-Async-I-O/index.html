@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="Flink DataStream流表与维表Join(Async I/O)">
+  <meta name="description" content="Flink DataStream流表与维表Join(Async I/O)"/>
 
 
 
 
-  <meta name="keywords" content="Flink, Async I/O, Anthon">
+  <meta name="keywords" content="Flink, Async I/O, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/">
+<link rel="canonical" href="http://code-monkey.top/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Flink DataStream流表与维表Join(Async I/O) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Flink DataStream流表与维表Join(Async I/O) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/" data-title="Flink DataStream流表与维表Join(Async I/O)">
+        <span class="post-visits"
+             data-url="/2020/02/24/Flink-DataStream%E6%B5%81%E8%A1%A8%E4%B8%8E%E7%BB%B4%E8%A1%A8Join-Async-I-O/"
+             data-title="Flink DataStream流表与维表Join(Async I/O)">
           阅读次数 0
         </span>
         
@@ -236,7 +238,7 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#用Async-I-O-实现流表与维表Join"><span class="toc-text">用Async I/O 实现流表与维表Join</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#需求背景"><span class="toc-text">需求背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据源"><span class="toc-text">数据源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现逻辑"><span class="toc-text">实现逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ElasticsearchAsyncFunction"><span class="toc-text">ElasticsearchAsyncFunction</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#用Async-I-O-实现流表与维表Join"><span class="toc-text">用Async I&#x2F;O 实现流表与维表Join</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#需求背景"><span class="toc-text">需求背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据源"><span class="toc-text">数据源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现逻辑"><span class="toc-text">实现逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ElasticsearchAsyncFunction"><span class="toc-text">ElasticsearchAsyncFunction</span></a></li></ol></li></ol>
     </div>
   </div>
 
@@ -245,7 +247,7 @@
     <div class="post-content">
       
         <p>在Flink 流处理过程中，经常需要和外部系统进行交互，如维度补全，用维度表补全事实表中的字段。默认情况下，在MapFunction中，单个并行只能用同步方式去交互: 将请求发送到外部存储，IO阻塞，等待请求返回，然后继续发送下一个请求。这种同步交互的方式往往在网络等待上就耗费了大量时间。为了提高处理效率，可以增加MapFunction的并行度，但增加并行度就意味着更多的资源，并不是一种非常好的解决方式。Flink 在1.2中引入了Async I/O，在异步模式下,将IO操作异步化，单个并行可以连续发送多个请求，哪个请求先返回就先处理，从而在连续的请求间不需要阻塞式等待，大大提高了流处理效率。</p>
-<img src="/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/1.jpeg">
+<img src="/2020/02/24/Flink-DataStream%E6%B5%81%E8%A1%A8%E4%B8%8E%E7%BB%B4%E8%A1%A8Join-Async-I-O/1.jpeg" class="">
 <p>注意:</p>
 <ol>
 <li>使用Async I/O，需要外部存储有支持异步请求的客户端。</li>
@@ -285,7 +287,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/">http://code-monkey.top/2020/02/24/Flink-DataStream流表与维表Join-Async-I-O/</a>
+      <a href="http://code-monkey.top/2020/02/24/Flink-DataStream%E6%B5%81%E8%A1%A8%E4%B8%8E%E7%BB%B4%E8%A1%A8Join-Async-I-O/">http://code-monkey.top/2020/02/24/Flink-DataStream%E6%B5%81%E8%A1%A8%E4%B8%8E%E7%BB%B4%E8%A1%A8Join-Async-I-O/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -315,14 +317,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2020/02/25/Flink-DataStream基于Broadcast-State动态更新配置以实现实时过滤数据并增加字段/">
+      <a class="prev" href="/2020/02/25/Flink-DataStream%E5%9F%BA%E4%BA%8EBroadcast-State%E5%8A%A8%E6%80%81%E6%9B%B4%E6%96%B0%E9%85%8D%E7%BD%AE%E4%BB%A5%E5%AE%9E%E7%8E%B0%E5%AE%9E%E6%97%B6%E8%BF%87%E6%BB%A4%E6%95%B0%E6%8D%AE%E5%B9%B6%E5%A2%9E%E5%8A%A0%E5%AD%97%E6%AE%B5/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Flink DataStream基于Broadcast State动态更新配置以实现实时过滤数据并增加字段</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2020/02/24/Flink-原理与实现：内存管理/">
+      <a class="next" href="/2020/02/24/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
         <span class="next-text nav-default">Flink 原理与实现：内存管理</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -365,7 +367,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -373,7 +375,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -400,12 +402,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

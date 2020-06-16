@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="深入理解JVM(3)——7种垃圾收集器(转载)">
+  <meta name="description" content="深入理解JVM(3)——7种垃圾收集器(转载)"/>
 
 
 
 
-  <meta name="keywords" content="Java, JVM, GC, Anthon">
+  <meta name="keywords" content="Java, JVM, GC, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/">
+<link rel="canonical" href="http://code-monkey.top/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 深入理解JVM(3)——7种垃圾收集器(转载) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 深入理解JVM(3)——7种垃圾收集器(转载) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/" data-title="深入理解JVM(3)——7种垃圾收集器(转载)">
+        <span class="post-visits"
+             data-url="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/"
+             data-title="深入理解JVM(3)——7种垃圾收集器(转载)">
           阅读次数 0
         </span>
         
@@ -245,7 +247,7 @@
     <div class="post-content">
       
         <p>如果说收集算法是内存回收的方法论，那么垃圾收集器就是内存回收的具体实现。Java虚拟机规范中对垃圾收集器应该如何实现并没有任何规定，因此不同的厂商、版本的虚拟机所提供的垃圾收集器都可能会有很大差别，并且一般都会提供参数供用户根据自己的应用特点和要求组合出各个年代所使用的收集器。接下来讨论的收集器基于JDK1.7 Update 14 之后的HotSpot虚拟机（在此版本中正式提供了商用的G1收集器，之前G1仍处于实验状态），该虚拟机包含的所有收集器如下图所示：</p>
-<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/1.jpg">
+<img src="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/1.jpg" class="">
 <p>上图展示了7种作用于不同分代的收集器，如果两个收集器之间存在连线，就说明它们可以搭配使用。虚拟机所处的区域，则表示它是属于新生代收集器还是老年代收集器。Hotspot实现了如此多的收集器，正是因为目前并无完美的收集器出现，只是选择对具体应用最适合的收集器。</p>
 <h1 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h1><h2 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h2><ul>
 <li>并行（Parallel）：指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</li>
@@ -261,12 +263,12 @@
 <a id="more"></a>
 <h1 id="新生代收集器"><a href="#新生代收集器" class="headerlink" title="新生代收集器"></a>新生代收集器</h1><h2 id="Serial收集器"><a href="#Serial收集器" class="headerlink" title="Serial收集器"></a>Serial收集器</h2><p>Serial（串行）收集器是最基本、发展历史最悠久的收集器，它是采用复制算法的新生代收集器，曾经（JDK 1.3.1之前）是虚拟机新生代收集的唯一选择。它是一个单线程收集器，只会使用一个CPU或一条收集线程去完成垃圾收集工作，更重要的是它在进行垃圾收集时，必须暂停其他所有的工作线程，直至Serial收集器收集结束为止（“Stop The World”）。这项工作是由虚拟机在后台自动发起和自动完成的，在用户不可见的情况下把用户正常工作的线程全部停掉，这对很多应用来说是难以接收的。</p>
 <p>下图展示了Serial 收集器（老年代采用Serial Old收集器）的运行过程：</p>
-<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/2.jpeg">
+<img src="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/2.jpeg" class="">
 <p>为了消除或减少工作线程因内存回收而导致的停顿，HotSpot虚拟机开发团队在JDK 1.3之后的Java发展历程中研发出了各种其他的优秀收集器，这些将在稍后介绍。但是这些收集器的诞生并不意味着Serial收集器已经“老而无用”，实际上到现在为止，它依然是HotSpot虚拟机运行在Client模式下的默认的新生代收集器。它也有着优于其他收集器的地方：简单而高效（与其他收集器的单线程相比），对于限定单个CPU的环境来说，Serial收集器由于没有线程交互的开销，专心做垃圾收集自然可以获得更高的单线程收集效率。</p>
 <p>在用户的桌面应用场景中，分配给虚拟机管理的内存一般不会很大，收集几十兆甚至一两百兆的新生代（仅仅是新生代使用的内存，桌面应用基本不会再大了），停顿时间完全可以控制在几十毫秒最多一百毫秒以内，只要不频繁发生，这点停顿时间可以接收。所以，Serial收集器对于运行在Client模式下的虚拟机来说是一个很好的选择。</p>
 <h2 id="ParNew-收集器"><a href="#ParNew-收集器" class="headerlink" title="ParNew 收集器"></a>ParNew 收集器</h2><p>ParNew收集器就是Serial收集器的多线程版本，它也是一个新生代收集器。除了使用多线程进行垃圾收集外，其余行为包括Serial收集器可用的所有控制参数、收集算法（复制算法）、Stop The World、对象分配规则、回收策略等与Serial收集器完全相同，两者共用了相当多的代码。</p>
 <p>ParNew收集器的工作过程如下图（老年代采用Serial Old收集器）：</p>
-<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/3.jpeg">
+<img src="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/3.jpeg" class="">
 <p>ParNew收集器除了使用多线程收集外，其他与Serial收集器相比并无太多创新之处，但它却是许多运行在Server模式下的虚拟机中首选的新生代收集器，其中有一个与性能无关的重要原因是，除了Serial收集器外，目前只有它能和CMS收集器（Concurrent Mark Sweep）配合工作，CMS收集器是JDK 1.5推出的一个具有划时代意义的收集器，具体内容将在稍后进行介绍。</p>
 <p>ParNew 收集器在单CPU的环境中绝对不会有比Serial收集器有更好的效果，甚至由于存在线程交互的开销，该收集器在通过超线程技术实现的两个CPU的环境中都不能百分之百地保证可以超越。在多CPU环境下，随着CPU的数量增加，它对于GC时系统资源的有效利用是很有好处的。它默认开启的收集线程数与CPU的数量相同，在CPU非常多的情况下可使用-XX:ParallerGCThreads参数设置。</p>
 <h2 id="Parallel-Scavenge-收集器"><a href="#Parallel-Scavenge-收集器" class="headerlink" title="Parallel Scavenge 收集器"></a>Parallel Scavenge 收集器</h2><p>Parallel Scavenge收集器也是一个并行的多线程新生代收集器，它也使用复制算法。Parallel Scavenge收集器的特点是它的关注点与其他收集器不同，CMS等收集器的关注点是尽可能缩短垃圾收集时用户线程的停顿时间，而Parallel Scavenge收集器的目标是达到一个可控制的吞吐量（Throughput）。</p>
@@ -280,9 +282,9 @@
 <li>作为CMS收集器的后备预案，在并发收集发生Concurrent Mode Failure时使用。</li>
 </ul>
 <p>它的工作流程与Serial收集器相同，这里再次给出Serial/Serial Old配合使用的工作流程图：</p>
-<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/4.jpeg">
+<img src="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/4.jpeg" class="">
 <h2 id="Parallel-Old收集器"><a href="#Parallel-Old收集器" class="headerlink" title="Parallel Old收集器"></a>Parallel Old收集器</h2><p>经提到过，这个收集器是在JDK 1.6中才开始提供的，在此之前，如果新生代选择了Parallel Scavenge收集器，老年代除了Serial Old以外别无选择，所以在Parallel Old诞生以后，“吞吐量优先”收集器终于有了比较名副其实的应用组合，在注重吞吐量以及CPU资源敏感的场合，都可以优先考虑Parallel Scavenge加Parallel Old收集器。Parallel Old收集器的工作流程与Parallel Scavenge相同，这里给出Parallel Scavenge/Parallel Old收集器配合使用的流程图：</p>
-<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/5.jpeg">
+<img src="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/5.jpeg" class="">
 <h1 id="CMS收集器"><a href="#CMS收集器" class="headerlink" title="CMS收集器"></a>CMS收集器</h1><p>CMS（Concurrent Mark Sweep）收集器是一种以获取最短回收停顿时间为目标的收集器，它非常符合那些集中在互联网站或者B/S系统的服务端上的Java应用，这些应用都非常重视服务的响应速度。从名字上（“Mark Sweep”）就可以看出它是基于“标记-清除”算法实现的。</p>
 <p>CMS收集器工作的整个流程分为以下4个步骤：</p>
 <ol>
@@ -292,7 +294,7 @@
 <li>并发清除（CMS concurrent sweep）</li>
 </ol>
 <p>由于整个过程中耗时最长的并发标记和并发清除过程收集器线程都可以与用户线程一起工作，所以，从总体上来说，CMS收集器的内存回收过程是与用户线程一起并发执行的。通过下图可以比较清楚地看到CMS收集器的运作步骤中并发和需要停顿的时间：</p>
-<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/6.jpeg">
+<img src="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/6.jpeg" class="">
 <h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>CMS是一款优秀的收集器，它的主要优点在名字上已经体现出来了：并发收集、低停顿，因此CMS收集器也被称为并发低停顿收集器（Concurrent Low Pause Collector）。</p>
 <h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
 <li>对CPU资源非常敏感 其实，面向并发设计的程序都对CPU资源比较敏感。在并发阶段，它虽然不会导致用户线程停顿，但会因为占用了一部分线程（或者说CPU资源）而导致应用程序变慢，总吞吐量会降低。CMS默认启动的回收线程数是（CPU数量+3）/4，也就是当CPU在4个以上时，并发回收时垃圾收集线程不少于25%的CPU资源，并且随着CPU数量的增加而下降。但是当CPU不足4个时（比如2个），CMS对用户程序的影响就可能变得很大，如果本来CPU负载就比较大，还要分出一半的运算能力去执行收集器线程，就可能导致用户程序的执行速度忽然降低了50%，其实也让人无法接受。</li>
@@ -318,7 +320,7 @@
 <li>筛选回收（Live Data Counting and Evacuation） 首先对各个Region中的回收价值和成本进行排序，根据用户所期望的GC 停顿是时间来制定回收计划。此阶段其实也可以做到与用户程序一起并发执行，但是因为只回收一部分Region，时间是用户可控制的，而且停顿用户线程将大幅度提高收集效率。</li>
 </ul>
 <p>通过下图可以比较清楚地看到G1收集器的运作步骤中并发和需要停顿的阶段（Safepoint处）：</p>
-<img src="/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/6.jpeg">
+<img src="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/6.jpeg" class="">
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>|:收集器:|:串行、并行or并发:|:新生代/老年代:|:算法:|:目标:|:适用场景:|<br>|Serial|串行|新生代|复制算法|响应速度优先|单CPU环境下的Client模式|<br>|Serial Old|串行|老年代|标记-整理|响应速度优先|单CPU环境下的Client模式、CMS的后备预案|<br>|ParNew|并行|新生代|复制算法|响应速度优先|多CPU环境时在Server模式下与CMS配合|<br>|Parallel Scavenge|并行|新生代|复制算法|吞吐量优先|在后台运算而不需要太多交互的任务|<br>|Parallel Old|并行|老年代|标记-整理|吞吐量优先|在后台运算而不需要太多交互的任务|<br>|CMS|并发|老年代|标记-清除|响应速度优先|集中在互联网站或B/S系统服务端上的Java应用|<br>|G1|并发|both|标记-整理+复制算法|响应速度优先|面向服务端应用，将来替换CMS|</p>
 <p>本文通过详细介绍HotSpot虚拟机的7种垃圾收集器回答了上一篇文章开头提出的三个问题中的第三个——“如何回收”，在下一篇文章中，我们将回答最后一个未被解答的问题——“什么时候回收”。</p>
 
@@ -336,7 +338,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/">http://code-monkey.top/2019/10/23/深入理解JVM-3-——7种垃圾收集器-转载/</a>
+      <a href="http://code-monkey.top/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/">http://code-monkey.top/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -368,14 +370,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2019/10/23/深入理解JVM-4-——虚拟机类加载机制-转载/">
+      <a class="prev" href="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-4-%E2%80%94%E2%80%94%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6-%E8%BD%AC%E8%BD%BD/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">深入理解JVM(4)——虚拟机类加载机制(转载)</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/">
+      <a class="next" href="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/">
         <span class="next-text nav-default">深入理解JVM(2)——GC算法与内存分配策略(转载)</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -418,7 +420,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -426,7 +428,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -453,12 +455,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="机器学习，编程，玩">
+  <meta name="description" content="机器学习，编程，玩"/>
 
 
 
@@ -36,24 +36,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/page/4/">
+<link rel="canonical" href="http://code-monkey.top/page/4/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -96,8 +96,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -216,7 +216,71 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/">深入理解JVM(2)——GC算法与内存分配策略(转载)</a>
+          <a class="post-link" href="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/">深入理解JVM(3)——7种垃圾收集器(转载)</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-10-23
+        </span>
+        
+        
+        <span class="post-visits"
+             data-url="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/"
+             data-title="深入理解JVM(3)——7种垃圾收集器(转载)">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>如果说收集算法是内存回收的方法论，那么垃圾收集器就是内存回收的具体实现。Java虚拟机规范中对垃圾收集器应该如何实现并没有任何规定，因此不同的厂商、版本的虚拟机所提供的垃圾收集器都可能会有很大差别，并且一般都会提供参数供用户根据自己的应用特点和要求组合出各个年代所使用的收集器。接下来讨论的收集器基于JDK1.7 Update 14 之后的HotSpot虚拟机（在此版本中正式提供了商用的G1收集器，之前G1仍处于实验状态），该虚拟机包含的所有收集器如下图所示：</p>
+<img src="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/1.jpg" class="">
+<p>上图展示了7种作用于不同分代的收集器，如果两个收集器之间存在连线，就说明它们可以搭配使用。虚拟机所处的区域，则表示它是属于新生代收集器还是老年代收集器。Hotspot实现了如此多的收集器，正是因为目前并无完美的收集器出现，只是选择对具体应用最适合的收集器。</p>
+<h1 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h1><h2 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h2><ul>
+<li>并行（Parallel）：指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</li>
+<li>并发（Concurrent）：指用户线程与垃圾收集线程同时执行（但不一定是并行的，可能会交替执行），用户程序在继续运行。而垃圾收集程序运行在另一个CPU上。</li>
+</ul>
+<h2 id="吞吐量（Throughput）"><a href="#吞吐量（Throughput）" class="headerlink" title="吞吐量（Throughput）"></a>吞吐量（Throughput）</h2><p>吞吐量就是CPU用于运行用户代码的时间与CPU总消耗时间的比值，即</p>
+<p>吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）。</p>
+<p>假设虚拟机总共运行了100分钟，其中垃圾收集花掉1分钟，那吞吐量就是99%。</p>
+<h2 id="Minor-GC-和-Full-GC"><a href="#Minor-GC-和-Full-GC" class="headerlink" title="Minor GC 和 Full GC"></a>Minor GC 和 Full GC</h2><ul>
+<li>新生代GC（Minor GC）：指发生在新生代的垃圾收集动作，因为Java对象大多都具备朝生夕灭的特性，所以Minor GC非常频繁，一般回收速度也比较快。具体原理见上一篇文章。</li>
+<li>老年代GC（Major GC / Full GC）：指发生在老年代的GC，出现了Major GC，经常会伴随至少一次的Minor GC（但非绝对的，在Parallel Scavenge收集器的收集策略里就有直接进行Major GC的策略选择过程）。Major GC的速度一般会比Minor GC慢10倍以上。</li>
+</ul>
+          <div class="read-more">
+            <a href="/2019/10/23/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-3-%E2%80%94%E2%80%947%E7%A7%8D%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-%E8%BD%AC%E8%BD%BD/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/">深入理解JVM(2)——GC算法与内存分配策略(转载)</a>
         
       </h1>
 
@@ -226,7 +290,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/" data-title="深入理解JVM(2)——GC算法与内存分配策略(转载)">
+        <span class="post-visits"
+             data-url="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/"
+             data-title="深入理解JVM(2)——GC算法与内存分配策略(转载)">
           阅读次数 0
         </span>
         
@@ -262,7 +328,7 @@
 <p>在上面这段代码中，对象objA 和对象objB都有字段instance，赋值令<code>objA.instance = objB;、objB.instance = objA;</code>，除此之外，这两个对象再无引用。如果JVM采用引用计数算法来管理内存，这两个对象不可能再被访问，但是他们互相引用着对方，导致它们引用计数不为0，所以引用计数器无法通知GC收集器回收它们。</p>
 <p>而事实上执行这段代码，objA和objB是可以被回收的，下面一节将介绍JVM实际使用的存活判定算法。</p>
           <div class="read-more">
-            <a href="/2019/10/22/深入理解JVM-2-——GC算法与内存分配策略-转载/" class="read-more-link">阅读更多</a>
+            <a href="/2019/10/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-2-%E2%80%94%E2%80%94GC%E7%AE%97%E6%B3%95%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5-%E8%BD%AC%E8%BD%BD/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -280,7 +346,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/">深入理解JVM(1)——Java内存区域与Java对象(转载)</a>
+          <a class="post-link" href="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/">深入理解JVM(1)——Java内存区域与Java对象(转载)</a>
         
       </h1>
 
@@ -290,7 +356,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/" data-title="深入理解JVM(1)——Java内存区域与Java对象(转载)">
+        <span class="post-visits"
+             data-url="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/"
+             data-title="深入理解JVM(1)——Java内存区域与Java对象(转载)">
           阅读次数 0
         </span>
         
@@ -310,7 +378,7 @@
 
         
           <h1 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h1><p>JVM载执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则是依赖用户线程的启动和结束而建立和销毁。具体如下图所示：</p>
-<img src="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/jvm.jpeg">
+<img src="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/jvm.jpeg" class="">
 <h2 id="程序计数器（Program-Counter-Register）"><a href="#程序计数器（Program-Counter-Register）" class="headerlink" title="程序计数器（Program Counter Register）"></a>程序计数器（Program Counter Register）</h2><p><strong>程序计数器（Program Counter Register）</strong>是一块较小的内存空间，可以看作是当前线程所执行的字节码的<strong>行号指示器</strong>。在虚拟机概念模型中，<strong>字节码解释器</strong>工作时就是通过改变计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
 <p>程序计数器是一块<strong>线程私有</strong>的内存，如上文的图所示，每条线程都有一个独立的程序计数器，各条线程之间的计数器互不影响，独立存储。这样设计使得在多线程环境下，线程切换后能恢复到正确的执行位置。</p>
 <p>如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的<strong>虚拟机字节码指令的地址</strong>；若执行的是<strong>Native方法</strong>，则<strong>计数器为空（Undefined）</strong>（因为对于Native方法而言，它的方法体并不是由Java字节码构成的，自然无法应用上述的“字节码指令的地址”的概念）。程序计数器也是唯一一个在Java虚拟机规范中没有规定任何<strong>OutOfMemoryError</strong>情况的内存区域。</p>
@@ -329,7 +397,7 @@
 <li><strong>OutOfMemoryError：</strong>当可动态扩展的虚拟机栈在扩展时无法申请到足够的内存，就会抛出该异常。</li>
 </ul>
           <div class="read-more">
-            <a href="/2019/10/21/深入理解JVM-1-——Java内存区域与Java对象-转载/" class="read-more-link">阅读更多</a>
+            <a href="/2019/10/21/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM-1-%E2%80%94%E2%80%94Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E4%B8%8EJava%E5%AF%B9%E8%B1%A1-%E8%BD%AC%E8%BD%BD/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -347,7 +415,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/06/13/MapReduce之Shuffle过程详述/">MapReduce之Shuffle过程详述</a>
+          <a class="post-link" href="/2019/06/13/MapReduce%E4%B9%8BShuffle%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%BF%B0/">MapReduce之Shuffle过程详述</a>
         
       </h1>
 
@@ -357,7 +425,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/06/13/MapReduce之Shuffle过程详述/" data-title="MapReduce之Shuffle过程详述">
+        <span class="post-visits"
+             data-url="/2019/06/13/MapReduce%E4%B9%8BShuffle%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%BF%B0/"
+             data-title="MapReduce之Shuffle过程详述">
           阅读次数 0
         </span>
         
@@ -378,7 +448,7 @@
         
           <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>MapReduce作为Hadoop的编程框架，对于大数据开发或者想要接触大数据开发的开发者来说，是必须要掌握的，它是一种经典大数据计算框架，现在有很多开源项目的内部实现都会直接或间接地借鉴了MR过程的实现。我在经过了一些hadoop项目的开发，然后前几天又系统地学习MapReduc内部实现过程，尤其是学习中间的Shuffle过程之后，准备对这一块做一下总结，希望这篇文章能给需要的人带来一些帮助（文中Shuffle的分析还是以Hadoop1.0为例，这个跟2.0的区别并不是很大）。</p>
 <h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><p>对于MapReduce作业，完整的作业运行流程：</p>
-<img src="/2019/06/13/MapReduce之Shuffle过程详述/hadoop.png">
+<img src="/2019/06/13/MapReduce%E4%B9%8BShuffle%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%BF%B0/hadoop.png" class="">
 <p>完整过程应该是分为7部分，分别是：</p>
 <ol>
 <li>作业启动：开发者通过控制台启动作业；</li>
@@ -396,7 +466,7 @@
 <li><strong>Reduce</strong>:对相同key的输入进行最终的处理,并将结果写入到文件中。</li>
 </ol>
 <p>这里先给出官网上关于这个过程的经典流程图：</p>
-<img src="/2019/06/13/MapReduce之Shuffle过程详述/mapreduce.png">
+<img src="/2019/06/13/MapReduce%E4%B9%8BShuffle%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%BF%B0/mapreduce.png" class="">
 <p>上图是把MapReduce过程分为两个部分，而实际上从两边的Map和Reduce到中间的那一大块都属于Shuffle过程，也就是说，Shuffle过程有一部分是在Map端，有一部分是在Reduce端，下文也将会分两部分来介绍Shuffle过程。</p>
 <p>对于Hadoop集群，当我们在运行作业时，大部分的情况下，map task与reduce task的执行是分布在不同的节点上的，因此，很多情况下，reduce执行时需要跨节点去拉取其他节点上的map task结果，这样造成了集群内部的网络资源消耗很严重，而且在节点的内部，相比于内存，磁盘IO对性能的影响是非常严重的。如果集群中运行的作业有很多，那么task的执行对于集群内部网络的资源消费非常大。因此，我们对于MapRedue作业Shuffle过程的期望是：</p>
 <ul>
@@ -405,7 +475,7 @@
 <li>减少磁盘IO对task执行的影响。</li>
 </ul>
           <div class="read-more">
-            <a href="/2019/06/13/MapReduce之Shuffle过程详述/" class="read-more-link">阅读更多</a>
+            <a href="/2019/06/13/MapReduce%E4%B9%8BShuffle%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%BF%B0/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -423,7 +493,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-interpreter调试/">Zeppelin源码分析-interpreter调试</a>
+          <a class="post-link" href="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-interpreter%E8%B0%83%E8%AF%95/">Zeppelin源码分析-interpreter调试</a>
         
       </h1>
 
@@ -433,7 +503,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/06/12/Zeppelin源码分析-interpreter调试/" data-title="Zeppelin源码分析-interpreter调试">
+        <span class="post-visits"
+             data-url="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-interpreter%E8%B0%83%E8%AF%95/"
+             data-title="Zeppelin源码分析-interpreter调试">
           阅读次数 0
         </span>
         
@@ -458,15 +530,14 @@
 <p>加粗部分保证启动interpreter的jvm以debug方式启动，监听的端口号比RemoteInterpreterServer process监听的端口号+1（采用<code>expr${PORT} + 1</code>）这里不能写成固定的端口，因为每种interpreter都会启动一个独立的process，该process监听的socket端口是zeppelin在运行时随机获取一个可用的端口（没有被占用的端口）。如果写成固定的端口，那么每种interpreter process在进行remote debug的时候，端口就会冲突。</p>
 <ol>
 <li>启动ZeppelinServer的调试，可以直接run，不用以debug方式启动。</li>
-<li>打开浏览器，访问<a href="http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter" target="_blank" rel="noopener">http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter</a> binding了spark。insert一个paragraph，首行写入%spark (表明采用SparkInterpreter来解释此paragrapph中的代码)，换行，写入scala代码println(“hello,world”)，由于这里主要演示debug interpreter，以最简单的hello world说明问题。然后点击运行该paragraph。此时zeppelin server会调用bin/interpreter.sh脚本，传入“端口、interpreter加载的目录(这里是${ZEPPELIN_HOME}/interpreter/spark)、interpreter各自的log file位置”这些参数以启动该interpreter jvm。由于之前在JAVA_INTP_OPTS设置了jvm支持远程调试的参数，该jvm可以通过IDE remote debug。</li>
+<li>打开浏览器，访问<a href="http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter">http://localhost:8080，（如果在shiro.ini中配置了auth，则需要登录），然后创建一个Note，interpreter</a> binding了spark。insert一个paragraph，首行写入%spark (表明采用SparkInterpreter来解释此paragrapph中的代码)，换行，写入scala代码println(“hello,world”)，由于这里主要演示debug interpreter，以最简单的hello world说明问题。然后点击运行该paragraph。此时zeppelin server会调用bin/interpreter.sh脚本，传入“端口、interpreter加载的目录(这里是${ZEPPELIN_HOME}/interpreter/spark)、interpreter各自的log file位置”这些参数以启动该interpreter jvm。由于之前在JAVA_INTP_OPTS设置了jvm支持远程调试的参数，该jvm可以通过IDE remote debug。</li>
 <li>通过ps –ef|grep interpreter来查找RemoteInterpreterServer process启动的参数，可以看到-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=58679类似的输出，表明该jvm在58679端口上支持remote debug。</li>
 </ol>
-<p>在SparkInterpreter.java中的重点位置设置断点，如在方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open()和interpret(String line, InterpreterContext context)</span><br></pre></td></tr></table></figure></p>
-<p>首行设置断点。</p>
+<p>在SparkInterpreter.java中的重点位置设置断点，如在方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open()和interpret(String line, InterpreterContext context)</span><br></pre></td></tr></table></figure><br>首行设置断点。</p>
 <ol>
 <li>在IDE，以Idea为例：创建Remote Run/Debug Configuration，填入端口号58679</li>
 </ol>
-<img src="/2019/06/12/Zeppelin源码分析-interpreter调试/1.png">
+<img src="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-interpreter%E8%B0%83%E8%AF%95/1.png" class="">
 <p>即可启动remote debug。</p>
 <p>需要注意的是，由于hello world代码简短，可能在你在IDE中启动Remote debug时该Interpreter已经执行完了。再次点击执行该paragraph即可命中SparkInterpreter中的断点。</p>
 
@@ -486,7 +557,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-note的执行过程/">Zeppelin源码分析-note的执行过程</a>
+          <a class="post-link" href="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-note%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/">Zeppelin源码分析-note的执行过程</a>
         
       </h1>
 
@@ -496,7 +567,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/06/12/Zeppelin源码分析-note的执行过程/" data-title="Zeppelin源码分析-note的执行过程">
+        <span class="post-visits"
+             data-url="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-note%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/"
+             data-title="Zeppelin源码分析-note的执行过程">
           阅读次数 0
         </span>
         
@@ -515,13 +588,13 @@
         
 
         
-          <img src="/2019/06/12/Zeppelin源码分析-note的执行过程/1.png">
+          <img src="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-note%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/1.png" class="">
 <p>上图是zeppelin的前后台交互模型，zeppelin采用单独的jvm来启动interpreter进程，该Interpreter进程与zeppelinServer进程之间采用Thrift协议通信，其中RemoteInterpreterProcess是Thrift-Client端，而相应的RemoteInterpreterServer是Thrift-Server端。</p>
 <p>Paragraph的执行分成“从前端UI提交ParagraphJob到其相关的Interpreter的Scheduler”和“Sheduler执行”2个部分，这2个部分是异步执行的。</p>
-<img src="/2019/06/12/Zeppelin源码分析-note的执行过程/2.png">
+<img src="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-note%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/2.png" class="">
 <p>以上是从前台请求执行指定的Note的指定的Paragraph开始，到该Paragraph提交到Scheduler之间的时序图。这个执行逻辑是与语言无关的。任何语言写的脚本（存储在Paragraph之中）都是上述提交执行的过程。</p>
           <div class="read-more">
-            <a href="/2019/06/12/Zeppelin源码分析-note的执行过程/" class="read-more-link">阅读更多</a>
+            <a href="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-note%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -539,7 +612,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/06/12/Zeppelin源码分析-notebook持久化/">Zeppelin源码分析-notebook持久化</a>
+          <a class="post-link" href="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/">Zeppelin源码分析-notebook持久化</a>
         
       </h1>
 
@@ -549,7 +622,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/06/12/Zeppelin源码分析-notebook持久化/" data-title="Zeppelin源码分析-notebook持久化">
+        <span class="post-visits"
+             data-url="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/"
+             data-title="Zeppelin源码分析-notebook持久化">
           阅读次数 0
         </span>
         
@@ -568,7 +643,7 @@
         
 
         
-          <p>Notebook的持久化系统主要的类图如下：<br><img src="/2019/06/12/Zeppelin源码分析-notebook持久化/1.png"></p>
+          <p>Notebook的持久化系统主要的类图如下：<br><img src="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/1.png" class=""></p>
 <p>各类主要的职责如下：</p>
 <ol>
 <li>NotebookRepo是顶层接口，规定了持久化层基本的CRUD接口。</li>
@@ -693,7 +768,7 @@
 <li>ZeppelinHubRepo是为了向zeppelinhub持久化Notebook而设计的，zeppelinhub是一个类似于Github的分享网站，区别在于Github是分享git仓库的，zeppelinhub是分享notebook的。</li>
 </ol>
           <div class="read-more">
-            <a href="/2019/06/12/Zeppelin源码分析-notebook持久化/" class="read-more-link">阅读更多</a>
+            <a href="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -711,7 +786,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/05/29/Zeppelin源码分析——主要的class分析/">Zeppelin源码分析——主要的class分析</a>
+          <a class="post-link" href="/2019/05/29/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E2%80%94%E2%80%94%E4%B8%BB%E8%A6%81%E7%9A%84class%E5%88%86%E6%9E%90/">Zeppelin源码分析——主要的class分析</a>
         
       </h1>
 
@@ -721,7 +796,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/05/29/Zeppelin源码分析——主要的class分析/" data-title="Zeppelin源码分析——主要的class分析">
+        <span class="post-visits"
+             data-url="/2019/05/29/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E2%80%94%E2%80%94%E4%B8%BB%E8%A6%81%E7%9A%84class%E5%88%86%E6%9E%90/"
+             data-title="Zeppelin源码分析——主要的class分析">
           阅读次数 0
         </span>
         
@@ -741,12 +818,12 @@
 
         
           <p>zeppelin的module、package、class众多，如何快速地理清头绪，抓住重点？本文分析zeppelin主要module中重点的类以及它们之间的关系，理清这些类的职责，对于理解zeppelin的运行过程至关重要。<br>经过之前文章的分析，我们已经了解了zeppelin涉及到框架层面的几个module为：zeppelin-server、zeppelin-zengine、zeppelin-interpreter，并且三者之间有如下的依赖关系： </p>
-<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/1.png">
+<img src="/2019/05/29/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E2%80%94%E2%80%94%E4%B8%BB%E8%A6%81%E7%9A%84class%E5%88%86%E6%9E%90/1.png" class="">
 <p>本文要分析的主要的class，也都来自于这三个module。</p>
-<img src="/2019/05/29/Zeppelin源码分析——主要的class分析/2.png">
+<img src="/2019/05/29/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E2%80%94%E2%80%94%E4%B8%BB%E8%A6%81%E7%9A%84class%E5%88%86%E6%9E%90/2.png" class="">
 <p>以上类图中省略了字段和方法，以避免过早引入太多细节，重点关注类与类之间的关系组成。由于篇幅的限制，再加上zeppelin提供的核心价值是与Interpreter相关的多语言repl解释器，笔者就选择从右上角黄色的区域开始，分多篇分析。</p>
           <div class="read-more">
-            <a href="/2019/05/29/Zeppelin源码分析——主要的class分析/" class="read-more-link">阅读更多</a>
+            <a href="/2019/05/29/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E2%80%94%E2%80%94%E4%B8%BB%E8%A6%81%E7%9A%84class%E5%88%86%E6%9E%90/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -764,7 +841,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/">Zeppelin源码分析---目录结构与modules分析</a>
+          <a class="post-link" href="/2019/05/27/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E4%B8%8Emodules%E5%88%86%E6%9E%90/">Zeppelin源码分析---目录结构与modules分析</a>
         
       </h1>
 
@@ -774,7 +851,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/" data-title="Zeppelin源码分析---目录结构与modules分析">
+        <span class="post-visits"
+             data-url="/2019/05/27/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E4%B8%8Emodules%E5%88%86%E6%9E%90/"
+             data-title="Zeppelin源码分析---目录结构与modules分析">
           阅读次数 0
         </span>
         
@@ -800,7 +879,7 @@
 </ol>
 <p>zeppelin本质上是一个web应用程序，它以独立的jvm进程的方式来启动Interpreter（解释器），交互式（repl）执行各种语言的代码片段，并将结果以html代码片段的形式返回给前端UI。</p>
           <div class="read-more">
-            <a href="/2019/05/27/Zeppelin源码分析-目录结构与modules分析/" class="read-more-link">阅读更多</a>
+            <a href="/2019/05/27/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E4%B8%8Emodules%E5%88%86%E6%9E%90/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -818,7 +897,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2019/04/28/Spark-应用程序调优/">Spark 应用程序调优(转)</a>
+          <a class="post-link" href="/2019/04/28/Spark-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E8%B0%83%E4%BC%98/">Spark 应用程序调优(转)</a>
         
       </h1>
 
@@ -828,7 +907,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/04/28/Spark-应用程序调优/" data-title="Spark 应用程序调优(转)">
+        <span class="post-visits"
+             data-url="/2019/04/28/Spark-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E8%B0%83%E4%BC%98/"
+             data-title="Spark 应用程序调优(转)">
           阅读次数 0
         </span>
         
@@ -857,61 +938,7 @@
 </ul>
 <p>一开始我们只能通过大致的估算来确定上述资源的配置，例如一个Spark应用程序处理的数据大小为1T，如果读出来默认是500个partitions（可以通过测试运行，从web中查看的到），那么平均每个partition的大小为1T/500≈2G，默认情况下，考虑中间处理过程中的数据膨胀以及一些额外内存消耗，executor中可用于存放rdd的阈值设定为spar.storage.memoryFraction=0.6，所以存储partition需要的内存为executor-memory*0.6，稳妥一点设置executor-memory大于2G/0.6，如果一个executor不止是处理一个partition，假如num-executors设置为100，那么平均每个executor处理的partition为500/100=5，这时如果需要缓存rdd，那么executor-memory就要设置为大于5*2G/0.6；如果读出来的分区数很少（如100），一个partition很大（1T/100≈10G），使得executor-memory有可能OOM，那么就需要考虑加大分区数（调用repartition(numPartitions)等），增加task数量来减少一个task的数据量。一般来说一个executor处理的partition数最好不要超过5个，否则增加num-executors数，接上面的例子，500个分区，配置num-executors为100，每个executor需要处理5个partition。driver-memory的大小取决于最后的action操作，如果是调用collect，那么driver-memory的大小就取决于结果集rdd的大小，如果是调用count，那么driver-memory的大小只需要满足运行需求就够了，对于需要长时间迭代的Spark应用，driver端需要维护rdd的依赖关系，所以需要设置较大的内存。</p>
           <div class="read-more">
-            <a href="/2019/04/28/Spark-应用程序调优/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2019/04/25/Spark-底层网络模块/">Spark 底层网络模块(转)</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2019-04-25
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2019/04/25/Spark-底层网络模块/" data-title="Spark 底层网络模块(转)">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>对于分布式系统来说，网络是最基本的一环，其设计的好坏直接影响到整个分布式系统的稳定性及可用性。为此，Spark专门独立出基础网络模块spark-network，为上层RPC、Shuffle数据传输、RDD Block同步以及资源文件传输等提供可靠的网络服务。在spark-1.6以前，RPC是单独通过akka实现，数据以及文件传输是通过netty实现，然而akka实质上底层也是采用netty实现，对于一个优雅的工程师来说，不会在系统中同时使用具有重复功能的框架，否则会使得系统越来越重，所以自spark-1.6开始，通过netty封装了一套简洁的类似于akka actor模式的RPC接口，逐步抛弃akka这个大框架。从spark-2.0起，所有的网络功能都是通过netty来实现。</p>
-<h2 id="系统抽象"><a href="#系统抽象" class="headerlink" title="系统抽象"></a>系统抽象</h2><p>在介绍spark网络模块前，我们先温习下netty的基本工作流程。无论是服务器还是客户端都会关联一个channel(socket)，channel上会绑定一个pipeline，pipeline绑定若干个handler，用来专门用来处理和业务有关的东西，handler有DownHandler和UpHandler两种，DownHandler用来处理发包，UpHandler用来处理收包，大致过程如下图所示。</p>
-<img src="/2019/04/25/Spark-底层网络模块/spark-network-netty-overview.png">
-<p>Spark的底层网络实现也是遵循上图所示流程，其总体实现流程如下图所示。客户端发送请求消息，经过Encoder(一种DownHandler)编码，加上包头信息，再通过网络发给服务端，服务端收到消息后，首先经过TransportFrameDecoder(一种UpHandler)处理粘包拆包，得到消息类型和消息体，然后经过Decoder解析消息类型，得到一个个具体的请求消息，最后由TransportChannelHandler处理具体的请求消息，并根据具体的消息类型判断是否返回一个响应。类似地，响应消息传给客户端也是先经过Encoder编码，客户端先通过TransportFrameDecoder、Decoder解包消息，再通过TransportChannelHandler处理具体的响应消息。</p>
-<img src="/2019/04/25/Spark-底层网络模块/spark-network-basic.png">
-<p>整个网络模型非常清晰简单，最核心的当属消息抽象以及如何定义消息传输和处理，即上图中的Message的定义以及编解码传输等，下面详细介绍spark网络模块的消息抽象以及相关handler的定义。</p>
-          <div class="read-more">
-            <a href="/2019/04/25/Spark-底层网络模块/" class="read-more-link">阅读更多</a>
+            <a href="/2019/04/28/Spark-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E8%B0%83%E4%BC%98/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -968,7 +995,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -976,7 +1003,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -1003,12 +1030,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

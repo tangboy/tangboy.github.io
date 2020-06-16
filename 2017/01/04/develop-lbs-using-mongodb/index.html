@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="结合MongoDB开发LBS应用">
+  <meta name="description" content="结合MongoDB开发LBS应用"/>
 
 
 
 
-  <meta name="keywords" content="lbs, mongodb, geohash, mysql, Anthon">
+  <meta name="keywords" content="lbs, mongodb, geohash, mysql, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2017/01/04/develop-lbs-using-mongodb/">
+<link rel="canonical" href="http://code-monkey.top/2017/01/04/develop-lbs-using-mongodb/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> 结合MongoDB开发LBS应用 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> 结合MongoDB开发LBS应用 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/01/04/develop-lbs-using-mongodb/" data-title="结合MongoDB开发LBS应用">
+        <span class="post-visits"
+             data-url="/2017/01/04/develop-lbs-using-mongodb/"
+             data-title="结合MongoDB开发LBS应用">
           阅读次数 0
         </span>
         
@@ -269,7 +271,7 @@
 <p>我们一个个来分析这几种方案</p>
 <h3 id="基于MySQL数据库"><a href="#基于MySQL数据库" class="headerlink" title="基于MySQL数据库"></a>基于MySQL数据库</h3><p>MySQL的使用非常简单。对于大部分已经使用MySQL的网站来说，使用这种方案没有任何迁移和部署成本。<br>而在MySQL中查询“最近的人”也仅需一条SQL即可,<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT id, ( 6371 * acos( cos( radians(37) ) * cos( radians( lat ) ) * cos( radians</span><br><span class="line">( lng ) - radians(-122) ) + sin( radians(37) ) * sin( radians( lat ) ) ) ) AS distance</span><br><span class="line"> FROM places HAVING distance &lt; 25 ORDER BY distance LIMIT 0 , 100;</span><br></pre></td></tr></table></figure></p>
 <p>注：这条SQL查询的是在lat,lng这个坐标附近的目标，并且按距离正序排列，SQL中的distance单位为公里。</p>
-<p>但使用SQL语句进行查询的缺点也显而易见，每条SQL的计算量都会非常大，性能将会是严重的问题。<br>先别放弃，我们尝试对这条SQL做一些优化。<br>可以将圆形区域抽象为正方形，如下图:<br><img src="/2017/01/04/develop-lbs-using-mongodb/lbs_1.jpg"></p>
+<p>但使用SQL语句进行查询的缺点也显而易见，每条SQL的计算量都会非常大，性能将会是严重的问题。<br>先别放弃，我们尝试对这条SQL做一些优化。<br>可以将圆形区域抽象为正方形，如下图:<br><img src="/2017/01/04/develop-lbs-using-mongodb/lbs_1.jpg" class=""></p>
 <p>根据维基百科上的球面计算公式，可以根据圆心坐标计算出正方形四个点的坐标。</p>
 <p>然后，查询这个正方形内的目标点。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM places WHERE ((lat BETWEEN ? AND ?) AND (lng BETWEEN ? AND ?))</span><br></pre></td></tr></table></figure></p>
 <p>这样优化后，虽然数据不完全精确，但性能提升很明显，并且可以通过给lat lng字段做索引的方式进一步加快这条SQL的查询速度。对精度有要求的应用也可以在这个结果上再进行计算，排除那些在方块范围内但不在原型范围内的数据，已达到对精度的要求。</p>
@@ -285,8 +287,7 @@
 <p>这条语句的处理逻辑是先通过两个点产生一个LineString的类型的数据，然后调用GLength得到这个LineString的实际长度。<br>这么做虽然有些复杂，貌似也解决了距离计算的问题，但读者需要注意的是：这种方法计算的是欧式空间的距离，简单来说，它给出的结果是两个点在三维空间中的直线距离，不是飞机在地球上飞的那条轨迹，而是笔直穿过地球的那条直线。<br>所以如果你的地理位置信息是用经纬度进行存储的，你就无法简单的直接使用这种方式进行距离计算。</p>
 <h2 id="使用MongoDB存储地理位置信息"><a href="#使用MongoDB存储地理位置信息" class="headerlink" title="使用MongoDB存储地理位置信息"></a>使用MongoDB存储地理位置信息</h2><p>MongoDB原生支持地理位置索引，可以直接用于位置距离计算和查询。</p>
 <p>另外，它也是如今最流行的NoSQL数据库之一，除了能够很好地支持地理位置计算之外，还拥有诸如面向集合存储、模式自由、高性能、支持复杂查询、支持完全索引等等特性。</p>
-<p>对于我们的需求，在MongoDB只需一个命令即可得到所需要的结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.runCommand( &#123; geoNear: &quot;places&quot;, near: [ 121.4905, 31.2646 ], num:100 &#125;)</span><br></pre></td></tr></table></figure></p>
-<p>查询结果默认将会由近到远排序，而且查询结果也包含目标点对象、距离目标点的距离等信息。</p>
+<p>对于我们的需求，在MongoDB只需一个命令即可得到所需要的结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.runCommand( &#123; geoNear: &quot;places&quot;, near: [ 121.4905, 31.2646 ], num:100 &#125;)</span><br></pre></td></tr></table></figure><br>查询结果默认将会由近到远排序，而且查询结果也包含目标点对象、距离目标点的距离等信息。</p>
 <p>由于geoNear是MongoDB原生支持的查询函数，所以性能上也做到了高度的优化，完全可以应付生产环境的压力。</p>
 <h2 id="方案总结"><a href="#方案总结" class="headerlink" title="方案总结"></a>方案总结</h2><p>基于MongoDB做附近查询是很方便的一件事情。</p>
 <p>MongoDB在地理位置信息方面的表现远远不限于此，它还支持更多更加方便的功能，如范围查询、距离自动计算等。</p>
@@ -398,7 +399,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -406,7 +407,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -433,12 +434,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="Flink 原理与实现：如何处理反压问题">
+  <meta name="description" content="Flink 原理与实现：如何处理反压问题"/>
 
 
 
 
-  <meta name="keywords" content="Flink, 反压, Anthon">
+  <meta name="keywords" content="Flink, 反压, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2020/02/21/Flink-原理与实现：如何处理反压问题/">
+<link rel="canonical" href="http://code-monkey.top/2020/02/21/Flink-原理与实现：如何处理反压问题/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Flink 原理与实现：如何处理反压问题 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Flink 原理与实现：如何处理反压问题 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/02/21/Flink-原理与实现：如何处理反压问题/" data-title="Flink 原理与实现：如何处理反压问题">
+        <span class="post-visits"
+             data-url="/2020/02/21/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%8F%8D%E5%8E%8B%E9%97%AE%E9%A2%98/"
+             data-title="Flink 原理与实现：如何处理反压问题">
           阅读次数 0
         </span>
         
@@ -254,7 +256,7 @@
 <p>在 Flink 中，这些分布式阻塞队列就是这些逻辑流，而队列容量是通过缓冲池（LocalBufferPool）来实现的。每个被生产和被消费的流都会被分配一个缓冲池。缓冲池管理着一组缓冲(Buffer)，缓冲在被消费后可以被回收循环利用。这很好理解：你从池子中拿走一个缓冲，填上数据，在数据消费完之后，又把缓冲还给池子，之后你可以再次使用它。</p>
 <p>在解释 Flink 的反压原理之前，我们必须先对 Flink 中网络传输的内存管理有个了解。</p>
 <h3 id="网络传输中的内存管理"><a href="#网络传输中的内存管理" class="headerlink" title="网络传输中的内存管理"></a>网络传输中的内存管理</h3><p>如下图所示展示了 Flink 在网络传输场景下的内存管理。网络上传输的数据会写到 Task 的 InputGate（IG） 中，经过 Task 的处理后，再由 Task 写到 ResultPartition（RS） 中。每个 Task 都包括了输入和输入，输入和输出的数据存在 Buffer 中（都是字节数据）。Buffer 是 MemorySegment 的包装类。</p>
-<img src="/2020/02/21/Flink-原理与实现：如何处理反压问题/1.png">
+<img src="/2020/02/21/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%8F%8D%E5%8E%8B%E9%97%AE%E9%A2%98/1.png" class="">
 <ol>
 <li>TaskManager（TM）在启动时，会先初始化NetworkEnvironment对象，TM 中所有与网络相关的东西都由该类来管理（如 Netty 连接），其中就包括NetworkBufferPool。根据配置，Flink 会在 NetworkBufferPool 中生成一定数量（默认2048）的内存块 MemorySegment，内存块的总数量就代表了网络传输中所有可用的内存。NetworkEnvironment 和 NetworkBufferPool 是 Task 之间共享的，每个 TM 只会实例化一个。</li>
 <li>Task 线程启动时，会向 NetworkEnvironment 注册，NetworkEnvironment 会为 Task 的 InputGate（IG）和 ResultPartition（RP） 分别创建一个 LocalBufferPool（缓冲池）并设置可申请的 MemorySegment（内存块）数量。IG 对应的缓冲池初始的内存块数量与 IG 中 InputChannel 数量一致，RP 对应的缓冲池初始的内存块数量与 RP 中的 ResultSubpartition 数量一致。不过，每当创建或销毁缓冲池时，NetworkBufferPool 会计算剩余空闲的内存块数量，并平均分配给已创建的缓冲池。注意，这个过程只是指定了缓冲池所能使用的内存块数量，并没有真正分配内存块，只有当需要时才分配。为什么要动态地为缓冲池扩容呢？因为内存越多，意味着系统可以更轻松地应对瞬时压力（如GC），不会频繁地进入反压状态，所以我们要利用起那部分闲置的内存块。</li>
@@ -262,7 +264,7 @@
 <li>当一个内存块被消费完成之后（在输入端是指内存块中的字节被反序列化成对象了，在输出端是指内存块中的字节写入到 Netty Channel 了），会调用 Buffer.recycle() 方法，会将内存块还给 LocalBufferPool （上图中的⑤）。如果LocalBufferPool中当前申请的数量超过了池子容量（由于上文提到的动态容量，由于新注册的 Task 导致该池子容量变小），则LocalBufferPool会将该内存块回收给 NetworkBufferPool（上图中的⑥）。如果没超过池子容量，则会继续留在池子中，减少反复申请的开销。</li>
 </ol>
 <h3 id="反压的过程"><a href="#反压的过程" class="headerlink" title="反压的过程"></a>反压的过程</h3><p>下面这张图简单展示了两个 Task 之间的数据传输以及 Flink 如何感知到反压的：</p>
-<img src="/2020/02/21/Flink-原理与实现：如何处理反压问题/2.png">
+<img src="/2020/02/21/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%8F%8D%E5%8E%8B%E9%97%AE%E9%A2%98/2.png" class="">
 <ol>
 <li>记录“A”进入了 Flink 并且被 Task 1 处理。（这里省略了 Netty 接收、反序列化等过程）</li>
 <li>记录被序列化到 buffer 中。</li>
@@ -281,12 +283,12 @@
 <p>当输出缓冲中的字节数超过了高水位值, 则 Channel.isWritable() 会返回false。当输出缓存中的字节数又掉到了低水位值以下, 则 Channel.isWritable() 会重新返回true。Flink 中发送数据的核心代码在 PartitionRequestQueue 中，该类是 server channel pipeline 的最后一层。发送数据关键代码如下所示。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeAndFlushNextMessageIfPossible</span><span class="params">(<span class="keyword">final</span> Channel channel)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (fatalError) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Buffer buffer = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// channel.isWritable() 配合 WRITE_BUFFER_LOW_WATER_MARK </span></span><br><span class="line">    <span class="comment">// 和 WRITE_BUFFER_HIGH_WATER_MARK 实现发送端的流量控制</span></span><br><span class="line">    <span class="keyword">if</span> (channel.isWritable()) &#123;</span><br><span class="line">      <span class="comment">// 注意: 一个while循环也就最多只发送一个BufferResponse, 连续发送BufferResponse是通过writeListener回调实现的</span></span><br><span class="line">      <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (currentPartitionQueue == <span class="keyword">null</span> &amp;&amp; (currentPartitionQueue = queue.poll()) == <span class="keyword">null</span>) &#123;</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        buffer = currentPartitionQueue.getNextBuffer();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (buffer == <span class="keyword">null</span>) &#123;</span><br><span class="line">          <span class="comment">// 跳过这部分代码</span></span><br><span class="line">          ...</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">// 构造一个response返回给客户端</span></span><br><span class="line">          BufferResponse resp = <span class="keyword">new</span> BufferResponse(buffer, currentPartitionQueue.getSequenceNumber(), currentPartitionQueue.getReceiverId());</span><br><span class="line"></span><br><span class="line">          <span class="keyword">if</span> (!buffer.isBuffer() &amp;&amp;</span><br><span class="line">              EventSerializer.fromBuffer(buffer, getClass().getClassLoader()).getClass() == EndOfPartitionEvent.class) &#123;</span><br><span class="line">            <span class="comment">// 跳过这部分代码。batch 模式中 subpartition 的数据准备就绪，通知下游消费者。</span></span><br><span class="line">            ...</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">          <span class="comment">// 将该response发到netty channel, 当写成功后, </span></span><br><span class="line">          <span class="comment">// 通过注册的writeListener又会回调进来, 从而不断地消费 queue 中的请求</span></span><br><span class="line">          channel.writeAndFlush(resp).addListener(writeListener);</span><br><span class="line"></span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">    <span class="keyword">if</span> (buffer != <span class="keyword">null</span>) &#123;</span><br><span class="line">      buffer.recycle();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IOException(t.getMessage(), t);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当水位值降下来后（channel 再次可写），会重新触发发送函数</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelWritabilityChanged</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">  writeAndFlushNextMessageIfPossible(ctx.channel());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="反压实验"><a href="#反压实验" class="headerlink" title="反压实验"></a>反压实验</h3><p>另外，<a href="http://data-artisans.com/how-flink-handles-backpressure/" target="_blank" rel="noopener">官方博客</a>中为了展示反压的效果，给出了一个简单的实验。下面这张图显示了：随着时间的改变，生产者（黄色线）和消费者（绿色线）每5秒的平均吞吐与最大吞吐（在单一JVM中每秒达到8百万条记录）的百分比。我们通过衡量task每5秒钟处理的记录数来衡量平均吞吐。该实验运行在单 JVM 中，不过使用了完整的 Flink 功能栈。</p>
-<img src="/2020/02/21/Flink-原理与实现：如何处理反压问题/3.png">
+<img src="/2020/02/21/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%8F%8D%E5%8E%8B%E9%97%AE%E9%A2%98/3.png" class="">
 <p>首先，我们运行生产task到它最大生产速度的60%（我们通过Thread.sleep()来模拟降速）。消费者以同样的速度处理数据。然后，我们将消费task的速度降至其最高速度的30%。你就会看到背压问题产生了，正如我们所见，生产者的速度也自然降至其最高速度的30%。接着，停止消费task的人为降速，之后生产者和消费者task都达到了其最大的吞吐。接下来，我们再次将消费者的速度降至30%，pipeline给出了立即响应：生产者的速度也被自动降至30%。最后，我们再次停止限速，两个task也再次恢复100%的速度。总而言之，我们可以看到：生产者和消费者在 pipeline 中的处理都在跟随彼此的吞吐而进行适当的调整，这就是我们希望看到的反压的效果。</p>
 <h2 id="反压监控"><a href="#反压监控" class="headerlink" title="反压监控"></a>反压监控</h2><p>在 Storm/JStorm 中，只要监控到队列满了，就可以记录下拓扑进入反压了。但是 Flink 的反压太过于天然了，导致我们无法简单地通过监控队列来监控反压状态。Flink 在这里使用了一个 trick 来实现对反压的监控。如果一个 Task 因为反压而降速了，那么它会卡在向 LocalBufferPool 申请内存块上。那么这时候，该 Task 的 stack trace 就会长下面这样：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Object.wait(Native Method)</span><br><span class="line">o.a.f.[...].LocalBufferPool.requestBuffer(LocalBufferPool.java:<span class="number">163</span>)</span><br><span class="line">o.a.f.[...].LocalBufferPool.requestBufferBlocking(LocalBufferPool.java:<span class="number">133</span>) &lt;--- BLOCKING request</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
 <p>那么事情就简单了。通过不断地采样每个 task 的 stack trace 就可以实现反压监控。</p>
-<img src="/2020/02/21/Flink-原理与实现：如何处理反压问题/4.png">
+<img src="/2020/02/21/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%8F%8D%E5%8E%8B%E9%97%AE%E9%A2%98/4.png" class="">
 <p>Flink 的实现中，只有当 Web 页面切换到某个 Job 的 Backpressure 页面，才会对这个 Job 触发反压检测，因为反压检测还是挺昂贵的。JobManager 会通过 Akka 给每个 TaskManager 发送TriggerStackTraceSample消息。默认情况下，TaskManager 会触发100次 stack trace 采样，每次间隔 50ms（也就是说一次反压检测至少要等待5秒钟）。并将这 100 次采样的结果返回给 JobManager，由 JobManager 来计算反压比率（反压出现的次数/采样的次数），最终展现在 UI 上。UI 刷新的默认周期是一分钟，目的是不对 TaskManager 造成太大的负担。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Flink 不需要一种特殊的机制来处理反压，因为 Flink 中的数据传输相当于已经提供了应对反压的机制。因此，Flink 所能获得的最大吞吐量由其 pipeline 中最慢的组件决定。相对于 Storm/JStorm 的实现，Flink 的实现更为简洁优雅，源码中也看不见与反压相关的代码，无需 Zookeeper/TopologyMaster 的参与也降低了系统的负载，也利于对反压更迅速的响应。</p>
 
@@ -304,7 +306,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2020/02/21/Flink-原理与实现：如何处理反压问题/">http://code-monkey.top/2020/02/21/Flink-原理与实现：如何处理反压问题/</a>
+      <a href="http://code-monkey.top/2020/02/21/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%8F%8D%E5%8E%8B%E9%97%AE%E9%A2%98/">http://code-monkey.top/2020/02/21/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%8F%8D%E5%8E%8B%E9%97%AE%E9%A2%98/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -326,7 +328,7 @@
             
               <a href="/tags/Flink/">Flink</a>
             
-              <a href="/tags/反压/">反压</a>
+              <a href="/tags/%E5%8F%8D%E5%8E%8B/">反压</a>
             
           </div>
         
@@ -334,14 +336,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2020/02/24/Flink-原理与实现：内存管理/">
+      <a class="prev" href="/2020/02/24/Flink-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Flink 原理与实现：内存管理</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2020/02/19/Flink-Table-SQL-时态表Temporal-Table/">
+      <a class="next" href="/2020/02/19/Flink-Table-SQL-%E6%97%B6%E6%80%81%E8%A1%A8Temporal-Table/">
         <span class="next-text nav-default">Flink Table & SQL 时态表Temporal Table</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -384,7 +386,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -392,7 +394,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -419,12 +421,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

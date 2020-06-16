@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="Spark CommitCoordinator 保证数据一致性(转)">
+  <meta name="description" content="Spark CommitCoordinator 保证数据一致性(转)"/>
 
 
 
 
-  <meta name="keywords" content="spark, 大数据, commit coordinator, 一致性, Anthon">
+  <meta name="keywords" content="大数据, spark, commit coordinator, 一致性, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">
+<link rel="canonical" href="http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-保证数据一致性/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Spark CommitCoordinator 保证数据一致性(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Spark CommitCoordinator 保证数据一致性(转) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/" data-title="Spark CommitCoordinator 保证数据一致性(转)">
+        <span class="post-visits"
+             data-url="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/"
+             data-title="Spark CommitCoordinator 保证数据一致性(转)">
           阅读次数 0
         </span>
         
@@ -266,48 +268,48 @@
 </ul>
 <a id="more"></a>
 <h3 id="检查-Job-输出目录"><a href="#检查-Job-输出目录" class="headerlink" title="检查 Job 输出目录"></a>检查 Job 输出目录</h3><p>在启动 Job 之前，Driver 首先通过 FileOutputFormat 的 checkOutputSpecs 方法检查输出目录是否已经存在。若已存在，则直接抛出 FileAlreadyExistsException</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/check_output_path.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/check_output_path.png" class="">
 <h3 id="Driver执行setupJob"><a href="#Driver执行setupJob" class="headerlink" title="Driver执行setupJob"></a>Driver执行setupJob</h3><p>Job 开始前，由 Driver（本例使用 local mode，因此由 main 线程执行）调用 FileOuputCommitter.setupJob 创建 Application Attempt 目录，即 <code>output.dir.root/temporary/{appAttempt}</code></p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/setup_job.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/setup_job.png" class="">
 <h3 id="Task执行setupTask"><a href="#Task执行setupTask" class="headerlink" title="Task执行setupTask"></a>Task执行setupTask</h3><p>由各 Task 执行 FileOutputCommitter.setupTask 方法（本例使用 local mode，因此由 task 线程执行）。该方法不做任何事情，因为 Task 临时目录由 Task 按需创建。</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/setup_task.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/setup_task.png" class="">
 <h3 id="按需创建-Task-目录"><a href="#按需创建-Task-目录" class="headerlink" title="按需创建 Task 目录"></a>按需创建 Task 目录</h3><p>本例中，Task 写数据需要通过 TextOutputFormat 的 getRecordWriter 方法创建 LineRecordWriter。而创建前需要通过 FileOutputFormat.getTaskOutputPath设置 Task 输出路径，即 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}/${fileName}</code>。该 Task Attempt 所有数据均写在该目录下的文件内</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/create_task_output_file.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/create_task_output_file.png" class="">
 <h3 id="检查是否需要-commit"><a href="#检查是否需要-commit" class="headerlink" title="检查是否需要 commit"></a>检查是否需要 commit</h3><p>Task 执行数据写完后，通过 FileOutputCommitter.needsTaskCommit 方法检查是否需要 commit 它写在 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 下的数据。</p>
 <p>检查依据是 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 目录是否存在</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/need_commit_task.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/need_commit_task.png" class="">
 <p>如果需要 commit，并且开启了 Output commit coordination，还需要通过 RPC 由 Driver 侧的 OutputCommitCoordinator 判断该 Task Attempt 是否可以 commit</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/need_commit_task_detail.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/need_commit_task_detail.png" class="">
 <p>之所以需要由 Driver 侧的 CommitCoordinator 判断是否可以 commit，是因为可能由于 speculation 或者其它原因（如之前的 TaskAttemp 未被 Kill 成功）存在同一 Task 的多个 Attemp 同时写数据且都申请 commit 的情况。</p>
 <h3 id="CommitCoordinator"><a href="#CommitCoordinator" class="headerlink" title="CommitCoordinator"></a>CommitCoordinator</h3><p>当申请 commitTask 的 TaskAttempt 为失败的 Attempt，则直接拒绝</p>
 <p>若该 TaskAttempt 成功，并且 CommitCoordinator 未允许过该 Task 的其它 Attempt 的 commit 请求，则允许该 TaskAttempt 的 commit 请求</p>
 <p>若 CommitCoordinator 之前已允许过该 TaskAttempt 的 commit 请求，则继续同意该 TaskAttempt 的 commit 请求，即 CommitCoordinator 对该申请的处理是幂等的。</p>
 <p>若该 TaskAttempt 成功，且 CommitCoordinator 之前已允许该 Task 的其它 Attempt 的 commit 请求，则直接拒绝当前 TaskAttempt 的 commit 请求</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/coordinator_handle_request.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/coordinator_handle_request.png" class="">
 <p>OutputCommitCoordinator 为了实现上述功能，为每个 ActiveStage 维护一个如下 StageState</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">StageState</span>(<span class="params">numPartitions: <span class="type">Int</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">val</span> authorizedCommitters = <span class="type">Array</span>.fill[<span class="type">TaskAttemptNumber</span>](numPartitions)(<span class="type">NO_AUTHORIZED_COMMITTER</span>)</span><br><span class="line">  <span class="keyword">val</span> failures = mutable.<span class="type">Map</span>[<span class="type">PartitionId</span>, mutable.<span class="type">Set</span>[<span class="type">TaskAttemptNumber</span>]]()</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <p>该数据结构中，保存了每个 Task 被允许 commit 的 TaskAttempt。默认值均为 NO_AUTHORIZED_COMMITTER</p>
 <p>同时，保存了每个 Task 的所有失败的 Attempt</p>
 <h3 id="commitTask"><a href="#commitTask" class="headerlink" title="commitTask"></a>commitTask</h3><p>当 TaskAttempt 被允许 commit 后，Task (本例由于使用 local model，因此由 task 线程执行)会通过如下方式 commitTask。</p>
 <p>当 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 1 (默认值)时，Task 将 taskAttemptPath 即 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 重命令为 committedTaskPath 即 <code>${output.dir.root}/_temporary/${appAttempt}/${taskAttempt}</code></p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/commit_task_v1.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/commit_task_v1.png" class="">
 <p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 2，直接将taskAttemptPath 即 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code> 内的所有文件移动到 outputPath 即 <code>${output.dir.root}/</code></p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/commit_task_v2.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/commit_task_v2.png" class="">
 <h3 id="commitJob"><a href="#commitJob" class="headerlink" title="commitJob"></a>commitJob</h3><p>当所有 Task 都执行成功后，由 Driver （本例由于使用 local model，故由 main 线程执行）执行 <code>FileOutputCommitter.commitJob</code></p>
 <p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 1，则由 Driver 单线程遍历所有 committedTaskPath 即 <code>${output.dir.root}/_temporary/${appAttempt}/${taskAttempt}</code>，并将其下所有文件移动到 finalOutput 即 <code>${output.dir.root}</code> 下</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/commit_job_v1.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/commit_job_v1.png" class="">
 <p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 2，则无须移动任何文件。因为所有 Task 的输出文件已在 commitTask 内被移动到 finalOutput 即 <code>${output.dir.root}</code> 内</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/commit_job_v2.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/commit_job_v2.png" class="">
 <p>所有 commit 过的 Task 输出文件移动到 finalOutput 即 <code>${output.dir.root}</code> 后，Driver 通过 cleanupJob 删除 <code>${output.dir.root}/_temporary/</code> 下所有内容</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/cleanup_job.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/cleanup_job.png" class="">
 <h3 id="recoverTask"><a href="#recoverTask" class="headerlink" title="recoverTask"></a>recoverTask</h3><p>上文所述的 commitTask 与 commitJob 机制，保证了一次 Application Attemp 中不同 Task 的不同 Attemp 在 commit 时的数据一致性</p>
 <p>而当整个 Application retry 时，在之前的 Application Attemp 中已经成功 commit 的 Task 无须重新执行，其数据可直接恢复</p>
 <p>恢复 Task 时，先获取上一次的 Application Attempt，以及对应的 committedTaskPath，即 <code>${output.dir.root}/_temporary/${preAppAttempt}/${taskAttempt}</code></p>
 <p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 1，并且 preCommittedTaskPath 存在（说明在之前的 Application Attempt 中该 Task 已被 commit 过），则直接将 preCommittedTaskPath 重命名为 committedTaskPath</p>
 <p>若 <code>mapreduce.fileoutputcommitter.algorithm.version</code> 的值为 2，无须恢复任何数据，因为在之前 Application Attempt 中 commit 过的 Task 的数据已经在 commitTask 中被移动到 ${output.dir.root} 中</p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/recover_task.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/recover_task.png" class="">
 <h3 id="abortTask"><a href="#abortTask" class="headerlink" title="abortTask"></a>abortTask</h3><p>中止 Task 时，由 Task 调用 <code>FileOutputCommitter.abortTask</code> 方法删除 <code>${output.dir.root}/_temporary/${appAttempt}/_temporary/${taskAttempt}</code></p>
-<img src="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/abort_task.png">
+<img src="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/abort_task.png" class="">
 <h3 id="abortJob"><a href="#abortJob" class="headerlink" title="abortJob"></a>abortJob</h3><p>中止 Job 由 Driver 调用 <code>FileOutputCommitter.abortJob</code> 方法完成。该方法通过 <code>FileOutputCommitter.cleanupJob</code> 方法删除 <code>${output.dir.root}/_temporary</code></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="V1-vs-V2-committer-过程"><a href="#V1-vs-V2-committer-过程" class="headerlink" title="V1 vs. V2 committer 过程"></a>V1 vs. V2 committer 过程</h3><p>V1 committer（即 mapreduce.fileoutputcommitter.algorithm.version 的值为 1），commit 过程如下</p>
 <ul>
@@ -348,7 +350,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-保证数据一致性/</a>
+      <a href="http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/">http://code-monkey.top/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -368,13 +370,13 @@
         
           <div class="post-tags">
             
-              <a href="/tags/spark/">spark</a>
+              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
             
-              <a href="/tags/大数据/">大数据</a>
+              <a href="/tags/spark/">spark</a>
             
               <a href="/tags/commit-coordinator/">commit coordinator</a>
             
-              <a href="/tags/一致性/">一致性</a>
+              <a href="/tags/%E4%B8%80%E8%87%B4%E6%80%A7/">一致性</a>
             
           </div>
         
@@ -382,14 +384,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">
+      <a class="prev" href="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Spark SQL / Catalyst 内部原理 与 RBO(转)</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2018/12/10/Spark性能优化之道——解决Spark数据倾斜/">
+      <a class="next" href="/2018/12/10/Spark%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E9%81%93%E2%80%94%E2%80%94%E8%A7%A3%E5%86%B3Spark%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C/">
         <span class="next-text nav-default">Spark性能优化之道——解决Spark数据倾斜</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -432,7 +434,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -440,7 +442,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -467,12 +469,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

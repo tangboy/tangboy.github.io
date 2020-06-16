@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="Spark SQL / Catalyst 内部原理 与 RBO(转)">
+  <meta name="description" content="Spark SQL / Catalyst 内部原理 与 RBO(转)"/>
 
 
 
 
-  <meta name="keywords" content="spark, 分布式, big data, sql, catalyst, RBO, Anthon">
+  <meta name="keywords" content="分布式, spark, big data, sql, catalyst, RBO, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">
+<link rel="canonical" href="http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Spark SQL / Catalyst 内部原理 与 RBO(转) - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Spark SQL / Catalyst 内部原理 与 RBO(转) - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/" data-title="Spark SQL / Catalyst 内部原理 与 RBO(转)">
+        <span class="post-visits"
+             data-url="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/"
+             data-title="Spark SQL / Catalyst 内部原理 与 RBO(转)">
           阅读次数 0
         </span>
         
@@ -245,7 +247,7 @@
     <div class="post-content">
       
         <h2 id="Spark-SQL-架构"><a href="#Spark-SQL-架构" class="headerlink" title="Spark SQL 架构"></a>Spark SQL 架构</h2><p>Spark SQL 的整体架构如下图所示</p>
-<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql.png">
+<img src="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/spark_sql.png" class="">
 <p>从上图可见，无论是直接使用 SQL 语句还是使用 DataFrame，都会经过如下步骤转换成 DAG 对 RDD 的操作</p>
 <ul>
 <li>Parser 解析 SQL，生成 Unresolved Logical Plan</li>
@@ -269,7 +271,7 @@
 <p>对其进行关联查询如下</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">sum</span>(v)</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">  <span class="keyword">SELECT</span> score.id,</span><br><span class="line">    <span class="number">100</span> + <span class="number">80</span> + score.math_score + score.english_score <span class="keyword">AS</span> v</span><br><span class="line">  <span class="keyword">FROM</span> people</span><br><span class="line">  <span class="keyword">JOIN</span> score</span><br><span class="line">  <span class="keyword">ON</span> people.id = score.id</span><br><span class="line">  <span class="keyword">AND</span> people.age &gt; <span class="number">10</span></span><br><span class="line">) tmp</span><br></pre></td></tr></table></figure>
 <p>生成的 UnresolvedPlan 如下图所示。</p>
-<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_parser.png">
+<img src="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/spark_sql_parser.png" class="">
 <p>从上图可见</p>
 <ul>
 <li>查询涉及的两张表，被解析成了两个 UnresolvedRelation，也即只知道这们是两张表，却并不知道它们是 EXTERNAL TABLE 还是 MANAGED TABLE，也不知道它们的数据存在哪儿，更不知道它们的表结构如何</li>
@@ -291,7 +293,7 @@
 <p>经 Analyzer 分析后得到的 Resolved Logical Plan 如下所示</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">== Analyzed Logical Plan ==</span><br><span class="line">sum(v): bigint</span><br><span class="line">Aggregate [sum(cast(v<span class="comment">#493 as bigint)) AS sum(v)#504L]</span></span><br><span class="line">+- SubqueryAlias tmp</span><br><span class="line">   +- Project [id<span class="comment">#500, (((100 + 80) + math_score#501) + english_score#502) AS v#493]</span></span><br><span class="line">      +- Filter ((id<span class="comment">#496 = id#500) &amp;&amp; (age#497 &gt; 10))</span></span><br><span class="line">         +- Join Inner</span><br><span class="line">            :- SubqueryAlias people</span><br><span class="line">            :  +- HiveTableRelation `jason`.`people`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [id<span class="comment">#496, age#497, name#498]</span></span><br><span class="line">            +- SubqueryAlias score</span><br><span class="line">               +- HiveTableRelation `jason`.`score`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [id<span class="comment">#500, math_score#501, english_score#502]</span></span><br></pre></td></tr></table></figure>
 <p>Analyzer 分析前后的 LogicalPlan 对比如下</p>
-<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_analyzer.png">
+<img src="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/spark_sql_analyzer.png" class="">
 <p>由上图可见，分析后，每张表对应的字段集，字段类型，数据存储位置都已确定。Project 与 Filter 操作的字段类型以及在表中的位置也已确定。</p>
 <p>有了这些信息，已经可以直接将该 LogicalPlan 转换为 Physical Plan 进行执行。</p>
 <p>但是由于不同用户提交的 SQL 质量不同，直接执行会造成不同用户提交的语义相同的不同 SQL 执行效率差距甚远。换句话说，如果要保证较高的执行效率，用户需要做大量的 SQL 优化，使用体验大大降低。</p>
@@ -305,19 +307,19 @@
 </ul>
 <p><strong>PushdownPredicate</strong><br><code>PushdownPredicate</code> 是最常见的用于减少参与计算的数据量的方法。</p>
 <p>前文中直接对两表进行 Join 操作，然后再 进行 Filter 操作。引入 PushdownPredicate 后，可先对两表进行 Filter 再进行 Join，如下图所示。</p>
-<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_predicate_pushdown.png">
+<img src="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/spark_sql_predicate_pushdown.png" class="">
 <p>当 Filter 可过滤掉大部分数据时，参与 Join 的数据量大大减少，从而使得 Join 操作速度大大提高。</p>
 <p>这里需要说明的是，此处的优化是 LogicalPlan 的优化，从逻辑上保证了将 Filter 下推后由于参与 Join 的数据量变少而提高了性能。另一方面，在物理层面，Filter 下推后，对于支持 Filter 下推的 Storage，并不需要将表的全量数据扫描出来再过滤，而是直接只扫描符合 Filter 条件的数据，从而在物理层面极大减少了扫描表的开销，提高了执行速度。</p>
 <p><strong>ConstantFolding</strong><br>本文的 SQL 查询中，Project 部分包含了 100 + 800 + match_score + english_score 。如果不进行优化，那如果有一亿条记录，就会计算一亿次 100 + 80，非常浪费资源。因此可通过 ConstantFolding 将这些常量合并，从而减少不必要的计算，提高执行速度。</p>
-<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_constant_folding.png">
+<img src="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/spark_sql_constant_folding.png" class="">
 <p><strong>ColumnPruning</strong><br>在上图中，Filter 与 Join 操作会保留两边所有字段，然后在 Project 操作中筛选出需要的特定列。如果能将 Project 下推，在扫描表时就只筛选出满足后续操作的最小字段集，则能大大减少 Filter 与 Project 操作的中间结果集数据量，从而极大提高执行速度。</p>
-<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_column_pruning.png">
+<img src="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/spark_sql_column_pruning.png" class="">
 <p>这里需要说明的是，此处的优化是逻辑上的优化。在物理上，Project 下推后，对于列式存储，如 Parquet 和 ORC，可在扫描表时就只扫描需要的列而跳过不需要的列，进一步减少了扫描开销，提高了执行速度。</p>
 <p>经过如上优化后的 LogicalPlan 如下</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">== Optimized Logical Plan ==</span><br><span class="line">Aggregate [sum(cast(v<span class="comment">#493 as bigint)) AS sum(v)#504L]</span></span><br><span class="line">+- Project [((180 + math_score<span class="comment">#501) + english_score#502) AS v#493]</span></span><br><span class="line">   +- Join Inner, (id<span class="comment">#496 = id#500)</span></span><br><span class="line">      :- Project [id<span class="comment">#496]</span></span><br><span class="line">      :  +- Filter ((isnotnull(age<span class="comment">#497) &amp;&amp; (age#497 &gt; 10)) &amp;&amp; isnotnull(id#496))</span></span><br><span class="line">      :     +- HiveTableRelation `jason`.`people`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [id<span class="comment">#496, age#497, name#498]</span></span><br><span class="line">      +- Filter isnotnull(id<span class="comment">#500)</span></span><br><span class="line">         +- HiveTableRelation `jason`.`score`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [id<span class="comment">#500, math_score#501, english_score#502]</span></span><br></pre></td></tr></table></figure>
 <h2 id="SparkPlanner"><a href="#SparkPlanner" class="headerlink" title="SparkPlanner"></a>SparkPlanner</h2><p>得到优化后的 LogicalPlan 后，SparkPlanner 将其转化为 SparkPlan 即物理计划。</p>
 <p>本例中由于 score 表数据量较小，Spark 使用了 BroadcastJoin。因此 score 表经过 Filter 后直接使用 BroadcastExchangeExec 将数据广播出去，然后结合广播数据对 people 表使用 BroadcastHashJoinExec 进行 Join。再经过 Project 后使用 HashAggregateExec 进行分组聚合。</p>
-<img src="/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/spark_sql_physical_plan.png">
+<img src="/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/spark_sql_physical_plan.png" class="">
 <p>至此，一条 SQL 从提交到解析、分析、优化以及执行的完整过程就介绍完毕。</p>
 <p>本文介绍的 Optimizer 属于 RBO，实现简单有效。它属于 LogicalPlan 的优化，所有优化均基于 LogicalPlan 本身的特点，未考虑数据本身的特点，也未考虑算子本身的代价。下文将介绍 CBO，它充分考虑了数据本身的特点（如大小、分布）以及操作算子的特点（中间结果集的分布及大小）及代价，从而更好的选择执行代价最小的物理执行计划，即 SparkPlan。</p>
 
@@ -335,7 +337,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/">http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-内部原理-与-RBO/</a>
+      <a href="http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/">http://code-monkey.top/2018/12/13/Spark-SQL-Catalyst-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E4%B8%8E-RBO/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -355,9 +357,9 @@
         
           <div class="post-tags">
             
-              <a href="/tags/spark/">spark</a>
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
             
-              <a href="/tags/分布式/">分布式</a>
+              <a href="/tags/spark/">spark</a>
             
               <a href="/tags/big-data/">big data</a>
             
@@ -373,14 +375,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2018/12/13/Spark-SQL-性能优化再进一步-CBO-基于代价的优化/">
+      <a class="prev" href="/2018/12/13/Spark-SQL-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%86%8D%E8%BF%9B%E4%B8%80%E6%AD%A5-CBO-%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E7%9A%84%E4%BC%98%E5%8C%96/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Spark SQL 性能优化再进一步 CBO 基于代价的优化(转)</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2018/12/11/Spark-CommitCoordinator-保证数据一致性/">
+      <a class="next" href="/2018/12/11/Spark-CommitCoordinator-%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/">
         <span class="next-text nav-default">Spark CommitCoordinator 保证数据一致性(转)</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -423,7 +425,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -431,7 +433,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -458,12 +460,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

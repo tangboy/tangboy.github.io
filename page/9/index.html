@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="机器学习，编程，玩">
+  <meta name="description" content="机器学习，编程，玩"/>
 
 
 
@@ -36,24 +36,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/page/9/">
+<link rel="canonical" href="http://code-monkey.top/page/9/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -96,8 +96,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -216,6 +216,63 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/07/09/Learn-Java-Collection/">Java 集合学习指南</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-07-09
+        </span>
+        
+        
+        <span class="post-visits"
+             data-url="/2017/07/09/Learn-Java-Collection/"
+             data-title="Java 集合学习指南">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="HashMap的实现原理"><a href="#HashMap的实现原理" class="headerlink" title="HashMap的实现原理"></a>HashMap的实现原理</h1><h2 id="HashMap概述"><a href="#HashMap概述" class="headerlink" title="HashMap概述"></a>HashMap概述</h2><p>HashMap 是基于哈希表的 Map 接口的非同步实现。此实现提供所有可选的映射操作，并允许使用 null 值和 null 键。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。</p>
+<p>此实现假定哈希函数将元素适当地分布在各桶之间，可为基本操作（get 和 put）提供稳定的性能。迭代 collection 视图所需的时间与 HashMap 实例的“容量”（桶的数量）及其大小（键-值映射关系数）成比例。所以，如果迭代性能很重要，则不要将初始容量设置得太高或将加载因子设置得太低。也许大家开始对这段话有一点不太懂，不过不用担心，当你读完这篇文章后，就能深切理解这其中的含义了。</p>
+<p>需要注意的是：Hashmap 不是同步的，如果多个线程同时访问一个 HashMap，而其中至少一个线程从结构上（指添加或者删除一个或多个映射关系的任何操作）修改了，则必须保持外部同步，以防止对映射进行意外的非同步访问。</p>
+<h2 id="HashMap的数据结构"><a href="#HashMap的数据结构" class="headerlink" title="HashMap的数据结构"></a>HashMap的数据结构</h2><p>在 Java 编程语言中，最基本的结构就是两种，一个是数组，另外一个是指针（引用），<strong>HashMap 就是通过这两个数据结构进行实现。HashMap实际上是一个“链表散列”的数据结构，即数组和链表的结合体。</strong></p>
+<img src="/2017/07/09/Learn-Java-Collection/hashmap1.jpg" class="">
+<p>从上图中可以看出，HashMap 底层就是一个数组结构，数组中的每一项又是一个链表。当新建一个 HashMap 的时候，就会初始化一个数组。</p>
+<p>我们通过 JDK 中的 HashMap 源码进行一些学习，首先看一下构造函数：<br>
+          <div class="read-more">
+            <a href="/2017/07/09/Learn-Java-Collection/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/07/08/introduction-to-seaborn/">introduction to seaborn</a>
         
       </h1>
@@ -226,7 +283,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/07/08/introduction-to-seaborn/" data-title="introduction to seaborn">
+        <span class="post-visits"
+             data-url="/2017/07/08/introduction-to-seaborn/"
+             data-title="introduction to seaborn">
           阅读次数 0
         </span>
         
@@ -254,9 +313,9 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sinplot</span><span class="params">(flip=<span class="number">1</span>)</span>:</span></span><br><span class="line">    x = np.linspace(<span class="number">0</span>,<span class="number">14</span>,<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">7</span>):</span><br><span class="line">        plt.plot(x,np.sin(x+i*<span class="number">.5</span>)*(<span class="number">7</span>-i)*flip)</span><br></pre></td></tr></table></figure>
 <p>使用matplotlib默认设置的图形效果：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_7_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_7_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_8_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_8_0.png" class="">
 <p>seaborn默认的灰色网格底色灵感来源于matplotlib却更加柔和。大多数情况下，图应优于表。seaborn的默认灰色网格底色避免了刺目的干扰，对于多个方面的图形尤其有用，是一些更复杂的工具的核心。</p>
 <p>Seaborn将matplotlib参数分成两个独立的组。第一组设定了美学风格，第二组则是不同的度量元素，这样就可以很容易地添加到代码当中了。</p>
 <p>操作这些参数的接口是两对函数。为了控制样式，使用axesstyle()和setstyle()函数。为了扩展绘图，请使用plotting_context()和set_context()函数。在这两种情况下，第一个函数返回一个参数字典，第二个函数则设置matplotlib默认属性。</p>
@@ -289,7 +348,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/01/23/introduction-to-neo4j/" data-title="introduction_to_neo4j">
+        <span class="post-visits"
+             data-url="/2017/01/23/introduction-to-neo4j/"
+             data-title="introduction_to_neo4j">
           阅读次数 0
         </span>
         
@@ -345,7 +406,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/01/04/matrix-summary-in-linear-algebra/" data-title="线性代数之各种各样的矩阵">
+        <span class="post-visits"
+             data-url="/2017/01/04/matrix-summary-in-linear-algebra/"
+             data-title="线性代数之各种各样的矩阵">
           阅读次数 0
         </span>
         
@@ -395,7 +458,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/01/04/develop-lbs-using-mongodb/" data-title="结合MongoDB开发LBS应用">
+        <span class="post-visits"
+             data-url="/2017/01/04/develop-lbs-using-mongodb/"
+             data-title="结合MongoDB开发LBS应用">
           阅读次数 0
         </span>
         
@@ -445,7 +510,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/01/02/spring-boot-in-action/" data-title="spring_boot_in_action">
+        <span class="post-visits"
+             data-url="/2017/01/02/spring-boot-in-action/"
+             data-title="spring_boot_in_action">
           阅读次数 0
         </span>
         
@@ -496,7 +563,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2016/12/28/emmet-usage/" data-title="emmet_usage">
+        <span class="post-visits"
+             data-url="/2016/12/28/emmet-usage/"
+             data-title="emmet_usage">
           阅读次数 0
         </span>
         
@@ -551,7 +620,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2016/12/26/spacemacs-usage/" data-title="spacemacs使用指南">
+        <span class="post-visits"
+             data-url="/2016/12/26/spacemacs-usage/"
+             data-title="spacemacs使用指南">
           阅读次数 0
         </span>
         
@@ -604,7 +675,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2016/12/25/mathjax-test/" data-title="mathjax 在hexo应用">
+        <span class="post-visits"
+             data-url="/2016/12/25/mathjax-test/"
+             data-title="mathjax 在hexo应用">
           阅读次数 0
         </span>
         
@@ -654,7 +727,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2016/12/25/rewrite/" data-title="rewrite">
+        <span class="post-visits"
+             data-url="/2016/12/25/rewrite/"
+             data-title="rewrite">
           阅读次数 0
         </span>
         
@@ -730,7 +805,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -738,7 +813,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -765,12 +840,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

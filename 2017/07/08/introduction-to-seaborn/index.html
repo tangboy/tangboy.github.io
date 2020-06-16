@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="introduction to seaborn">
+  <meta name="description" content="introduction to seaborn"/>
 
 
 
 
-  <meta name="keywords" content="seaborn, matplotlib, Anthon">
+  <meta name="keywords" content="seaborn, matplotlib, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2017/07/08/introduction-to-seaborn/">
+<link rel="canonical" href="http://code-monkey.top/2017/07/08/introduction-to-seaborn/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> introduction to seaborn - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> introduction to seaborn - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/07/08/introduction-to-seaborn/" data-title="introduction to seaborn">
+        <span class="post-visits"
+             data-url="/2017/07/08/introduction-to-seaborn/"
+             data-title="introduction to seaborn">
           阅读次数 0
         </span>
         
@@ -253,9 +255,9 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sinplot</span><span class="params">(flip=<span class="number">1</span>)</span>:</span></span><br><span class="line">    x = np.linspace(<span class="number">0</span>,<span class="number">14</span>,<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">7</span>):</span><br><span class="line">        plt.plot(x,np.sin(x+i*<span class="number">.5</span>)*(<span class="number">7</span>-i)*flip)</span><br></pre></td></tr></table></figure>
 <p>使用matplotlib默认设置的图形效果：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_7_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_7_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_8_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_8_0.png" class="">
 <p>seaborn默认的灰色网格底色灵感来源于matplotlib却更加柔和。大多数情况下，图应优于表。seaborn的默认灰色网格底色避免了刺目的干扰，对于多个方面的图形尤其有用，是一些更复杂的工具的核心。</p>
 <p>Seaborn将matplotlib参数分成两个独立的组。第一组设定了美学风格，第二组则是不同的度量元素，这样就可以很容易地添加到代码当中了。</p>
 <p>操作这些参数的接口是两对函数。为了控制样式，使用axesstyle()和setstyle()函数。为了扩展绘图，请使用plotting_context()和set_context()函数。在这两种情况下，第一个函数返回一个参数字典，第二个函数则设置matplotlib默认属性。</p>
@@ -271,32 +273,32 @@
 <p>网格能够帮助我们查找图表中的定量信息，而灰色网格主题中的白线能避免影响数据的表现，白色网格主题则类似的，当然更适合表达“重数据元素”（heavy data elements不理解）</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sns.set_style(<span class="string">"whitegrid"</span>)</span><br><span class="line">data = np.random.normal(size=(<span class="number">20</span>,<span class="number">6</span>)) + np.arange(<span class="number">6</span>) / <span class="number">2</span></span><br><span class="line">sns.boxplot(data=data)</span><br></pre></td></tr></table></figure>
 <pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x119eb8a58&gt;
-</code></pre><img src="/2017/07/08/introduction-to-seaborn/output_10_1.png">
+</code></pre><img src="/2017/07/08/introduction-to-seaborn/output_10_1.png" class="">
 <p>对于许多场景，(特别是对于像对话这样的设置，您主要想使用图形来提供数据模式的印象)，网格就不那么必要了</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.set_style(<span class="string">"dark"</span>)</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_12_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_12_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.set_style(<span class="string">"white"</span>)</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_13_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_13_0.png" class="">
 <p>有时你可能想要给情节增加一点额外的结构，这就是ticks参数的用途:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.set_style(<span class="string">"ticks"</span>)</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_15_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_15_0.png" class="">
 <p>特别的可以通过sns.axes_style(style=None, rc=None) 返回一个sns.set_style()可传的参数的字典</p>
 <p>通过类似sns.set_style(“ticks”, {“xtick.major.size”: 8, “ytick.major.size”: 8})的方式写入更具体的配置样式。</p>
 <p>关于sns.axes_style()下面会有说明和运行结果</p>
 <h3 id="用despine-进行边框控制"><a href="#用despine-进行边框控制" class="headerlink" title="用despine()进行边框控制"></a>用despine()进行边框控制</h3><p>white和ticks参数的样式，都可以删除上方和右方坐标轴上不需要的边框，这在matplotlib中是无法通过参数实现的，却可以在seaborn中通过despine()函数轻松移除他们。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sns.set_style(<span class="string">"white"</span>)</span><br><span class="line">sinplot() <span class="comment"># 默认无参数状态，就是删除上方和右方的边框</span></span><br><span class="line">sns.despine()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_18_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_18_0.png" class="">
 <p>一些图的边框可以通过数据移位，当然调用despine()也能做同样的事。当边框没有覆盖整个数据轴的范围的时候，trim参数会限制留存的边框范围。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sns.set_style(<span class="string">"whitegrid"</span>)</span><br><span class="line">f, ax = plt.subplots()</span><br><span class="line">sns.violinplot(data=data)</span><br><span class="line">sns.despine(offset=<span class="number">0</span>, trim=<span class="keyword">True</span>) <span class="comment">#offset 两坐标轴离开距离；</span></span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_20_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_20_0.png" class="">
 <p>你也可以通过往despine()中添加参数去控制边框</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sns.set_style(<span class="string">"whitegrid"</span>)</span><br><span class="line">sns.boxplot(data=data, palette=<span class="string">"deep"</span>)</span><br><span class="line">sns.despine(left=<span class="keyword">True</span>)</span><br><span class="line">st = sns.axes_style(<span class="string">"darkgrid"</span>)</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_22_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_22_0.png" class="">
 <p>despine(fig=None, ax=None, top=True, right=True, left=False, bottom=False, offset=None, trim=False)</p>
 <p>从plot()函数中移除顶部或右边的边框</p>
 <h3 id="临时设定图形样式"><a href="#临时设定图形样式" class="headerlink" title="临时设定图形样式"></a>临时设定图形样式</h3><p>虽然来回切换非常容易，但sns也允许用with语句中套用axes_style()达到临时设置参数的效果（仅对with块内的绘图函数起作用）。这也允许创建不同风格的坐标轴。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> sns.axes_style(<span class="string">"darkgrid"</span>):</span><br><span class="line">    plt.subplot(<span class="number">211</span>)</span><br><span class="line">    sinplot()</span><br><span class="line">    plt.subplot(<span class="number">212</span>)</span><br><span class="line">    sinplot(<span class="number">-1</span>)</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_25_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_25_0.png" class="">
 <h3 id="seaborn样式中最重要的元素"><a href="#seaborn样式中最重要的元素" class="headerlink" title="seaborn样式中最重要的元素"></a>seaborn样式中最重要的元素</h3><p>如果您想要定制seanborn的样式，可以将参数字典传递给axes_style()和set_style()的rc参数。注意，只能通过该方法覆盖样式定义的一部分参数。(然而，更高层次的set()函数接受任何matplotlib参数的字典)。</p>
 <p>如果您想要查看包含哪些参数，您可以只调用该函数而不带参数，这将返回当前设置的字典:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.axes_style()</span><br></pre></td></tr></table></figure>
@@ -330,24 +332,24 @@
  &#39;ytick.minor.size&#39;: 0.0}
 </code></pre><p>或许，你可以试试不同种类的参数效果</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.set_style(<span class="string">"darkgrid"</span>, &#123;<span class="string">"axes.facecolor"</span>: <span class="string">".9"</span>&#125;)</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_29_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_29_0.png" class="">
 <h3 id="通过-plotting-context-和-set-context-调整绘图元素"><a href="#通过-plotting-context-和-set-context-调整绘图元素" class="headerlink" title="通过 plotting_context() 和 set_context() 调整绘图元素"></a>通过 plotting_context() 和 set_context() 调整绘图元素</h3><p>另一组参数控制绘图元素的规模，这应该让您使用相同的代码来制作适合在较大或较小的情节适当的场景中使用的情节。</p>
 <p>首先，可以通过sns.set()重置参数。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.set()</span><br></pre></td></tr></table></figure>
 <p>四种预设，按相对尺寸的顺序(线条越来越粗)，分别是paper，notebook, talk, and poster。notebook的样式是默认的，上面的绘图都是使用默认的notebook预设。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sns.set_context(<span class="string">"paper"</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">6</span>))</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_33_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_33_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># default 默认设置</span></span><br><span class="line">sns.set_context(<span class="string">"notebook"</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">6</span>))</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_34_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_34_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sns.set_context(<span class="string">"talk"</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">6</span>))</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_35_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_35_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sns.set_context(<span class="string">"poster"</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">6</span>))</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_36_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_36_0.png" class="">
 <p>通过观察各种样式的结果，你应当可以了解context函数</p>
 <p>类似的，还可以使用其中一个名称来调用set_context()来设置参数，您可以通过提供参数值的字典来覆盖参数。</p>
 <p>通过更改context还可以独立地扩展字体元素的大小。(这个选项也可以通过顶级set()函数获得）。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.set_context(<span class="string">"notebook"</span>, font_scale=<span class="number">1.5</span>, rc=&#123;<span class="string">"lines.linewidth"</span>: <span class="number">2.5</span>&#125;)</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_38_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_38_0.png" class="">
 <p>类似地(尽管它可能用处不大)，也可以使用with嵌套语句进行临时的设置。</p>
 <p>样式和上下文都可以用set()函数快速地进行配置。这个函数还设置了默认的颜色选项，在下一节将详细介绍这一功能。</p>
 <h2 id="第二章-斑驳陆离的调色板"><a href="#第二章-斑驳陆离的调色板" class="headerlink" title="第二章 斑驳陆离的调色板"></a>第二章 斑驳陆离的调色板</h2><p>颜色显然比图形风格的其他方面都更加重要，因为颜色使用得当就可以有效显示或隐藏数据中的特征。有许多的好资源都可以了解关于在可视化中使用颜色的技巧，推荐<a href="https://earthobservatory.nasa.gov/blogs/elegantfigures/2013/08/05/subtleties-of-color-part-1-of-6/" target="_blank" rel="noopener">Rob Simmon的《series of blog posts》</a>和这篇进阶的<a href="https://cfwebprod.sandia.gov/cfdocs/CompResearch/docs/ColorMapsExpanded.pdf" target="_blank" rel="noopener">技术文章</a>,<a href="http://matplotlib.org/users/colormaps.html" target="_blank" rel="noopener">matplotlib文档</a>现在也有一个很好的教程，说明了如何在内置色彩映射中构建的一些感知特性。</p>
@@ -361,122 +363,122 @@
 <h3 id="分类色板"><a href="#分类色板" class="headerlink" title="分类色板"></a>分类色板</h3><p>分类色板（定性）是在区分没有固定顺序的数据时最好的选择。</p>
 <p>在导入seaborn库后，默认的颜色循环被更改为一组六种颜色。虽然这些颜色可能会让你想起matplotlib的标准颜色循环，但他们无疑更赏心悦目一些。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">current_palette = sns.color_palette()</span><br><span class="line">sns.palplot(current_palette)</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_43_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_43_0.png" class="">
 <p>默认颜色主题共有六种不同的变化分别是：deep, muted, pastel, bright, dark, 和 colorblind。类似下面的方式直接传入即可。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">current_palette = sns.color_palette(<span class="string">"dark"</span>)</span><br><span class="line">sns.palplot(current_palette)</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_45_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_45_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">current_palette = sns.color_palette(<span class="string">"muted"</span>)</span><br><span class="line">sns.palplot(current_palette)</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_46_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_46_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">current_palette = sns.color_palette(<span class="string">"pastel"</span>)</span><br><span class="line">sns.palplot(current_palette)</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_47_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_47_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">current_palette = sns.color_palette(<span class="string">"bright"</span>)</span><br><span class="line">sns.palplot(current_palette)</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_48_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_48_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">current_palette = sns.color_palette(<span class="string">"colorblind"</span>)</span><br><span class="line">sns.palplot(current_palette)</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_49_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_49_0.png" class="">
 <h4 id="使用圆形颜色系统"><a href="#使用圆形颜色系统" class="headerlink" title="使用圆形颜色系统"></a>使用圆形颜色系统</h4><p>当你有六个以上的分类要区分时，最简单的方法就是在一个圆形的颜色空间中画出均匀间隔的颜色(这样的色调会保持亮度和饱和度不变)。这是大多数的当他们需要使用比当前默认颜色循环中设置的颜色更多时的默认方案。</p>
 <p>最常用的方法是使用hls的颜色空间，这是RGB值的一个简单转换。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"hls"</span>, <span class="number">8</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_51_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_51_0.png" class="">
 <p>当然，也可以使用hls_palette()函数来控制颜色的亮度和饱和。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.hls_palette(<span class="number">8</span>, l=<span class="number">.3</span>, s=<span class="number">.8</span>))</span><br><span class="line"><span class="comment"># l-亮度 lightness / s-饱和 saturation</span></span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_53_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_53_0.png" class="">
 <p>由于人类视觉系统的工作方式，会导致在RGB度量上强度一致的颜色在视觉中并不平衡。比如，我们黄色和绿色是相对较亮的颜色，而蓝色则相对较暗，使得这可能会成为与hls系统一致的一个问题。</p>
 <p>为了解决这一问题，seaborn为husl系统提供了一个接口，这也使得选择均匀间隔的色彩变得更加容易，同时保持亮度和饱和度更加一致。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"husl"</span>, <span class="number">8</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_55_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_55_0.png" class="">
 <h4 id="使用分类颜色调色板"><a href="#使用分类颜色调色板" class="headerlink" title="使用分类颜色调色板"></a>使用分类颜色调色板</h4><p>另一种视觉上令人愉悦的分类调色板来自于Color Brewer工具(它也有连续调色板和离散调色板，我们将在下面的图中看到)。这些也存在于matplotlib颜色映射中，但是它们没有得到适当的处理。在这里，当你要求一个定性颜色的调色板时，你总是会得到离散的颜色，但这意味着在某一点它们会开始循环。</p>
 <p>Color Brewer工具的一个很好的特点是，它提供了一些关于调色板是<a href="https://en.wikipedia.org/wiki/Color_blindness" target="_blank" rel="noopener">色盲安全</a>的指导。有各种各样的适合色盲的颜色，但是最常见的变异导致很难区分红色和绿色。一般来说，避免使用红色和绿色来表示颜色以区分元素是一个不错的主意。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"Paired"</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_57_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_57_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"Set2"</span>, <span class="number">10</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_58_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_58_0.png" class="">
 <p>为了帮助您从Color Brewer工具中选择调色板，这里有choose_colorbrewer_palette()函数。这个函数必须在IPython notebook中使用，它将启动一个交互式小部件，让您浏览各种选项并调整参数。</p>
 <p>当然，您可能只想使用一组您特别喜欢的颜色。因为color_palette()接受一个颜色列表，这很容易做到。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">flatui = [<span class="string">"#9b59b6"</span>, <span class="string">"#3498db"</span>, <span class="string">"#95a5a6"</span>, <span class="string">"#e74c3c"</span>, <span class="string">"#34495e"</span>, <span class="string">"#2ecc71"</span>]</span><br><span class="line">sns.palplot(sns.color_palette(flatui))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_60_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_60_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.choose_colorbrewer_palette(<span class="string">"sequential"</span>)</span><br><span class="line"><span class="comment"># data_type: &#123;‘sequential’, ‘diverging’, ‘qualitative’&#125;</span></span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_61_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_61_0.png" class="">
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.choose_colorbrewer_palette(<span class="string">"sequential"</span>,as_cmap=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># as_cmap参数用来更改显示的颜色范围是离散的还是连续的</span></span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_62_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_62_0.png" class="">
 <h4 id="使用xkcd颜色来命名颜色"><a href="#使用xkcd颜色来命名颜色" class="headerlink" title="使用xkcd颜色来命名颜色"></a>使用xkcd颜色来命名颜色</h4><p>xkcd包含了一套众包努力的针对随机RGB色的命名。产生了954个可以随时通过xdcd_rgb字典中调用的命名颜色。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">plt.plot([<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>], sns.xkcd_rgb[<span class="string">"pale red"</span>], lw=<span class="number">3</span>)</span><br><span class="line">plt.plot([<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">2</span>], sns.xkcd_rgb[<span class="string">"medium green"</span>], lw=<span class="number">3</span>)</span><br><span class="line">plt.plot([<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">3</span>], sns.xkcd_rgb[<span class="string">"denim blue"</span>], lw=<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_64_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_64_0.png" class="">
 <p>如果你想花一些时间挑选颜色，或许这种交互式的可视化（官方链接失效）是非常有帮助的。除了将单一颜色从xkcd_rgb字典中取出，也可以通过名称列表传入xkcd_palette()函数中取得颜色组。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">colors = [<span class="string">"windows blue"</span>, <span class="string">"amber"</span>, <span class="string">"greyish"</span>, <span class="string">"faded green"</span>, <span class="string">"dusty purple"</span>]</span><br><span class="line">sns.palplot(sns.xkcd_palette(colors))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_66_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_66_0.png" class="">
 <h3 id="连续色板"><a href="#连续色板" class="headerlink" title="连续色板"></a>连续色板</h3><p>调色板中第二大类称为“顺序”。这种颜色映射对应的是从相对低价值（无意义）数据到高价值（有意义）的数据范围。虽然有时候你会需要一个连续的离散颜色调色板，用他们像kdeplot()或者corrplot()功能映射更加常见（以及可能类似的matplotlib功能）。</p>
 <p>非常可能的是见到jet色彩映射（或其他采用调色板）在这种情况下使用，因为色彩范围提供有关数据的附加信息。然而，打的色调变化中往往会引入不连续性中不存在的数据和视觉系统不能自然的通过“彩虹色”定量产生“高”、“低”之分。其结果是，这样的可视化更像是一个谜题，模糊了数据中的信息而并非揭示这种信息。事实上，jet调色板可能非常糟糕，因为最亮的颜色，黄色和青色用于显示中间数值，这就导致强调了一些没有意义的数据而忽视了端点的数据。</p>
 <p>所以对于连续的数据，最好是使用那些在色调上相对细微变化的调色板，同时在亮度和饱和度上有很大的变化。这种方法将自然地吸引数据中相对重要的部分</p>
 <p>Color Brewer的字典中就有一组很好的调色板。它们是以在调色板中的主导颜色(或颜色)命名的。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"Blues"</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_68_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_68_0.png" class="">
 <p>就像在matplotlib中一样，如果您想要翻转渐变，您可以在面板名称中添加一个_r后缀。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"BuGn_r"</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_70_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_70_0.png" class="">
 <p>seaborn还增加了一个允许创建没有动态范围的”dark”面板。如果你想按顺序画线或点，这可能是有用的，因为颜色鲜艳的线可能很难区分。</p>
 <p>类似的，这种暗处理的颜色，需要在面板名称中添加一个_d后缀</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"GnBu_d"</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_72_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_72_0.png" class="">
 <p>牢记，你可能想使用choose_colorbrewer_palette()函数取绘制各种不同的选项。如果你想返回一个变量当做颜色映射传入seaborn或matplotlib的函数中，可以设置as_cmap参数为True。</p>
 <h4 id="cubehelix-palette-函数的连续调色板"><a href="#cubehelix-palette-函数的连续调色板" class="headerlink" title="cubehelix_palette()函数的连续调色板"></a>cubehelix_palette()函数的连续调色板</h4><p><a href="http://www.mrao.cam.ac.uk/~dag/CUBEHELIX/" target="_blank" rel="noopener">cubehelix</a>调色板系统具有线性增加或降低亮度和色调变化顺序的调色板。这意味着在你的映射信息会在保存为黑色和白色（为印刷）时或被一个色盲的人浏览时可以得以保留。</p>
 <p>Matplotlib拥有一个默认的内置cubehelix版本可供创建:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"cubehelix"</span>, <span class="number">8</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_74_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_74_0.png" class="">
 <p>seaborn为cubehelix系统添加一个接口使得其可以在各种变化中都保持良好的亮度线性梯度。</p>
 <p>通过seaborn的cubehelix_palette()函数返回的调色板与matplotlib默认值稍有所不同，它不会在色轮周围旋转或覆盖更广的强度范围。seaborn还改变了排序使得更重要的值显得更暗：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.cubehelix_palette(<span class="number">8</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_76_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_76_0.png" class="">
 <p>其他cubehelix_palette()的参数主要调整色板的视觉。两个重要的选择是：start(值的范围为03）和rot，还有rot的次数（-11之间的任意值）</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.cubehelix_palette(<span class="number">8</span>, start=<span class="number">.5</span>, rot=<span class="number">-.75</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_78_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_78_0.png" class="">
 <p>你也可以控制断点的亮度和甚至对调结果顺序</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.cubehelix_palette(<span class="number">8</span>, start=<span class="number">2</span>, rot=<span class="number">0</span>, dark=<span class="number">0</span>, light=<span class="number">.95</span>, reverse=<span class="keyword">True</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_80_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_80_0.png" class="">
 <p>默认情况下你只会得到一些与seaborn调色板相似的颜色的列表，但你也可以让调色板返回一个可以用as_cmap=True传入seaborn或matplotlib函数的颜色映射对象</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sns.set_context(<span class="string">"notebook"</span>)</span><br><span class="line">x, y = np.random.multivariate_normal([<span class="number">0</span>, <span class="number">0</span>], [[<span class="number">1</span>, <span class="number">-.5</span>], [<span class="number">-.5</span>, <span class="number">1</span>]], size=<span class="number">300</span>).T</span><br><span class="line">cmap = sns.cubehelix_palette(light=<span class="number">1</span>, as_cmap=<span class="keyword">True</span>)</span><br><span class="line">sns.kdeplot(x, y, cmap=cmap, shade=<span class="keyword">True</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_82_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_82_0.png" class="">
 <p>类似的，也可以在notebook中使用choose_cubehelix_palette()函数启动一个互助程序来帮助选择更适合的调色板或颜色映射。如果想让函数返回一个类似hexbin的颜色映射而非一个列表则需要传入as_cmap=True。</p>
 <h4 id="使用light-palette-和dark-palette-调用定制连续调色板"><a href="#使用light-palette-和dark-palette-调用定制连续调色板" class="headerlink" title="使用light_palette() 和dark_palette()调用定制连续调色板"></a>使用light_palette() 和dark_palette()调用定制连续调色板</h4><p>这里还有一个更简单的连续调色板的使用方式，就是调用light_palette() 和dark_palette()，这与一个单一颜色和种子产生的从亮到暗的饱和度的调色板。这些函数还伴有choose_light_palette() and choose_dark_palette()函数，这些函数启动了交互式小部件来创建这些调色板。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.light_palette(<span class="string">"green"</span>))</span><br><span class="line">sns.palplot(sns.dark_palette(<span class="string">"purple"</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_85_0.png">
-<img src="/2017/07/08/introduction-to-seaborn/output_85_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_85_0.png" class="">
+<img src="/2017/07/08/introduction-to-seaborn/output_85_1.png" class="">
 <p>这些调色板结果也可以颠倒</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.light_palette(<span class="string">"navy"</span>, reverse=<span class="keyword">True</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_87_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_87_0.png" class="">
 <p>当然也可以创建一个颜色映射对象取代颜色列表</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pal = sns.dark_palette(<span class="string">"palegreen"</span>, as_cmap=<span class="keyword">True</span>)</span><br><span class="line">sns.kdeplot(x, y, cmap=pal);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_89_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_89_0.png" class="">
 <p>默认情况下，任何有效的matplotlib颜色可以传递给input参数。也可以在hls或husl空间中提供默认的rgb元组，您还可以使用任何有效的xkcd颜色的种子。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.light_palette((<span class="number">210</span>, <span class="number">90</span>, <span class="number">60</span>), input=<span class="string">"husl"</span>))</span><br><span class="line">sns.palplot(sns.dark_palette(<span class="string">"muted purple"</span>, input=<span class="string">"xkcd"</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_91_0.png">
-<img src="/2017/07/08/introduction-to-seaborn/output_91_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_91_0.png" class="">
+<img src="/2017/07/08/introduction-to-seaborn/output_91_1.png" class="">
 <p>需要注意的是，为默认的input空间提供交互的组件是husl，这与函数自身默认的并不同，但这在背景下却是更有用的。</p>
 <h3 id="离散色板"><a href="#离散色板" class="headerlink" title="离散色板"></a>离散色板</h3><p>调色板中的第三类被称为“离散”。用于可能无论大的低的值和大的高的值都非常重要的数据。数据中通常有一个定义良好的中点。例如，如果你正在绘制温度变化从基线值，最好使用不同色图显示相对降低和相对增加面积的地区。</p>
 <p>选择离散色板的规则类似于顺序色板，除了你想满足一个强调的颜色中点以及用不同起始颜色的两个相对微妙的变化。同样重要的是，起始值的亮度和饱和度是相同的。</p>
 <p>同样重要的是要强调，应该避免使用红色和绿色，因为大量的潜在观众将无法分辨它们。</p>
 <p>你不应该感到惊讶的是，Color Brewer颜色字典里拥有一套精心挑选的离散颜色映射:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"BrBG"</span>, <span class="number">7</span>))</span><br><span class="line">sns.palplot(sns.color_palette(<span class="string">"RdBu_r"</span>, <span class="number">7</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_93_0.png">
-<img src="/2017/07/08/introduction-to-seaborn/output_93_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_93_0.png" class="">
+<img src="/2017/07/08/introduction-to-seaborn/output_93_1.png" class="">
 <p>另一个在matplotlib中建立的明智的选择是coolwarm面板。请注意，这个颜色映射在中间值和极端之间并没有太大的对比。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.color_palette(<span class="string">"coolwarm"</span>, <span class="number">7</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_95_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_95_0.png" class="">
 <h4 id="用diverging-palette-使用定制离散色板"><a href="#用diverging-palette-使用定制离散色板" class="headerlink" title="用diverging_palette()使用定制离散色板"></a>用diverging_palette()使用定制离散色板</h4><p>你也可以使用海运功能diverging_palette()为离散的数据创建一个定制的颜色映射。（当然也有一个类似配套的互动工具：choose_diverging_palette()）。该函数使用husl颜色系统的离散色板。你需随意传递两种颜色，并设定明度和饱和度的端点。函数将使用husl的端点值及由此产生的中间值进行均衡。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.diverging_palette(<span class="number">220</span>, <span class="number">20</span>, n=<span class="number">7</span>))</span><br><span class="line">sns.palplot(sns.diverging_palette(<span class="number">145</span>, <span class="number">280</span>, s=<span class="number">85</span>, l=<span class="number">25</span>, n=<span class="number">7</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_97_0.png">
-<img src="/2017/07/08/introduction-to-seaborn/output_97_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_97_0.png" class="">
+<img src="/2017/07/08/introduction-to-seaborn/output_97_1.png" class="">
 <p>sep参数控制面板中间区域的两个渐变的宽度。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.diverging_palette(<span class="number">10</span>, <span class="number">220</span>, sep=<span class="number">80</span>, n=<span class="number">7</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_99_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_99_0.png" class="">
 <p>也可以用中间的色调来选择调色，而不是用亮度</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.palplot(sns.diverging_palette(<span class="number">255</span>, <span class="number">133</span>, l=<span class="number">60</span>, n=<span class="number">7</span>, center=<span class="string">"dark"</span>))</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_101_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_101_0.png" class="">
 <h4 id="用set-palette-更改色变的默认值"><a href="#用set-palette-更改色变的默认值" class="headerlink" title="用set_palette()更改色变的默认值"></a>用set_palette()更改色变的默认值</h4><p>color_palette() 函数有一个名为set_palette()的配套。它们之间的关系类似于在美学教程中涉及的aesthetics tutorial. set_palette()。set_palette()接受与color_palette()相同的参数，但是它会更改默认的matplotlib参数，以便成为所有的调色板配置。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sinplot</span><span class="params">(flip=<span class="number">1</span>)</span>:</span></span><br><span class="line">    x = np.linspace(<span class="number">0</span>, <span class="number">14</span>, <span class="number">100</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">7</span>):</span><br><span class="line">        plt.plot(x, np.sin(x + i * <span class="number">.5</span>) * (<span class="number">7</span> - i) * flip)</span><br><span class="line">sns.set_palette(<span class="string">"husl"</span>)</span><br><span class="line">sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_103_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_103_0.png" class="">
 <p>color_palette()函数也可以在一个with块中使用，以达到临时更改调色板的目的</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> sns.color_palette(<span class="string">"PuBuGn_d"</span>):</span><br><span class="line">    sinplot()</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_105_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_105_0.png" class="">
 <h4 id="简单常用色彩总结："><a href="#简单常用色彩总结：" class="headerlink" title="简单常用色彩总结："></a>简单常用色彩总结：</h4><ul>
 <li>分类：hls husl Paired Set1~Set3（色调不同）</li>
 <li>连续：Blues[蓝s，颜色+s] BuGn[蓝绿] cubehelix（同色系渐变）</li>
@@ -486,61 +488,61 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> scipy <span class="keyword">import</span> stats, integrate</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">sns.set(color_codes=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">np.random.seed(sum(map(ord, <span class="string">"distributions"</span>)))</span><br></pre></td></tr></table></figure>
 <h3 id="单变量分布"><a href="#单变量分布" class="headerlink" title="单变量分布"></a>单变量分布</h3><p>最方便的方式是快速查看单变量分布无疑是使用distplot()函数。默认情况下，这将绘制一个直方图，并拟合出核密度估计(KDE)。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x = np.random.normal(size=<span class="number">100</span>)</span><br><span class="line">sns.distplot(x);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_110_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_110_1.png" class="">
 <h3 id="直方图"><a href="#直方图" class="headerlink" title="直方图"></a>直方图</h3><p>直方图应当是非常熟悉的函数了，在matplotlib中就存在hist函数。直方图通过在数据的范围内切成数据片段，然后绘制每个数据片段中的观察次数，来表示整体数据的分布。</p>
 <p>为了说明这一点，我们删除密度曲线并添加了地毯图，每个观察点绘制一个小的垂直刻度。您可以使用rugplot()函数来制作地毯图，但它也可以在distplot()中使用：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.distplot(x, kde=<span class="keyword">False</span>, rug=<span class="keyword">True</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_112_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_112_0.png" class="">
 <p>绘制直方图时，主要的选择是使用切分数据片段的数量或在何位置切分数据片段。 distplot()使用一个简单的规则来很好地猜测并给予默认的切分数量，但尝试更多或更少的数据片段可能会显示出数据中的其他特征：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.distplot(x, bins=<span class="number">20</span>, kde=<span class="keyword">False</span>, rug=<span class="keyword">True</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_114_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_114_0.png" class="">
 <h3 id="核密度估计-KDE-Kernel-density-estimaton"><a href="#核密度估计-KDE-Kernel-density-estimaton" class="headerlink" title="核密度估计(KDE) Kernel density estimaton"></a>核密度估计(KDE) Kernel density estimaton</h3><p>或许你对核密度估计可能不像直方图那么熟悉，但它是绘制分布形状的有力工具。如同直方图一样，KDE图会对一个轴上的另一轴的高度的观测密度进行描述：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.distplot(x, hist=<span class="keyword">False</span>, rug=<span class="keyword">True</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_116_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_116_1.png" class="">
 <p>绘制KDE比绘制直方图更有计算性。所发生的是，每一个观察都被一个以这个值为中心的正态（ 高斯）曲线所取代。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">x = np.random.normal(<span class="number">0</span>, <span class="number">1</span>, size=<span class="number">30</span>)</span><br><span class="line">bandwidth = <span class="number">1.06</span> * x.std() * x.size ** (<span class="number">-1</span> / <span class="number">5.</span>)</span><br><span class="line">support = np.linspace(<span class="number">-4</span>, <span class="number">4</span>, <span class="number">200</span>)</span><br><span class="line"></span><br><span class="line">kernels = []</span><br><span class="line"><span class="keyword">for</span> x_i <span class="keyword">in</span> x:</span><br><span class="line"></span><br><span class="line">    kernel = stats.norm(x_i, bandwidth).pdf(support)</span><br><span class="line">    kernels.append(kernel)</span><br><span class="line">    plt.plot(support, kernel, color=<span class="string">"r"</span>)</span><br><span class="line"></span><br><span class="line">sns.rugplot(x, color=<span class="string">".2"</span>, linewidth=<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_118_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_118_0.png" class="">
 <p>接下来，这些曲线可以用来计算支持网格中每个点的密度值。得到的曲线再用归一化使得它下面的面积等于1:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">density = np.sum(kernels, axis=<span class="number">0</span>)</span><br><span class="line">density /= integrate.trapz(density, support)</span><br><span class="line">plt.plot(support, density);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_120_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_120_0.png" class="">
 <p>我们可以看到，如果我们在seaborn中使用kdeplot()函数，我们得到相同的曲线。 这个函数由distplot()使用，但是当您只想要密度估计时，它提供了一个更直接的界面，更容易访问其他选项：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.kdeplot(x, shade=<span class="keyword">True</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_122_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_122_1.png" class="">
 <p>KDE的带宽bandwidth（bw）参数控制估计对数据的拟合程度，与直方图中的bin(数据切分数量参数)大小非常相似。 它对应于我们上面绘制的内核的宽度。 默认中会尝试使用通用引用规则猜测一个适合的值，但尝试更大或更小的值可能会有所帮助：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sns.kdeplot(x)</span><br><span class="line">sns.kdeplot(x, bw=<span class="number">.2</span>, label=<span class="string">"bw: 0.2"</span>)</span><br><span class="line">sns.kdeplot(x, bw=<span class="number">2</span>, label=<span class="string">"bw: 2"</span>)</span><br><span class="line">plt.legend();</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_124_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_124_1.png" class="">
 <p>如上所述，高斯KDE过程的性质意味着估计延续了数据集中最大和最小的值。 可以通过cut参数来控制绘制曲线的极值值的距离; 然而，这只影响曲线的绘制方式，而不是曲线如何拟合：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.kdeplot(x, shade=<span class="keyword">True</span>, cut=<span class="number">0</span>)</span><br><span class="line">sns.rugplot(x);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_126_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_126_1.png" class="">
 <h3 id="拟合参数分布"><a href="#拟合参数分布" class="headerlink" title="拟合参数分布"></a>拟合参数分布</h3><p>还可以使用distplot()将参数分布拟合到数据集，并可视化地评估其与观察数据的对应关系：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x = np.random.gamma(<span class="number">6</span>, size=<span class="number">200</span>)</span><br><span class="line">sns.distplot(x, kde=<span class="keyword">False</span>, fit=stats.gamma);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_128_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_128_0.png" class="">
 <h3 id="绘制双变量分布"><a href="#绘制双变量分布" class="headerlink" title="绘制双变量分布"></a>绘制双变量分布</h3><p>在绘制两个变量的双变量分布也是有用的。在seaborn中这样做的最简单的方法就是在jointplot()函数中创建一个多面板数字，显示两个变量之间的双变量（或联合）关系以及每个变量的单变量（或边际）分布和轴。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mean, cov = [<span class="number">0</span>, <span class="number">1</span>], [(<span class="number">1</span>, <span class="number">.5</span>), (<span class="number">.5</span>, <span class="number">1</span>)]</span><br><span class="line">data = np.random.multivariate_normal(mean, cov, <span class="number">200</span>)</span><br><span class="line">df = pd.DataFrame(data, columns=[<span class="string">"x"</span>, <span class="string">"y"</span>])</span><br></pre></td></tr></table></figure>
 <h3 id="散点图"><a href="#散点图" class="headerlink" title="散点图"></a>散点图</h3><p>双变量分布的最熟悉的可视化方式无疑是散点图，其中每个观察结果以x和y值表示。这是两个方面的地毯图。可以使用matplotlib中的plt.scatter函数绘制散点图，它也是jointplot()函数显示的默认方式。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.jointplot(x=<span class="string">"x"</span>, y=<span class="string">"y"</span>, data=df);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_132_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_132_0.png" class="">
 <h3 id="HexBin图"><a href="#HexBin图" class="headerlink" title="HexBin图"></a>HexBin图</h3><p>直方图的双变量类似物被称为“hexbin”图，因为它显示了落在六边形仓内的观测数。该图适用于较大的数据集。通过matplotlib plt.hexbin函数和jointplot()中的样式可以实现。 它最好使用白色背景：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x, y = np.random.multivariate_normal(mean, cov, <span class="number">1000</span>).T</span><br><span class="line"><span class="keyword">with</span> sns.axes_style(<span class="string">"white"</span>):</span><br><span class="line">    sns.jointplot(x=x, y=y, kind=<span class="string">"hex"</span>, color=<span class="string">"k"</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_134_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_134_0.png" class="">
 <h3 id="核密度估计"><a href="#核密度估计" class="headerlink" title="核密度估计"></a>核密度估计</h3><p>使用上述内核密度估计程序可视化双变量分布也是可行的。在seaborn中，这种图用等高线图显示，可以在jointplot()中作为样式传入参数使用：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.jointplot(x=<span class="string">"x"</span>, y=<span class="string">"y"</span>, data=df, kind=<span class="string">"kde"</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_136_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_136_1.png" class="">
 <p>还可以使用kdeplot()函数绘制二维核密度图。这样可以将这种绘图绘制到一个特定的（可能已经存在的）matplotlib轴上，而jointplot()函数只能管理自己：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">f, ax = plt.subplots(figsize=(<span class="number">6</span>, <span class="number">6</span>))</span><br><span class="line">sns.kdeplot(df.x, df.y, ax=ax)</span><br><span class="line">sns.rugplot(df.x, color=<span class="string">"g"</span>, ax=ax)</span><br><span class="line">sns.rugplot(df.y, vertical=<span class="keyword">True</span>, ax=ax);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_138_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_138_0.png" class="">
 <p>如果是希望更连续地显示双变量密度，您可以简单地增加n_levels参数增加轮廓级数：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">f, ax = plt.subplots(figsize=(<span class="number">6</span>, <span class="number">6</span>))</span><br><span class="line">cmap = sns.cubehelix_palette(as_cmap=<span class="keyword">True</span>, dark=<span class="number">0</span>, light=<span class="number">1</span>, reverse=<span class="keyword">True</span>)</span><br><span class="line">sns.kdeplot(df.x, df.y, cmap=cmap, n_levels=<span class="number">60</span>, shade=<span class="keyword">True</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_140_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_140_0.png" class="">
 <p>jointplot()函数使用JointGrid来管理。为了获得更多的灵活性，您可能需要直接使用JointGrid绘制图形。jointplot()在绘制后返回JointGrid对象，您可以使用它来添加更多图层或调整可视化的其他方面：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">g = sns.jointplot(x=<span class="string">"x"</span>, y=<span class="string">"y"</span>, data=df, kind=<span class="string">"kde"</span>, color=<span class="string">"m"</span>)</span><br><span class="line">g.plot_joint(plt.scatter, c=<span class="string">"w"</span>, s=<span class="number">30</span>, linewidth=<span class="number">1</span>, marker=<span class="string">"+"</span>)</span><br><span class="line">g.ax_joint.collections[<span class="number">0</span>].set_alpha(<span class="number">0</span>)</span><br><span class="line">g.set_axis_labels(<span class="string">"$X$"</span>, <span class="string">"$Y$"</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_142_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_142_1.png" class="">
 <h3 id="呈现数据集中成对的关系"><a href="#呈现数据集中成对的关系" class="headerlink" title="呈现数据集中成对的关系"></a>呈现数据集中成对的关系</h3><p>要在数据集中绘制多个成对双变量分布，可以使用pairplot()函数。这将创建一个轴的矩阵，并显示DataFrame中每对列的关系。默认情况下，它也绘制每个变量在对角轴上的单变量：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iris = sns.load_dataset(<span class="string">"iris"</span>)</span><br><span class="line">sns.pairplot(iris);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_144_0.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_144_0.png" class="">
 <p>对于jointplot()和JointGrid之间的关系，pairplot()函数是建立在一个PairGrid对象上的，可以直接使用它来获得更大的灵活性：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">g = sns.PairGrid(iris)</span><br><span class="line">g.map_diag(sns.kdeplot)</span><br><span class="line">g.map_offdiag(sns.kdeplot, cmap=<span class="string">"Blues_d"</span>, n_levels=<span class="number">6</span>);</span><br></pre></td></tr></table></figure>
-<img src="/2017/07/08/introduction-to-seaborn/output_146_1.png">
+<img src="/2017/07/08/introduction-to-seaborn/output_146_1.png" class="">
 
       
     </div>
@@ -636,7 +638,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -644,7 +646,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -671,12 +673,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

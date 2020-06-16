@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="Kafka Connect简介与部署">
+  <meta name="description" content="Kafka Connect简介与部署"/>
 
 
 
 
-  <meta name="keywords" content="Kafka Connect, Anthon">
+  <meta name="keywords" content="Kafka Connect, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2020/03/10/Kafka-Connect简介与部署/">
+<link rel="canonical" href="http://code-monkey.top/2020/03/10/Kafka-Connect简介与部署/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Kafka Connect简介与部署 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Kafka Connect简介与部署 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2020/03/10/Kafka-Connect简介与部署/" data-title="Kafka Connect简介与部署">
+        <span class="post-visits"
+             data-url="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/"
+             data-title="Kafka Connect简介与部署">
           阅读次数 0
         </span>
         
@@ -255,7 +257,7 @@
 <li>流/批处理集成</li>
 </ul>
 <p>KafkaCnnect有两个核心概念：Source和Sink。 Source负责导入数据到Kafka，Sink负责从Kafka导出数据，它们都被称为Connector。</p>
-<img src="/2020/03/10/Kafka-Connect简介与部署/Kafka_and_the_age_of_streaming_data_integration_image_sources_sinks.png">
+<img src="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/Kafka_and_the_age_of_streaming_data_integration_image_sources_sinks.png" class="">
 <a id="more"></a>
 <h2 id="Kafka-connect概念"><a href="#Kafka-connect概念" class="headerlink" title="Kafka connect概念"></a>Kafka connect概念</h2><p>Kafka connect的几个重要的概念包括：connectors、tasks、workers和converters。</p>
 <ul>
@@ -273,16 +275,16 @@
 <li><a href="https://docs.confluent.io/current/connect/devguide.html#connect-devguide" target="_blank" rel="noopener">developer guide</a></li>
 <li><a href="https://kafka.apache.org/documentation/#connect" target="_blank" rel="noopener">kafka documentation</a></li>
 </ol>
-<img src="/2020/03/10/Kafka-Connect简介与部署/connector-model-simple.png">
+<img src="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/connector-model-simple.png" class="">
 <h3 id="Tasks"><a href="#Tasks" class="headerlink" title="Tasks"></a>Tasks</h3><p>task是kafka connect数据模型的主角，每一个connector都会协调一系列的task去执行任务，connector可以把一项工作分割成许多的task，然后再把task分发到各个worker中去执行（分布式模式下），task不自己保存自己的状态信息，而是交给特定的kafka 主题去保存（config.storage.topic 和status.storage.topic）。</p>
-<img src="/2020/03/10/Kafka-Connect简介与部署/data-model-simple.png">
+<img src="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/data-model-simple.png" class="">
 <h4 id="Task-Rebalancing"><a href="#Task-Rebalancing" class="headerlink" title="Task Rebalancing"></a>Task Rebalancing</h4><p>在分布式模式下有一个概念叫做任务再平衡（Task Rebalancing），当一个connector第一次提交到集群时，所有的worker都会做一个task rebalancing从而保证每一个worker都运行了差不多数量的工作，而不是所有的工作压力都集中在某个worker进程中，而当某个进程挂了之后也会执行task rebalance。</p>
-<p>当一个task fail，但是是由于是一个异常case，那么task rebalancing并不会被触发，这个时候框架并不会自动重启task，需要通过<a href="https://docs.confluent.io/current/connect/managing/monitoring.html#connect-managing-rest-examples" target="_blank" rel="noopener">rest api</a>来重启<br><img src="/2020/03/10/Kafka-Connect简介与部署/task-failover.png"></p>
+<p>当一个task fail，但是是由于是一个异常case，那么task rebalancing并不会被触发，这个时候框架并不会自动重启task，需要通过<a href="https://docs.confluent.io/current/connect/managing/monitoring.html#connect-managing-rest-examples" target="_blank" rel="noopener">rest api</a>来重启<br><img src="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/task-failover.png" class=""></p>
 <h3 id="Workers"><a href="#Workers" class="headerlink" title="Workers"></a>Workers</h3><p>connectors和tasks都是逻辑工作单位，必须安排在进程中执行，而在kafka connect中，这些进程就是workers，分别有两种worker：standalone和distributed。这里不对standalone进行介绍，具体的可以查看官方文档。我个人觉得distributed worker很棒，因为它提供了可扩展性以及自动容错的功能，你可以使用一个group.ip来启动很多worker进程，在有效的worker进程中它们会自动的去协调执行connector和task，如果你新加了一个worker或者挂了一个worker，其他的worker会检测到然后在重新分配connector和task。</p>
-<img src="/2020/03/10/Kafka-Connect简介与部署/worker-model-basics.png">
+<img src="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/worker-model-basics.png" class="">
 <h3 id="Converters"><a href="#Converters" class="headerlink" title="Converters"></a>Converters</h3><p>converter会把bytes数据转换成kafka connect内部的格式，也可以把kafka connect内部存储格式的数据转变成bytes。</p>
 <p>converter对connector来说是解耦的，所以其他的connector都可以重用，例如，使用了avro converter，那么jdbc connector可以写avro格式的数据到kafka，当然，hdfs connector也可以从kafka中读出avro格式的数据。</p>
-<img src="/2020/03/10/Kafka-Connect简介与部署/converter-basics.png">
+<img src="/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/converter-basics.png" class="">
 <h3 id="Transforms"><a href="#Transforms" class="headerlink" title="Transforms"></a>Transforms</h3><p>connector可以配置一些transformations，用来对于单独一条message做一些轻量级或者简单的逻辑修改。这对于小的数据调整和事件路由都很方便，当然多种transformations可以在connector配置中链式串起来。当然，对于复杂的转换和多条message的处理逻辑还是建议采用<a href="https://docs.confluent.io/current/ksql/docs/index.html" target="_blank" rel="noopener">KSQL</a>或者Kafka Streams。</p>
 <p>一个transform就是一个简单的函数，接受一个record作为输入，并输出修改之后的结果。Kafka Connect提供了很多非常有用的transform。当然你可以自己实现一个基于自己的逻辑的Transformation，然后将实现之后的transform打包作为一个Kafka Connect 插件，并在任何connector上使用。</p>
 <p>常见的Transform参考<a href="https://docs.confluent.io/current/connect/transforms/index.html#connect-transforms-supported" target="_blank" rel="noopener">Kafka Connect Transformations</a></p>
@@ -329,11 +331,11 @@
 <p>当<code>errors.tolerance</code>设置为<code>none</code>， 一个无效的记录会导致connector task立即失败，并且connector会进入到failed state。 为了解决这个问题，你需要去查看Kafka connect Worker的自制，找出导致错误的原因，修改并重启connector</p>
 <p>当<code>errors.tolerance</code>设置为<code>all</code>， 所有无效或者错误的记录都会被忽略，并且connect会正常继续处理。没有任何错误信息会被写到Connect Worker 日志。 所以需要采用其他手段来监控错误的情况，例如采用internal metrics或者记录源和处理之后的记录的条数</p>
 <h4 id="Creating-a-Dead-Letter-Queue-Topic"><a href="#Creating-a-Dead-Letter-Queue-Topic" class="headerlink" title="Creating a Dead Letter Queue Topic"></a>Creating a Dead Letter Queue Topic</h4><p>可以在sink配置中，采用以下方式来创建一个dead letter queue</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">errors.tolerance = all</span><br><span class="line">errors.deadletterqueue.topic.name = &lt;dead-letter-topic-name&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">errors.tolerance &#x3D; all</span><br><span class="line">errors.deadletterqueue.topic.name &#x3D; &lt;dead-letter-topic-name&gt;</span><br></pre></td></tr></table></figure>
 <p>以下为一个sink配置示例</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> &#123;</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"gcs-sink-01"</span>,</span><br><span class="line">  <span class="attr">"config"</span>: &#123;</span><br><span class="line">    <span class="attr">"connector.class"</span>: <span class="string">"io.confluent.connect.gcs.GcsSinkConnector"</span>,</span><br><span class="line">    <span class="attr">"tasks.max"</span>: <span class="string">"1"</span>,</span><br><span class="line">    <span class="attr">"topics"</span>: <span class="string">"gcs_topic"</span>,</span><br><span class="line">    <span class="attr">"gcs.bucket.name"</span>: <span class="string">"&lt;my-gcs-bucket&gt;"</span>,</span><br><span class="line">    <span class="attr">"gcs.part.size"</span>: <span class="string">"5242880"</span>,</span><br><span class="line">    <span class="attr">"flush.size"</span>: <span class="string">"3"</span>,</span><br><span class="line">    <span class="attr">"storage.class"</span>: <span class="string">"io.confluent.connect.gcs.storage.GcsStorage"</span>,</span><br><span class="line">    <span class="attr">"format.class"</span>: <span class="string">"io.confluent.connect.gcs.format.avro.AvroFormat"</span>,</span><br><span class="line">    <span class="attr">"partitioner.class"</span>: <span class="string">"io.confluent.connect.storage.partitioner.DefaultPartitioner"</span>,</span><br><span class="line">    <span class="attr">"value.converter"</span>: <span class="string">"io.confluent.connect.avro.AvroConverter"</span>,</span><br><span class="line">    <span class="attr">"value.converter.schema.registry.url"</span>: <span class="string">"http://localhost:8081"</span>,</span><br><span class="line">    <span class="attr">"schema.compatibility"</span>: <span class="string">"NONE"</span>,</span><br><span class="line">    <span class="attr">"confluent.topic.bootstrap.servers"</span>: <span class="string">"localhost:9092"</span>,</span><br><span class="line">    <span class="attr">"confluent.topic.replication.factor"</span>: <span class="string">"1"</span>,</span><br><span class="line">    <span class="attr">"errors.tolerance"</span>: <span class="string">"all"</span>,</span><br><span class="line">    <span class="attr">"errors.deadletterqueue.topic.name"</span>: <span class="string">"dlq-gcs-sink-01"</span>,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>即使dead letter topic中记录了失败的record，但是也不会显示出为什么失败，可以增加如下配置将失败信息也放到记录的header中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">errors.deadletterqueue.context.headers.enable = true</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">errors.deadletterqueue.context.headers.enable &#x3D; true</span><br></pre></td></tr></table></figure>
 <p>当这个配置设置为<code>true</code>之后，Record Headers会被加入到dead letter queue中。你可以使用kafkacat Utility 来查看header并找出失败原因。</p>
 <p>需要注意： 为了避免和原有的record header冲突，dead letter queue的header key是以<code>_connect.errors</code>开头</p>
 <p>以下是更新之后的配置</p>
@@ -387,7 +389,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2020/03/10/Kafka-Connect简介与部署/">http://code-monkey.top/2020/03/10/Kafka-Connect简介与部署/</a>
+      <a href="http://code-monkey.top/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/">http://code-monkey.top/2020/03/10/Kafka-Connect%E7%AE%80%E4%BB%8B%E4%B8%8E%E9%83%A8%E7%BD%B2/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -415,7 +417,7 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2020/04/20/YAML-语言教程/">
+      <a class="prev" href="/2020/04/20/YAML-%E8%AF%AD%E8%A8%80%E6%95%99%E7%A8%8B/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">YAML 语言教程</span>
         <span class="prev-text nav-mobile">上一篇</span>
@@ -465,7 +467,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -473,7 +475,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -500,12 +502,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

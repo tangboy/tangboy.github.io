@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="机器学习，编程，玩">
+  <meta name="description" content="机器学习，编程，玩"/>
 
 
 
@@ -36,24 +36,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/page/8/">
+<link rel="canonical" href="http://code-monkey.top/page/8/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -96,8 +96,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -216,7 +216,70 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/10/14/聚类算法/">聚类算法</a>
+          <a class="post-link" href="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/">K近邻法(KNN)原理小结</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-10-18
+        </span>
+        
+        
+        <span class="post-visits"
+             data-url="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/"
+             data-title="K近邻法(KNN)原理小结">
+          阅读次数 0
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>K近邻法(k-nearst neighbors,KNN)是一种很基本的机器学习方法了，在我们平常的生活中也会不自主的应用。比如，我们判断一个人的人品，只需要观察他来往最密切的几个人的人品好坏就可以得出了。这里就运用了KNN的思想。KNN方法既可以做分类，也可以做回归，这点和决策树算法相同。</p>
+<p>KNN做回归和分类的主要区别在于最后做预测时候的决策方式不同。KNN做分类预测时，一般是选择多数表决法，即训练集里和预测的样本特征最近的K个样本，预测为里面有最多类别数的类别。而KNN做回归时，一般是选择平均法，即最近的K个样本的样本输出的平均值作为回归预测值。由于两者区别不大，虽然本文主要是讲解KNN的分类方法，但思想对KNN的回归方法也适用。由于scikit-learn里只使用了蛮力实现(brute-force)，KD树实现(KDTree)和球树(BallTree)实现，本文只讨论这几种算法的实现原理。其余的实现方法比如BBF树，MVP树等，在这里不做讨论。</p>
+<h2 id="KNN算法三要素"><a href="#KNN算法三要素" class="headerlink" title="KNN算法三要素"></a>KNN算法三要素</h2><p>KNN算法我们主要要考虑三个重要的要素，对于固定的训练集，只要这三点确定了，算法的预测方式也就决定了。这三个最终的要素是k值的选取，距离度量的方式和分类决策规则。</p>
+<p>对于分类决策规则，一般都是使用前面提到的多数表决法。所以我们重点是关注与k值的选择和距离的度量方式。</p>
+<p>对于k值的选择，没有一个固定的经验，一般根据样本的分布，选择一个较小的值，可以通过交叉验证选择一个合适的k值。</p>
+<p>选择较小的k值，就相当于用较小的领域中的训练实例进行预测，训练误差会减小，只有与输入实例较近或相似的训练实例才会对预测结果起作用，与此同时带来的问题是泛化误差会增大，换句话说，K值的减小就意味着整体模型变得复杂，容易发生过拟合；</p>
+<p>选择较大的k值，就相当于用较大领域中的训练实例进行预测，其优点是可以减少泛化误差，但缺点是训练误差会增大。这时候，与输入实例较远（不相似的）训练实例也会对预测器作用，使预测发生错误，且K值的增大就意味着整体的模型变得简单。</p>
+<p>一个极端是k等于样本数m，则完全没有分类，此时无论输入实例是什么，都只是简单的预测它属于在训练实例中最多的类，模型过于简单。</p>
+<p>对于距离的度量，我们有很多的距离度量方式，但是最常用的是欧式距离，即对于两个n维向量x和y，两者的欧式距离定义为：</p>
+<script type="math/tex; mode=display">D(x,y) = \sqrt{(x_1-y_1)^2 + (x_2-y_2)^2 + ... + (x_n-y_n)^2} = \sqrt{\sum\limits_{i=1}^{n}(x_i-y_i)^2}</script><p>大多数情况下，欧式距离可以满足我们的需求，我们不需要再去操心距离的度量。</p>
+<p>当然我们也可以用他的距离度量方式。比如曼哈顿距离，定义为：</p>
+<script type="math/tex; mode=display">D(x,y) =|x_1-y_1| + |x_2-y_2| + ... + |x_n-y_n| =\sum\limits_{i=1}^{n}|x_i-y_i|</script><p>更加通用点，比如闵可夫斯基距离(Minkowski Distance)，定义为：</p>
+<script type="math/tex; mode=display">D(x,y) =\sqrt[p]{(|x_1-y_1|)^p + (|x_2-y_2|)^p + ... + (|x_n-y_n|)^p} =\sqrt[p]{\sum\limits_{i=1}^{n}(|x_i-y_i|)^p}</script><p>可以看出，欧式距离是闵可夫斯基距离距离在p=2时的特例，而曼哈顿距离是p=1时的特例。<br>
+          <div class="read-more">
+            <a href="/2017/10/18/K%E8%BF%91%E9%82%BB%E6%B3%95-KNN-%E5%8E%9F%E7%90%86%E5%B0%8F%E7%BB%93/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+      
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/10/14/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/">聚类算法</a>
         
       </h1>
 
@@ -226,7 +289,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/10/14/聚类算法/" data-title="聚类算法">
+        <span class="post-visits"
+             data-url="/2017/10/14/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/"
+             data-title="聚类算法">
           阅读次数 0
         </span>
         
@@ -254,22 +319,22 @@
 </ol>
 <h3 id="完整计算过程"><a href="#完整计算过程" class="headerlink" title="完整计算过程"></a>完整计算过程</h3><ol>
 <li><p>设置实验数据<br>运行之后，效果如下图所示：</p>
-<img src="/2017/10/14/聚类算法/kmeans_1.png">
+<img src="/2017/10/14/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/kmeans_1.png" class="">
 <p>在图中，ABCDE五个点是待分类点，k1、k2是两个种子点。</p>
 </li>
 <li><p>计算ABCDE五个点到k1、k2的距离，离哪个点近，就属于哪个点，进行初步分类。<br>  结果如图：</p>
-  <img src="/2017/10/14/聚类算法/kmeans_2.png">
+  <img src="/2017/10/14/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/kmeans_2.png" class="">
 <p>   A、B属于k1，C、D、E属于k2</p>
 </li>
 <li><p>重新计算k1、k2的坐标。这里使用简单的坐标的平均值，使用其他算法也可以(例如以下三个公式)<br> a) Minkowski Distance公式——λ可以随意取值，可以是负数，也可以是正数，或是无穷大。<br> b) Euclidean Distance公式——也就是第一个公式λ=2的情况<br> c) CityBlock Distance公式——也就是第一个公式λ=1的情况</p>
 <p> 采用坐标平均值算法的结果如图：</p>
-  <img src="/2017/10/14/聚类算法/kmeans_3.png">
+  <img src="/2017/10/14/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/kmeans_3.png" class="">
 </li>
 <li><p>重复2、3步，直到最终分类完毕。下面是完整的示例代码：</p>
 </li>
 </ol>
           <div class="read-more">
-            <a href="/2017/10/14/聚类算法/" class="read-more-link">阅读更多</a>
+            <a href="/2017/10/14/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -287,7 +352,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/09/20/解密谷歌机器学习工程最佳实践/">解密谷歌机器学习工程最佳实践</a>
+          <a class="post-link" href="/2017/09/20/%E8%A7%A3%E5%AF%86%E8%B0%B7%E6%AD%8C%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">解密谷歌机器学习工程最佳实践</a>
         
       </h1>
 
@@ -297,7 +362,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/09/20/解密谷歌机器学习工程最佳实践/" data-title="解密谷歌机器学习工程最佳实践">
+        <span class="post-visits"
+             data-url="/2017/09/20/%E8%A7%A3%E5%AF%86%E8%B0%B7%E6%AD%8C%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"
+             data-title="解密谷歌机器学习工程最佳实践">
           阅读次数 0
         </span>
         
@@ -317,7 +384,7 @@
 
         
           <p>转载于 <strong>张相於</strong></p>
-<p>本文是对<rules of="" machine="" learning:="" best="" practices="" for="" ml="" engineering="">一文的翻译+解读。看过我翻译文章的同学知道我翻译文章一般都不太老实，没有那么“忠于原著”，本篇也不例外，本篇对于原文的解读大概有三种形式：</rules></p>
+<p>本文是对<Rules of Machine Learning: Best Practices for ML Engineering>一文的翻译+解读。看过我翻译文章的同学知道我翻译文章一般都不太老实，没有那么“忠于原著”，本篇也不例外，本篇对于原文的解读大概有三种形式：</p>
 <ol>
 <li><strong>原文翻译</strong> 对于作者本身阐述的比较好，而我也没什么可补充的部分，基本会原文翻译。</li>
 <li><strong>半翻译半解读</strong> 有的条目我觉得有些自己的经验和感想可以和大家分享，就会加一些自己的解读在里面。</li>
@@ -333,7 +400,7 @@
 </blockquote>
 <p>这句话一定程度上是对整篇文章（叫手册可能更合适）的一个高度概括，ML在实际工作确实更多是工程问题，而不是算法问题。优先从工程效率中要效果，当把这部分榨干后，再考虑算法的升级。</p>
           <div class="read-more">
-            <a href="/2017/09/20/解密谷歌机器学习工程最佳实践/" class="read-more-link">阅读更多</a>
+            <a href="/2017/09/20/%E8%A7%A3%E5%AF%86%E8%B0%B7%E6%AD%8C%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -351,7 +418,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/09/10/Word2vec原理浅析及tensorflow实现/">Word2vec原理浅析及tensorflow实现</a>
+          <a class="post-link" href="/2017/09/10/Word2vec%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90%E5%8F%8Atensorflow%E5%AE%9E%E7%8E%B0/">Word2vec原理浅析及tensorflow实现</a>
         
       </h1>
 
@@ -361,7 +428,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/09/10/Word2vec原理浅析及tensorflow实现/" data-title="Word2vec原理浅析及tensorflow实现">
+        <span class="post-visits"
+             data-url="/2017/09/10/Word2vec%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90%E5%8F%8Atensorflow%E5%AE%9E%E7%8E%B0/"
+             data-title="Word2vec原理浅析及tensorflow实现">
           阅读次数 0
         </span>
         
@@ -387,29 +456,29 @@
 </ul>
 <p>词向量的重要意义在于将自然语言转换成了计算机能够理解的向量。相对于词袋模型、TF-IDF等模型，词向量能抓住词的上下文、语义，衡量词与词的相似性，在文本分类、情感分析等许多自然语言处理领域有重要作用。</p>
 <h2 id="Word2vec详细实现"><a href="#Word2vec详细实现" class="headerlink" title="Word2vec详细实现"></a>Word2vec详细实现</h2><p>word2vec的详细实现，简而言之，就是一个三层的神经网络。要理解word2vec的实现，需要的预备知识是神经网络和Logistic Regression。</p>
-<h3 id="神经网络结构"><a href="#神经网络结构" class="headerlink" title="神经网络结构"></a>神经网络结构</h3><img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/1.png">
+<h3 id="神经网络结构"><a href="#神经网络结构" class="headerlink" title="神经网络结构"></a>神经网络结构</h3><img src="/2017/09/10/Word2vec%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90%E5%8F%8Atensorflow%E5%AE%9E%E7%8E%B0/1.png" class="">
 <p>上图是Word2vec的简要流程图。首先假设，词库里的词数为10000; 词向量的长度为300（根据<a href="https://www.youtube.com/playlist?list=PLlJy-eBtNFt4CSVWYqscHDdP58M3zFHIG" target="_blank" rel="noopener">斯坦福CS224d</a>的讲解，词向量一般为25-1000维，300维是一个好的选择）。下面以单个训练样本为例，依次介绍每个部分的含义。</p>
 <ol>
 <li>输入层：输入为一个词的one-hot向量表示。这个向量长度为10000。假设这个词为ants，ants在词库中的ID为i，则输入向量的第i个分量为1，其余为0。[0, 0, …, 0, 0, 1, 0, 0, …, 0, 0]</li>
 <li>隐藏层：隐藏层的神经元个数就是词向量的长度。隐藏层的参数是一个[10000 ，300]的矩阵。 <strong>实际上，这个参数矩阵就是词向量</strong>。回忆一下矩阵相乘，一个one-hot行向量和矩阵相乘，结果就是矩阵的第i行。经过隐藏层，实际上就是把10000维的one-hot向量映射成了最终想要得到的300维的词向量。</li>
 </ol>
-<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/2.png">
+<img src="/2017/09/10/Word2vec%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90%E5%8F%8Atensorflow%E5%AE%9E%E7%8E%B0/2.png" class="">
 <ol>
 <li>输出层: 输出层的神经元个数为总词数10000，参数矩阵尺寸为[300，10000]。词向量经过矩阵计算后再加上softmax归一化，重新变为10000维的向量，每一维对应词库中的一个词与输入的词（在这里是ants）共同出现在上下文中的概率。</li>
 </ol>
-<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/3.png">
+<img src="/2017/09/10/Word2vec%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90%E5%8F%8Atensorflow%E5%AE%9E%E7%8E%B0/3.png" class="">
 <p>上图中计算了car与ants共现的概率，car所对应的300维列向量就是输出层参数矩阵中的一列。输出层的参数矩阵是[300，10000]，也就是计算了词库中所有词与ants共现的概率。输出层的参数矩阵在训练完毕后没有作用。</p>
 <ol>
 <li>训练：训练样本（x, y）有输入也有输出，我们知道哪个词实际上跟ants共现，因此y也是一个10000维的向量。损失函数跟Logistic Regression相似，是神经网络的最终输出向量和y的交叉熵（cross-entropy）。最后用随机梯度下降来求解。</li>
 </ol>
-<img src="/2017/09/10/Word2vec原理浅析及tensorflow实现/4.png">
+<img src="/2017/09/10/Word2vec%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90%E5%8F%8Atensorflow%E5%AE%9E%E7%8E%B0/4.png" class="">
 <p>上述步骤是一个词作为输入和一个上下文中的词作为输出的情况，但实际情况显然更复杂，什么是上下文呢？用一个词去预测周围的其他词，还是用周围的好多词来预测一个词？这里就要引入实际训练时的两个模型skip-gram和CBOW。<br>
           <div class="read-more">
-            <a href="/2017/09/10/Word2vec原理浅析及tensorflow实现/" class="read-more-link">阅读更多</a>
+            <a href="/2017/09/10/Word2vec%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90%E5%8F%8Atensorflow%E5%AE%9E%E7%8E%B0/" class="read-more-link">阅读更多</a>
           </div>
         
       
-    </p></div>
+    </div>
 
     
 
@@ -423,7 +492,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/">一篇文章搞懂Python中的面向对象编程</a>
+          <a class="post-link" href="/2017/09/07/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E6%90%9E%E6%87%82Python%E4%B8%AD%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B/">一篇文章搞懂Python中的面向对象编程</a>
         
       </h1>
 
@@ -433,7 +502,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/09/07/一篇文章搞懂Python中的面向对象编程/" data-title="一篇文章搞懂Python中的面向对象编程">
+        <span class="post-visits"
+             data-url="/2017/09/07/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E6%90%9E%E6%87%82Python%E4%B8%AD%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B/"
+             data-title="一篇文章搞懂Python中的面向对象编程">
           阅读次数 0
         </span>
         
@@ -465,7 +536,7 @@
 <p>可以自由地给一个实例变量绑定属性，比如，给实例bart绑定一个name属性：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart.name = <span class="string">"diggzhang"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bart.name</span><br><span class="line"><span class="string">'diggzhang'</span></span><br></pre></td></tr></table></figure>
           <div class="read-more">
-            <a href="/2017/09/07/一篇文章搞懂Python中的面向对象编程/" class="read-more-link">阅读更多</a>
+            <a href="/2017/09/07/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E6%90%9E%E6%87%82Python%E4%B8%AD%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -483,7 +554,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/09/07/一篇文章踩遍Python中的坑/">一篇文章踩遍Python中的坑</a>
+          <a class="post-link" href="/2017/09/07/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E8%B8%A9%E9%81%8DPython%E4%B8%AD%E7%9A%84%E5%9D%91/">一篇文章踩遍Python中的坑</a>
         
       </h1>
 
@@ -493,7 +564,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/09/07/一篇文章踩遍Python中的坑/" data-title="一篇文章踩遍Python中的坑">
+        <span class="post-visits"
+             data-url="/2017/09/07/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E8%B8%A9%E9%81%8DPython%E4%B8%AD%E7%9A%84%E5%9D%91/"
+             data-title="一篇文章踩遍Python中的坑">
           阅读次数 0
         </span>
         
@@ -516,7 +589,7 @@
 <p>这个问题是变量作用域问题，在gen=(x for _ in xrange(10))中gen是一个generator,在generator中变量有自己的一套作用域，与其余作用域空间相互隔离。因此，将会出现这样的 NameError: name ‘x’ is not defined的问题，那么解决方案是什么呢？答案是：用lambda 。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">7</span>]: <span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">   ...:     x = <span class="number">1</span></span><br><span class="line">   ...:     gen = (<span class="keyword">lambda</span> x: (x <span class="keyword">for</span> _ <span class="keyword">in</span> xrange(<span class="number">10</span>)))(x)</span><br><span class="line">   ...:</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: <span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(list(A.gen))</span><br><span class="line">   ...:</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
           <div class="read-more">
-            <a href="/2017/09/07/一篇文章踩遍Python中的坑/" class="read-more-link">阅读更多</a>
+            <a href="/2017/09/07/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E8%B8%A9%E9%81%8DPython%E4%B8%AD%E7%9A%84%E5%9D%91/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -534,7 +607,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/09/05/一篇文章搞懂Python中的函数式编程/">一篇文章搞懂Python中的函数式编程</a>
+          <a class="post-link" href="/2017/09/05/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E6%90%9E%E6%87%82Python%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/">一篇文章搞懂Python中的函数式编程</a>
         
       </h1>
 
@@ -544,7 +617,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/09/05/一篇文章搞懂Python中的函数式编程/" data-title="一篇文章搞懂Python中的函数式编程">
+        <span class="post-visits"
+             data-url="/2017/09/05/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E6%90%9E%E6%87%82Python%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/"
+             data-title="一篇文章搞懂Python中的函数式编程">
           阅读次数 0
         </span>
         
@@ -569,7 +644,7 @@
 <p>Python对函数式编程提供部分支持。由于Python允许使用变量，因此，Python不是纯函数式编程语言。</p>
 <h2 id="高阶函数"><a href="#高阶函数" class="headerlink" title="高阶函数"></a>高阶函数</h2><p>高阶函数英文叫Higher-order function。什么是高阶函数？我们以实际代码为例子，一步一步深入概念。</p>
           <div class="read-more">
-            <a href="/2017/09/05/一篇文章搞懂Python中的函数式编程/" class="read-more-link">阅读更多</a>
+            <a href="/2017/09/05/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E6%90%9E%E6%87%82Python%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -587,7 +662,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/08/05/Python中的进程和线程/">Python中的进程和线程</a>
+          <a class="post-link" href="/2017/08/05/Python%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B/">Python中的进程和线程</a>
         
       </h1>
 
@@ -597,7 +672,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/08/05/Python中的进程和线程/" data-title="Python中的进程和线程">
+        <span class="post-visits"
+             data-url="/2017/08/05/Python%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B/"
+             data-title="Python中的进程和线程">
           阅读次数 0
         </span>
         
@@ -637,7 +714,7 @@
 <p>多进程和多线程的程序涉及到同步、数据共享的问题，编写起来更复杂。</p>
 <p>来啊，征服进程和线程，越过Python学习的一个大坎儿吧。</p>
           <div class="read-more">
-            <a href="/2017/08/05/Python中的进程和线程/" class="read-more-link">阅读更多</a>
+            <a href="/2017/08/05/Python%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -665,7 +742,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/07/30/model-evaluation/" data-title="机器学习模型评测指标">
+        <span class="post-visits"
+             data-url="/2017/07/30/model-evaluation/"
+             data-title="机器学习模型评测指标">
           阅读次数 0
         </span>
         
@@ -684,14 +763,14 @@
         
 
         
-          <p>假定有一个二分类问题，比如判定商品是否是假货。给系统一个样本，系统将会判断该样本为“真”（Predicted positive），或“假”（Predicted Negative）。但是当然，系统的判断与真实判断（actual positive/negative）是有误差的，将原本是真的判为真，就是TP（True Positive），原本真的判为假，就是FN（False Negative），原本假的判为真，就是FP（False Positive），原本假的判为假，就是TN（True Negative）。<br><img src="/2017/07/30/model-evaluation/metric.png"></p>
+          <p>假定有一个二分类问题，比如判定商品是否是假货。给系统一个样本，系统将会判断该样本为“真”（Predicted positive），或“假”（Predicted Negative）。但是当然，系统的判断与真实判断（actual positive/negative）是有误差的，将原本是真的判为真，就是TP（True Positive），原本真的判为假，就是FN（False Negative），原本假的判为真，就是FP（False Positive），原本假的判为假，就是TN（True Negative）。<br><img src="/2017/07/30/model-evaluation/metric.png" class=""></p>
 <p><strong>精确率(Precision)</strong>是指在所有系统判定的“真”的样本中，确实是真的占比，就是<strong>TP/(TP+FP)</strong></p>
 <p><strong>召回率(Recall)</strong>是指在所有确实为真的样本中，被判为“真”的占比，就是<strong>TP/(TP + FN)</strong></p>
 <p><strong>TPR(True Positive Rate)</strong>的定义和Recall定义一样</p>
 <p><strong>FPR(False Positive Rate)</strong>, 又被称为”Probability of False Alarm”, <strong>就是所有确实为“假”的样本中，被误判为真的样本，或者FP/(TN + FP)</strong></p>
 <p><strong>F1</strong> 是为了综合考量精确率和召回率而设计的一个指标，一般公式为取P和R的 <strong>harmonic mean:2<em>Precision</em>Recall/(Precision+Recall)</strong>。</p>
 <p><strong>ROC=Receiver Operating Characteristic</strong>，是TPR vs FPR的曲线；与之对应的是Precision-Recall Curve，展示的是Precision vs Recall的曲线。</p>
-<img src="/2017/07/30/model-evaluation/metric2.png">
+<img src="/2017/07/30/model-evaluation/metric2.png" class="">
           <div class="read-more">
             <a href="/2017/07/30/model-evaluation/" class="read-more-link">阅读更多</a>
           </div>
@@ -721,7 +800,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2017/07/15/how-to-read-source-code/" data-title="我是如何阅读开源项目的源代码的">
+        <span class="post-visits"
+             data-url="/2017/07/15/how-to-read-source-code/"
+             data-title="我是如何阅读开源项目的源代码的">
           阅读次数 0
         </span>
         
@@ -755,61 +836,6 @@
         
       
     </div>
-
-    
-
-    
-
-  </article>
-
-      
-        
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/07/09/Learn-Java-Collection/">Java 集合学习指南</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-07-09
-        </span>
-        
-        
-        <span class="post-visits" data-url="/2017/07/09/Learn-Java-Collection/" data-title="Java 集合学习指南">
-          阅读次数 0
-        </span>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h1 id="HashMap的实现原理"><a href="#HashMap的实现原理" class="headerlink" title="HashMap的实现原理"></a>HashMap的实现原理</h1><h2 id="HashMap概述"><a href="#HashMap概述" class="headerlink" title="HashMap概述"></a>HashMap概述</h2><p>HashMap 是基于哈希表的 Map 接口的非同步实现。此实现提供所有可选的映射操作，并允许使用 null 值和 null 键。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。</p>
-<p>此实现假定哈希函数将元素适当地分布在各桶之间，可为基本操作（get 和 put）提供稳定的性能。迭代 collection 视图所需的时间与 HashMap 实例的“容量”（桶的数量）及其大小（键-值映射关系数）成比例。所以，如果迭代性能很重要，则不要将初始容量设置得太高或将加载因子设置得太低。也许大家开始对这段话有一点不太懂，不过不用担心，当你读完这篇文章后，就能深切理解这其中的含义了。</p>
-<p>需要注意的是：Hashmap 不是同步的，如果多个线程同时访问一个 HashMap，而其中至少一个线程从结构上（指添加或者删除一个或多个映射关系的任何操作）修改了，则必须保持外部同步，以防止对映射进行意外的非同步访问。</p>
-<h2 id="HashMap的数据结构"><a href="#HashMap的数据结构" class="headerlink" title="HashMap的数据结构"></a>HashMap的数据结构</h2><p>在 Java 编程语言中，最基本的结构就是两种，一个是数组，另外一个是指针（引用），<strong>HashMap 就是通过这两个数据结构进行实现。HashMap实际上是一个“链表散列”的数据结构，即数组和链表的结合体。</strong></p>
-<img src="/2017/07/09/Learn-Java-Collection/hashmap1.jpg">
-<p>从上图中可以看出，HashMap 底层就是一个数组结构，数组中的每一项又是一个链表。当新建一个 HashMap 的时候，就会初始化一个数组。</p>
-<p>我们通过 JDK 中的 HashMap 源码进行一些学习，首先看一下构造函数：<br>
-          <div class="read-more">
-            <a href="/2017/07/09/Learn-Java-Collection/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </p></div>
 
     
 
@@ -862,7 +888,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -870,7 +896,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -897,12 +923,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="mathjax 在hexo应用">
+  <meta name="description" content="mathjax 在hexo应用"/>
 
 
 
 
-  <meta name="keywords" content="Mathjax, Anthon">
+  <meta name="keywords" content="Mathjax, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2016/12/25/mathjax-test/">
+<link rel="canonical" href="http://code-monkey.top/2016/12/25/mathjax-test/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> mathjax 在hexo应用 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> mathjax 在hexo应用 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2016/12/25/mathjax-test/" data-title="mathjax 在hexo应用">
+        <span class="post-visits"
+             data-url="/2016/12/25/mathjax-test/"
+             data-title="mathjax 在hexo应用">
           阅读次数 0
         </span>
         
@@ -254,7 +256,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;% <span class="keyword">if</span> (page.mathjax)&#123; %&gt;</span><br><span class="line">&lt;%- partial(<span class="string">'mathjax'</span>) %&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure>
 <p>在文章需要调用 Mathjax 时, 只需在 front-matter 前加上 mathjax: true 即可, 即</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">title: 测试Mathjax</span><br><span class="line">date: 2014-2-14 23:25:23</span><br><span class="line">tags: Mathmatics</span><br><span class="line">categories: Mathjax</span><br><span class="line">mathjax: true</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p><em>Markdown</em> 里使用 <em>Mathjax</em> 有一个很大的缺点, 比如下面这个问题.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">博主你好，你这样用mathjax，在用markdown写博客时能正常书写带下标的公式吗？</span><br><span class="line">比如下面一段话：</span><br><span class="line">This is an example for $x_mu$ and $y_mu$.</span><br><span class="line">两个`—`会被看成markdown中的斜体。</span><br></pre></td></tr></table></figure></p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p><em>Markdown</em> 里使用 <em>Mathjax</em> 有一个很大的缺点, 比如下面这个问题.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">博主你好，你这样用mathjax，在用markdown写博客时能正常书写带下标的公式吗？</span><br><span class="line">比如下面一段话：</span><br><span class="line">This is an example for $x_mu$ and $y_mu$.</span><br><span class="line">两个&#96;—&#96;会被看成markdown中的斜体。</span><br></pre></td></tr></table></figure></p>
 <p>这个的解决办法可以使用转义符, 即如下输出即可</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">This is an example for $x\_mu$ and $y\_mu$.</span><br></pre></td></tr></table></figure>
 <h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>除了上述方法以外, 还有下面几种.</p>
@@ -262,12 +264,12 @@
 <p>在<em>Hexo</em>文件夹中执行<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo math install</span><br></pre></td></tr></table></figure></p>
 <p>在<em>_config.yml</em>文件中添加：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">plugins:</span><br><span class="line">   hexo-math</span><br></pre></td></tr></table></figure><br>对于不含特殊符号的公式，可以直接使用 MathJax 的 inline math 表达式. 如果含有特殊符号，则需要人肉 escape，如 \ 之类的特殊符号在 LaTex 表达式中出现频率很高，这样就很麻烦，使用 tag 能够省不少事。</p>
 <h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h3 id="行内公式"><a href="#行内公式" class="headerlink" title="行内公式"></a>行内公式</h3><ol>
-<li>对于不含特殊符号的公式，可以直接使用MathJax的inline math表达式，比如：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一条直线$y=ax+b$使这几个点</span><br></pre></td></tr></table></figure>
+<li>对于不含特殊符号的公式，可以直接使用MathJax的inline math表达式，比如：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一条直线$y&#x3D;ax+b$使这几个点</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>效果为<br>$y=ax+b$</p>
 <ol>
-<li>对于含有特殊符号的公式，比如\和_符号在Markdown转义过程会出现一些问题，通常可以在符号前面加\,变为 \\ 和_进行数学公式编辑。比如：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一系列点$(x\_i,y\_i)(i=1,2,...n,n\ge 3)$</span><br></pre></td></tr></table></figure>
+<li>对于含有特殊符号的公式，比如\和_符号在Markdown转义过程会出现一些问题，通常可以在符号前面加\,变为 \\ 和_进行数学公式编辑。比如：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一系列点$(x\_i,y\_i)(i&#x3D;1,2,...n,n\ge 3)$</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>效果为<br>一系列点$(x_i,y_i)(i = 1,2,\cdots, n, n\ge 3)$</p>
@@ -376,7 +378,7 @@ w&=ax^2 + bxy + cy^2\\\
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -384,7 +386,7 @@ w&=ax^2 + bxy + cy^2\\\
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -411,12 +413,12 @@ w&=ax^2 + bxy + cy^2\\\
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
-  <head><meta name="generator" content="Hexo 3.8.0">
+  <head>
     
-<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-<meta name="theme-color" content="#f8f5ec">
+<meta name="theme-color" content="#f8f5ec" />
 <meta name="msapplication-navbutton-color" content="#f8f5ec">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
 
-  <meta name="description" content="Zeppelin源码分析-notebook持久化">
+  <meta name="description" content="Zeppelin源码分析-notebook持久化"/>
 
 
 
 
-  <meta name="keywords" content="Zeppelin, notebook, 持久化, Anthon">
+  <meta name="keywords" content="Zeppelin, notebook, 持久化, Anthon" />
 
 
 
@@ -38,24 +38,24 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
-<link rel="canonical" href="http://code-monkey.top/2019/06/12/Zeppelin源码分析-notebook持久化/">
+<link rel="canonical" href="http://code-monkey.top/2019/06/12/Zeppelin源码分析-notebook持久化/"/>
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -98,8 +98,8 @@
   window.config = {"leancloud":{"app_id":"MMvtgrWtn9BuiNVh6B529AP5-gzGzoHsz","app_key":"bA46NPkYiSG0QaBP2vX2ckzl"},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> Zeppelin源码分析-notebook持久化 - Anthon </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  </head>
+    <title> Zeppelin源码分析-notebook持久化 - Anthon </title>
+  <meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
@@ -224,7 +224,9 @@
         </span>
         
         
-        <span class="post-visits" data-url="/2019/06/12/Zeppelin源码分析-notebook持久化/" data-title="Zeppelin源码分析-notebook持久化">
+        <span class="post-visits"
+             data-url="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/"
+             data-title="Zeppelin源码分析-notebook持久化">
           阅读次数 0
         </span>
         
@@ -244,7 +246,7 @@
 
     <div class="post-content">
       
-        <p>Notebook的持久化系统主要的类图如下：<br><img src="/2019/06/12/Zeppelin源码分析-notebook持久化/1.png"></p>
+        <p>Notebook的持久化系统主要的类图如下：<br><img src="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/1.png" class=""></p>
 <p>各类主要的职责如下：</p>
 <ol>
 <li>NotebookRepo是顶层接口，规定了持久化层基本的CRUD接口。</li>
@@ -379,13 +381,13 @@
 <li>使用Gson将该note.json文件反序列化成Note实例。</li>
 <li>重建Note和相关对象的transient状态，参见Notebook.loadNoteFromRepo(Stringid)方法，如下：</li>
 </ol>
-<img src="/2019/06/12/Zeppelin源码分析-notebook持久化/2.png">
+<img src="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/2.png" class="">
 <p>如下是zeppelin自带的notebook中的demo note。经过VFSNotebookRepo加载之后，会产生2个Note实例，id分别为2A94M5J1Z和r。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">notebook/</span><br><span class="line">├── 2A94M5J1Z</span><br><span class="line">│   └── note.json</span><br><span class="line">└── r</span><br><span class="line">    └── note.json</span><br></pre></td></tr></table></figure></p>
 <h2 id="note-json中究竟序列化了什么内容？"><a href="#note-json中究竟序列化了什么内容？" class="headerlink" title="note.json中究竟序列化了什么内容？"></a>note.json中究竟序列化了什么内容？</h2><p>打开id=2A94M5J1Z的note，可以看到其序列化成json后的内容</p>
-<img src="/2019/06/12/Zeppelin源码分析-notebook持久化/3.png">
+<img src="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/3.png" class="">
 <p>通过对比Note的字段可以发现，以上json实际是与Note的“非transient”字段一一对应的。这里会存在一个问题——为什么Note将replLoader、jobListenerFactory、repo、index和delayedPersist设置为transient？是因为这些字段（状态）可以通过Note剩下的字段以及与该Note实例相关的其他class实例的状态重建。</p>
-<img src="/2019/06/12/Zeppelin源码分析-notebook持久化/4.png">
-<p>另外，由于在Note实例序列化成json的时候，实际是完成“图的序列化”——即Note实例“可达”的嵌套子对象（无论深度），需要一并序列化。实际上会将Paragraph、Job、GUI config、paragraphconfig（Map<string, object="">）。</string,></p>
+<img src="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/4.png" class="">
+<p>另外，由于在Note实例序列化成json的时候，实际是完成“图的序列化”——即Note实例“可达”的嵌套子对象（无论深度），需要一并序列化。实际上会将Paragraph、Job、GUI config、paragraphconfig（Map<String, Object>）。</p>
 <p>以下是id=2A94M5J1Z的note的scala代码段Paragraph序列化成json之后的样子：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"title"</span>: <span class="string">"Load data into table"</span>,</span><br><span class="line">  <span class="attr">"text"</span>: <span class="string">"import org.apache.commons.io.IOUtils\nimport java.net.URL\nimport java.nio.charset.Charset\n\n// Zeppelin creates and injects sc (SparkContext) and sqlContext (HiveContext or SqlContext)\n// So you don\u0027t need create them manually\n\n// load bank data\nval bankText \u003d sc.parallelize(\n    IOUtils.toString(\n        new URL(\"https://s3.amazonaws.com/apache-zeppelin/tutorial/bank/bank.csv\"),\n        Charset.forName(\"utf8\")).split(\"\\n\"))\n\ncase class Bank(age: Integer, job: String, marital: String, education: String, balance: Integer)\n\nval bank \u003d bankText.map(s \u003d\u003e s.split(\";\")).filter(s \u003d\u003e s(0) !\u003d \"\\\"age\\\"\").map(\n    s \u003d\u003e Bank(s(0).toInt, \n            s(1).replaceAll(\"\\\"\", \"\"),\n            s(2).replaceAll(\"\\\"\", \"\"),\n            s(3).replaceAll(\"\\\"\", \"\"),\n            s(5).replaceAll(\"\\\"\", \"\").toInt\n        )\n).toDF()\nbank.registerTempTable(\"bank\")"</span>,</span><br><span class="line">  <span class="attr">"dateUpdated"</span>: <span class="string">"Jan 14, 2016 7:58:56 PM"</span>,</span><br><span class="line">  <span class="attr">"config"</span>: &#123;</span><br><span class="line">    <span class="attr">"colWidth"</span>: <span class="number">12.0</span>,</span><br><span class="line">    <span class="attr">"graph"</span>: &#123;</span><br><span class="line">      <span class="attr">"mode"</span>: <span class="string">"table"</span>,</span><br><span class="line">      <span class="attr">"height"</span>: <span class="number">300.0</span>,</span><br><span class="line">      <span class="attr">"optionOpen"</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">"keys"</span>: [],</span><br><span class="line">      <span class="attr">"values"</span>: [],</span><br><span class="line">      <span class="attr">"groups"</span>: [],</span><br><span class="line">      <span class="attr">"scatter"</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"title"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"enabled"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"editorMode"</span>: <span class="string">"ace/mode/scala"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"settings"</span>: &#123;</span><br><span class="line">    <span class="attr">"params"</span>: &#123;&#125;,</span><br><span class="line">    <span class="attr">"forms"</span>: &#123;&#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"jobName"</span>: <span class="string">"paragraph_1423500779206_-1502780787"</span>,</span><br><span class="line">  <span class="attr">"id"</span>: <span class="string">"20150210-015259_1403135953"</span>,</span><br><span class="line">  <span class="attr">"result"</span>: &#123;</span><br><span class="line">    <span class="attr">"code"</span>: <span class="string">"SUCCESS"</span>,</span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"TEXT"</span>,</span><br><span class="line">    <span class="attr">"msg"</span>: <span class="string">"import org.apache.commons.io.IOUtils\nimport java.net.URL\nimport java.nio.charset.Charset\nbankText: org.apache.spark.rdd.RDD[String] \u003d ParallelCollectionRDD[32] at parallelize at \u003cconsole\u003e:65\ndefined class Bank\nbank: org.apache.spark.sql.DataFrame \u003d [age: int, job: string, marital: string, education: string, balance: int]\n"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"dateCreated"</span>: <span class="string">"Feb 10, 2015 1:52:59 AM"</span>,</span><br><span class="line">  <span class="attr">"dateStarted"</span>: <span class="string">"Jul 3, 2015 1:43:40 PM"</span>,</span><br><span class="line">  <span class="attr">"dateFinished"</span>: <span class="string">"Jul 3, 2015 1:43:45 PM"</span>,</span><br><span class="line">  <span class="attr">"status"</span>: <span class="string">"FINISHED"</span>,</span><br><span class="line">  <span class="attr">"progressUpdateIntervalMs"</span>: <span class="number">500</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>各字段都来自于Note和以上嵌套的对象。</p>
@@ -404,7 +406,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://code-monkey.top/2019/06/12/Zeppelin源码分析-notebook持久化/">http://code-monkey.top/2019/06/12/Zeppelin源码分析-notebook持久化/</a>
+      <a href="http://code-monkey.top/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/">http://code-monkey.top/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-notebook%E6%8C%81%E4%B9%85%E5%8C%96/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -428,7 +430,7 @@
             
               <a href="/tags/notebook/">notebook</a>
             
-              <a href="/tags/持久化/">持久化</a>
+              <a href="/tags/%E6%8C%81%E4%B9%85%E5%8C%96/">持久化</a>
             
           </div>
         
@@ -436,14 +438,14 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2019/06/12/Zeppelin源码分析-note的执行过程/">
+      <a class="prev" href="/2019/06/12/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-note%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Zeppelin源码分析-note的执行过程</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2019/05/29/Zeppelin源码分析——主要的class分析/">
+      <a class="next" href="/2019/05/29/Zeppelin%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E2%80%94%E2%80%94%E4%B8%BB%E8%A6%81%E7%9A%84class%E5%88%86%E6%9E%90/">
         <span class="next-text nav-default">Zeppelin源码分析——主要的class分析</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
@@ -486,7 +488,7 @@
     
       
         
-          <a href="https://github.com/tangboy" class="iconfont icon-github" title="github"></a>
+          <a href="https://github.com/tangboy" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
         
       
     
@@ -494,7 +496,7 @@
     
       
         
-          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" class="iconfont icon-zhihu" title="zhihu"></a>
+          <a href="https://www.zhihu.com/people/tang-huai-dong/activities" target="_blank" rel="noopener" class="iconfont icon-zhihu" title="zhihu"></a>
         
       
     
@@ -521,12 +523,12 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    由 <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 强力驱动
   </span>
   <span class="division">|</span>
   <span class="theme-info">
     主题 - 
-    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
   </span>
 
   <span class="copyright-year">
